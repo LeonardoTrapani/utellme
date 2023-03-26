@@ -37,7 +37,7 @@ export const feedbacksRouter = createTRPCRouter({
       data: {
         title: input.title,
         content: input.content,
-        topicId: input.topicId,
+        projectId: input.topicId,
         userId: ctx.session.user.id
       },
     })
@@ -66,7 +66,7 @@ export const feedbacksRouter = createTRPCRouter({
       data: {
         title: input.newTitle || undefined,
         content: input.newContent || undefined,
-        topicId: input.newTopicId || undefined
+        projectId: input.newTopicId || undefined
       }
     })
   }),
