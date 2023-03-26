@@ -7,7 +7,7 @@ import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
   const { data } = api.feedbacks.getAll.useQuery();
-  console.log(data)
+
   return (
     <>
       <Head>

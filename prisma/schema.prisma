@@ -17,7 +17,7 @@ model User {
   emailVerified DateTime?
   image         String?
   feedbacks     Feedback[]
-  topics        Project[]
+  projects      Project[]
   accounts      Account[]
   sessions      Session[]
 }
@@ -31,13 +31,13 @@ model Project {
 }
 
 model Feedback {
-  id      String  @id @default(cuid())
-  title   String?
-  content String  @db.Text
-  topicId String
-  topic   Project   @relation(fields: [topicId], references: [id], onDelete: Cascade)
-  userId  String
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  title     String?
+  content   String  @db.Text
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // Necessary for Next auth
