@@ -11,7 +11,7 @@ export const feedbacksRouter = createTRPCRouter({
     return await ctx.prisma.feedback.findMany(({
       where: {
         userId: ctx.session.user.id,
-        topic: {
+        project: {
           userId: ctx.session.user.id
         }
       }
@@ -21,23 +21,23 @@ export const feedbacksRouter = createTRPCRouter({
   create: protectedProcedure.input(z.object({
     title: z.string().nullish(),
     content: z.string(),
-    topicId: z.string()
+    projectId: z.string()
   })).mutation(async ({ ctx, input }) => {
-    const feedbacksTopic = await ctx.prisma.project.findFirst({
+    const feedbacksProject = await ctx.prisma.project.findFirst({
       where: {
-        id: input.topicId,
+        id: input.projectId,
         userId: ctx.session.user.id
       }
     })
-    if (!feedbacksTopic) throw new TRPCError({
+    if (!feedbacksProject) throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
-      message: "The selected topic isn't yours"
+      message: "The selected project isn't yours"
     })
     return await ctx.prisma.feedback.create({
       data: {
         title: input.title,
         content: input.content,
-        projectId: input.topicId,
+        projectId: input.projectId,
         userId: ctx.session.user.id
       },
     })
@@ -47,17 +47,17 @@ export const feedbacksRouter = createTRPCRouter({
     id: z.string(),
     newTitle: z.string().nullish(),
     newContent: z.string().nullish(),
-    newTopicId: z.string().nullish(),
+    newProjectId: z.string().nullish(),
   })).mutation(async ({ ctx, input }) => {
     const currProject = await ctx.prisma.project.findFirst({
       where: {
-        id: input.newTopicId || undefined,
+        id: input.newProjectId || undefined,
         userId: ctx.session.user.id
       }
     })
     if (!currProject) throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
-      message: "The selected topic isn't yours"
+      message: "The selected project isn't yours"
     })
     return await ctx.prisma.feedback.update({
       where: {
@@ -66,7 +66,7 @@ export const feedbacksRouter = createTRPCRouter({
       data: {
         title: input.newTitle || undefined,
         content: input.newContent || undefined,
-        projectId: input.newTopicId || undefined
+        projectId: input.newProjectId || undefined
       }
     })
   }),
