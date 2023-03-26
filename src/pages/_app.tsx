@@ -7,14 +7,14 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 
 const MyApp: AppType<{ session: Session | null }> = ({
-    Component,
-    pageProps: { session, ...pageProps },
-    }) => {
+  Component,
+  pageProps: { session, ...pageProps },
+}) => {
   return (
-      <SessionProvider session={session}>
+    <SessionProvider session={session}>
       <Component {...pageProps} />
-      </SessionProvider>
-      );
+    </SessionProvider>
+  );
 };
 
 export default api.withTRPC(MyApp);

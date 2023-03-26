@@ -33,7 +33,6 @@ model Feedback {
   id      String  @id @default(cuid())
   title   String?
   content String  @db.Text
-  userId  String
   topicId String
   topic   Topic   @relation(fields: [topicId], references: [id], onDelete: Cascade)
 }
