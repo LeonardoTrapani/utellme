@@ -4,10 +4,10 @@ import {
 } from "~/server/api/trpc";
 import { z } from "zod"
 
-export const topicsRouter = createTRPCRouter({
+export const projectsRouter = createTRPCRouter({
 
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.topic.findMany(({
+    return await ctx.prisma.project.findMany(({
       where: {
         userId: ctx.session.user.id,
       }
@@ -18,7 +18,7 @@ export const topicsRouter = createTRPCRouter({
     userId: z.string(),
     name: z.string()
   })).mutation(async ({ ctx, input }) => {
-    return await ctx.prisma.topic.create({
+    return await ctx.prisma.project.create({
       data: {
         userId: input.userId,
         name: input.name,
@@ -27,7 +27,7 @@ export const topicsRouter = createTRPCRouter({
   }),
 
   edit: protectedProcedure.input(z.object({ newName: z.string().nullish(), topicId: z.string(), })).mutation(async ({ ctx, input }) => {
-    return await ctx.prisma.topic.updateMany({
+    return await ctx.prisma.project.updateMany({
       data: {
         name: input.newName || undefined,
 
@@ -41,7 +41,7 @@ export const topicsRouter = createTRPCRouter({
   }),
 
   delete: protectedProcedure.input(z.object({topicId: z.string()})).mutation(async ({ ctx, input }) => {
-    await ctx.prisma.topic.deleteMany({
+    await ctx.prisma.project.deleteMany({
       where: {
         id: input.topicId,
         userId: ctx.session.user.id

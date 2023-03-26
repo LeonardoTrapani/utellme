@@ -17,12 +17,12 @@ model User {
   emailVerified DateTime?
   image         String?
   feedbacks     Feedback[]
-  topics        Topic[]
+  topics        Project[]
   accounts      Account[]
   sessions      Session[]
 }
 
-model Topic {
+model Project {
   id        String     @id @default(cuid())
   name      String
   userId    String
@@ -35,7 +35,7 @@ model Feedback {
   title   String?
   content String  @db.Text
   topicId String
-  topic   Topic   @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  topic   Project   @relation(fields: [topicId], references: [id], onDelete: Cascade)
   userId  String
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

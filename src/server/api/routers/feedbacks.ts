@@ -23,7 +23,7 @@ export const feedbacksRouter = createTRPCRouter({
     content: z.string(),
     topicId: z.string()
   })).mutation(async ({ ctx, input }) => {
-    const feedbacksTopic = await ctx.prisma.topic.findFirst({where: {
+    const feedbacksTopic = await ctx.prisma.project.findFirst({where: {
       id: input.topicId,
       userId: ctx.session.user.id
     }})
@@ -47,11 +47,11 @@ export const feedbacksRouter = createTRPCRouter({
     newContent: z.string().nullish(),
     newTopicId: z.string().nullish(),
   })).mutation(async ({ ctx, input }) => {
-    const feedbacksTopic = await ctx.prisma.topic.findFirst({where: {
+    const currProject = await ctx.prisma.project.findFirst({where: {
       id: input.newTopicId || undefined,
       userId: ctx.session.user.id
     }})
-    if (!feedbacksTopic) throw new TRPCError({
+    if (!currProject) throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR', 
       message: "The selected topic isn't yours"
     })
