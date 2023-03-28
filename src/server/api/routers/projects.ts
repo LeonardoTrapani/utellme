@@ -10,6 +10,9 @@ export const projectsRouter = createTRPCRouter({
     return await ctx.prisma.project.findMany(({
       where: {
         userId: ctx.session.user.id,
+      },
+      include: {
+        feedbacks: true,
       }
     }))
   }),

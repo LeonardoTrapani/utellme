@@ -1,12 +1,15 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 import { api } from "~/utils/api";
+import Navbar from "~/components/Navbar";
+import { useState } from "react";
+import { type Project } from "@prisma/client";
 
 const Home: NextPage = () => {
-  const { data } = api.feedbacks.getAll.useQuery();
+  const { data: sessionData } = useSession();
+  const isSignedIn = !!sessionData
 
   return (
     <>
@@ -15,20 +18,8 @@ const Home: NextPage = () => {
         <meta name="description" content="a web app to get feedback" />
         <link rel='icon' href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-            Leonardo <span className="text-[hsl(280,100%,70%)]">Trapani</span> !!!!
-          </h1>
-          <h2 className="text-3xl text-white  font-extrabold">
-            Comprami GITHUB copilot!!!
-          </h2>
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-3xl text-white  font-extrabold">
-            </p>
-            <AuthShowcase />
-          </div>
-        </div>
+      <main>
+        {isSignedIn ? <MainPageContent /> : <LoginPage />}
       </main>
     </>
   );
@@ -36,25 +27,41 @@ const Home: NextPage = () => {
 
 export default Home;
 
-const AuthShowcase: React.FC = () => {
-  const { data: sessionData } = useSession();
+const MainPageContent: React.FC = () => {
+  const { data } = api.projects.getAll.useQuery();
+  const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
 
-  /*
-  const { data: secretMessage } = api.example.getSecretMessage.useQuery(
-    undefined, // no input
-    { enabled: sessionData?.user !== undefined },
-  );*/
+  const onProjectPress = (i: number) => {
+    setSelectedProjectIndex(i);
+  }
+  return (
+    <div>
+      <Navbar />
+      <body className="flex items-stretch p-4">
+        <ul className="menu bg-base-200 w-56 p-2 rounded-box">
+          {
+            data?.map((project, i) => {
+              return <ProjectComponent key={i} project={project} isActive={selectedProjectIndex === i} onPress={onProjectPress} index={i}/>
+            })
+          }
+        </ul>
+      </body>
+    </div>
+  )
+}
 
+const ProjectComponent: React.FC<{ project: Project, isActive: boolean, onPress: (i: number) => void; index: number}> = (props) => {
+  return <li key={props.project.id}><a className={`${props.isActive ? "active" : ""}`} onClick={() => props.onPress(props.index)}>{props.project.name}</a></li>
+}
+
+const LoginPage: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-center text-2xl text-white">
-        {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-      </p>
       <button
-        className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
-        onClick={sessionData ? () => void signOut() : () => void signIn()}
+        className="btn"
+        onClick={() => void signIn()}
       >
-        {sessionData ? "Sign out" : "Sign in"}
+        Sign In
       </button>
     </div>
   );
