@@ -20,6 +20,7 @@ model User {
   projects      Project[]
   accounts      Account[]
   sessions      Session[]
+  createdAt     DateTime   @default(now())
 }
 
 model Project {
@@ -28,16 +29,27 @@ model Project {
   userId    String
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   feedbacks Feedback[]
+  createdAt DateTime   @default(now())
 }
 
 model Feedback {
-  id        String  @id @default(cuid())
+  id        String      @id @default(cuid())
   title     String?
-  content   String  @db.Text
+  content   String      @db.Text
   projectId String
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project   Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
   userId    String
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    RatingEnum?
+  createdAt DateTime    @default(now())
+}
+
+enum RatingEnum {
+  ONE
+  TWO
+  THREE
+  FOUR
+  FIVE
 }
 
 // Necessary for Next auth
