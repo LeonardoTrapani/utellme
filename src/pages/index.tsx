@@ -39,7 +39,7 @@ const MainPageContent: React.FC = () => {
       <Navbar />
       <body className="flex items-stretch p-4">
         <ul className="menu bg-base-200 w-56 p-2 rounded-box">
-          <li><button className="btn btn-primary mb-2">New Project</button></li>
+          <li><button className="btn mary mb-2">New Project</button></li>
           {
             projectsData?.map((project, i) => {
               return <ProjectComponent key={i} project={project} isActive={selectedProjectIndex === i} onPress={onProjectPress} index={i} />
@@ -66,7 +66,7 @@ const ProjectComponent: React.FC<{
   return (
     <li key={props.project.id}>
       <a
-        className={`${props.isActive ? "btn-accent text-neutral-200" : ""} active:bg-accent`}
+        className={`${props.isActive ? "active" : ""}`}
         onClick={() => props.onPress(props.index)}
       >
         {props.project.name}
