@@ -19,22 +19,27 @@ export const projectsRouter = createTRPCRouter({
 
   create: protectedProcedure.input(z.object({
     userId: z.string(),
-    name: z.string()
+    name: z.string(),
+    description: z.string().nullish(),
   })).mutation(async ({ ctx, input }) => {
     return await ctx.prisma.project.create({
       data: {
         userId: input.userId,
         name: input.name,
+        description: input.description,
       }
     })
   }),
 
-  edit: protectedProcedure.input(z.object({ newName: z.string().nullish(), projectId: z.string(), })).mutation(async ({ ctx, input }) => {
+  edit: protectedProcedure.input(z.object({
+    newName: z.string().nullish(),
+    newDescription: z.string().nullish(),
+    projectId: z.string(),
+  })).mutation(async ({ ctx, input }) => {
     return await ctx.prisma.project.updateMany({
       data: {
         name: input.newName || undefined,
-
-        // check user
+        description: input.newDescription || undefined,
       },
       where: {
         id: input.projectId,

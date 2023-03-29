@@ -5,7 +5,7 @@ import { signIn, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import Navbar from "~/components/Navbar";
 import { useState } from "react";
-import { type Project } from "@prisma/client";
+import { Feedback, type Project } from "@prisma/client";
 
 const Home: NextPage = () => {
   const { data: sessionData } = useSession();
@@ -28,7 +28,7 @@ const Home: NextPage = () => {
 export default Home;
 
 const MainPageContent: React.FC = () => {
-  const { data } = api.projects.getAll.useQuery();
+  const { data: projectsData } = api.projects.getAll.useQuery();
   const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
 
   const onProjectPress = (i: number) => {
@@ -40,8 +40,15 @@ const MainPageContent: React.FC = () => {
       <body className="flex items-stretch p-4">
         <ul className="menu bg-base-200 w-56 p-2 rounded-box">
           {
-            data?.map((project, i) => {
-              return <ProjectComponent key={i} project={project} isActive={selectedProjectIndex === i} onPress={onProjectPress} index={i}/>
+            projectsData?.map((project, i) => {
+              return <ProjectComponent key={i} project={project} isActive={selectedProjectIndex === i} onPress={onProjectPress} index={i} />
+            })
+          }
+        </ul>
+        <ul className="">
+          {
+            projectsData?.[selectedProjectIndex]?.feedbacks.map((feedback) => {
+              return <FeedbackComponent key={feedback.id} feedback={feedback} />
             })
           }
         </ul>
@@ -50,8 +57,12 @@ const MainPageContent: React.FC = () => {
   )
 }
 
-const ProjectComponent: React.FC<{ project: Project, isActive: boolean, onPress: (i: number) => void; index: number}> = (props) => {
+const ProjectComponent: React.FC<{ project: Project, isActive: boolean, onPress: (i: number) => void; index: number }> = (props) => {
   return <li key={props.project.id}><a className={`${props.isActive ? "active" : ""}`} onClick={() => props.onPress(props.index)}>{props.project.name}</a></li>
+}
+
+const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
+  return <li key={props.feedback.id}><a>{props.feedback.content}</a></li>
 }
 
 const LoginPage: React.FC = () => {
