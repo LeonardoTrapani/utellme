@@ -13,6 +13,9 @@ export const projectsRouter = createTRPCRouter({
       },
       include: {
         feedbacks: true,
+      },
+      orderBy: {
+        createdAt: "desc"
       }
     }))
   }),

@@ -14,6 +14,9 @@ export const feedbacksRouter = createTRPCRouter({
         project: {
           userId: ctx.session.user.id
         }
+      }, 
+      orderBy: {
+        createdAt: "desc"
       }
     }))
   }),
