@@ -5,7 +5,8 @@ import { signIn, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import Navbar from "~/components/Navbar";
 import { useState } from "react";
-import { Feedback, type Project } from "@prisma/client";
+import type { Feedback, Project, RatingEnum } from "@prisma/client";
+import { RatingComponent } from "~/components/RatingComponent";
 
 const Home: NextPage = () => {
   const { data: sessionData } = useSession();
@@ -37,16 +38,9 @@ const MainPageContent: React.FC = () => {
   return (
     <div>
       <Navbar />
-      <body className="flex items-stretch p-4">
-        <ul className="menu bg-base-200 w-56 p-2 rounded-box">
-          <li><button className="btn mary mb-2">New Project</button></li>
-          {
-            projectsData?.map((project, i) => {
-              return <ProjectComponent key={i} project={project} isActive={selectedProjectIndex === i} onPress={onProjectPress} index={i} />
-            })
-          }
-        </ul>
-        <ul className="">
+      <body className="flex items-stretch p-2 my-2">
+        <ProjectMenuComponent projectsData={projectsData} selectedProjectIndex={selectedProjectIndex} onProjectPress={onProjectPress} />
+        <ul className="gap-2 flex flex-col flex-1 mx-2">
           {
             projectsData?.[selectedProjectIndex]?.feedbacks.map((feedback) => {
               return <FeedbackComponent key={feedback.id} feedback={feedback} />
@@ -58,11 +52,30 @@ const MainPageContent: React.FC = () => {
   )
 }
 
+type ProjectsDataType = (Project & {
+  feedbacks: Feedback[];
+})[] | undefined
+
+const ProjectMenuComponent: React.FC<{
+  projectsData: ProjectsDataType;
+  selectedProjectIndex: number; onProjectPress: (i: number) => void
+}> = (props) => {
+  return (
+    <ul className="menu bg-base-200 w-56 p-2 rounded-box mr-2">
+      <li><button className="btn mary mb-2">New Project</button></li>
+      {
+        props.projectsData?.map((project, i) => {
+          return <ProjectComponent key={i} project={project} isActive={props.selectedProjectIndex === i} onPress={props.onProjectPress} index={i} />
+        })
+      }
+    </ul>
+  )
+}
+
 const ProjectComponent: React.FC<{
   project: Project,
   isActive: boolean, onPress: (i: number) => void; index: number
 }> = (props) => {
-  // className={`${props.isActive ? "btn-accent text-neutral-200" : ""} hover:bg-accent hover:opacity-90 hover:text-neutral-200`} to put in a
   return (
     <li key={props.project.id}>
       <a
@@ -78,10 +91,39 @@ const ProjectComponent: React.FC<{
 const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
   return (
     <li key={props.feedback.id}>
-      <a>
-        {props.feedback.content}
-      </a>
+      <div className="bg-base-200 rounded-xl p-2">
+        <TitleAndRatingComponent title={props.feedback.title} rating={props.feedback.rating} />
+        <p>
+          {props.feedback.content}
+        </p>
+        <p className="text-gray-500 text-right">
+          {
+            !props.feedback.anonymous ?
+              props.feedback.author
+              :
+              "Anonymous"
+          }
+        </p>
+      </div>
     </li>
+  )
+}
+
+const TitleAndRatingComponent: React.FC<{ title: string | null, rating: RatingEnum }> = (props) => {
+  return (
+    <div className="flex justify-between">
+      {
+        props.title ?
+          <h2 className="text-xl font-bold">
+            {props.title}
+          </h2>
+          :
+          <h2 className="text-xl font-bold text-gray-500">
+            Untitled
+          </h2>
+      }
+      <RatingComponent rating={props.rating} />
+    </div>
   )
 }
 
