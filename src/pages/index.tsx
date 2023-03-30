@@ -7,9 +7,11 @@ import Navbar from "~/components/Navbar";
 import { useState } from "react";
 import type { Feedback, Project, RatingEnum } from "@prisma/client";
 import { RatingComponent } from "~/components/RatingComponent";
+import LoadingIndicator from "~/components/LoadingIndicator";
 
 const Home: NextPage = () => {
-  const { data: sessionData } = useSession();
+  const { data: sessionData, status: sessionStatus } = useSession();
+  const { isLoading: isProjectsLoading } = api.projects.getAll.useQuery();
   const isSignedIn = !!sessionData
 
   return (
@@ -20,7 +22,11 @@ const Home: NextPage = () => {
         <link rel='icon' href="/favicon.ico" />
       </Head>
       <main>
-        {isSignedIn ? <MainPageContent /> : <LoginPage />}
+        {(sessionStatus === 'loading') || isProjectsLoading ? <div className="flex items-center justify-center h-screen">
+          <LoadingIndicator />
+        </div> :
+          (isSignedIn ? <MainPageContent /> : <LoginPage />)
+        }
       </main>
     </>
   );
