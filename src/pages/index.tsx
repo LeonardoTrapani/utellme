@@ -9,6 +9,8 @@ import { RatingComponent } from "~/components/RatingComponent";
 import LoadingIndicator from "~/components/LoadingIndicator";
 import Avatar from "~/components/Avatar";
 
+import { BiLogOut } from "react-icons/bi";
+
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
   const { isLoading: isProjectsLoading } = api.projects.getAll.useQuery();
@@ -106,7 +108,14 @@ const TitleAndAvatarComponen = () => {
     <div className="flex justify-between items-center">
       <p className="font-bold text-xl">TELL <span className="text-primary">ME!</span></p>
       <Avatar>
-        <li><a onClick={() => void signOut()}>Sign Out</a></li>
+        <li>
+          <a onClick={() => void signOut()} className="flex justify-between">
+            <p>
+              Sign Out
+            </p>
+            <BiLogOut size={20}/>
+          </a>
+        </li>
       </Avatar>
     </div>
   )
@@ -119,7 +128,7 @@ const ProjectComponent: React.FC<{
   return (
     <li key={props.project.id}>
       <a
-        className={`${props.isActive ? "active" : ""}`}
+        className={`${props.isActive ? "active font-semibold" : ""}`}
         onClick={() => props.onPress(props.index)}
       >
         {props.project.name}
