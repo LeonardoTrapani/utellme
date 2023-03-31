@@ -3,6 +3,7 @@ import React from "react";
 
 export const RatingComponent: React.FC<{
   rating: RatingEnum;
+  editable?: boolean;
 }> = (props) => {
   return (
     <div className="rating rating-md">

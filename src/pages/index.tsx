@@ -45,6 +45,7 @@ const MainPageContent: React.FC = () => {
   const onProjectPress = (i: number) => {
     setSelectedProjectIndex(i);
   }
+
   return (
     <body>
       <ProjectDrawerContainer
@@ -52,7 +53,7 @@ const MainPageContent: React.FC = () => {
         selectedProjectIndex={selectedProjectIndex}
         onProjectPress={onProjectPress}
       >
-        <ul className="gap-2 flex flex-col flex-1 mx-2">
+        <ul className="gap-2 flex flex-col flex-1 ml-2">
           {
             projectsData?.[selectedProjectIndex]?.feedbacks.map((feedback) => {
               return <FeedbackComponent key={feedback.id} feedback={feedback} />
@@ -76,7 +77,7 @@ const ProjectDrawerContainer: React.FC<{
   return (
     <div className="drawer drawer-mobile p-2">
       <input id="drawer" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content flex flex-col items-center justify-center">
+      <div className="drawer-content flex flex-col justify-center">
         {props.children}
         <label htmlFor="drawer" className="btn btn-primary drawer-button lg:hidden">Open drawer</label>
       </div>
@@ -97,7 +98,6 @@ const ProjectDrawerContainer: React.FC<{
             })
           }
         </ul>
-
       </div>
     </div>
   )
@@ -113,7 +113,7 @@ const TitleAndAvatarComponen = () => {
             <p>
               Sign Out
             </p>
-            <BiLogOut size={20}/>
+            <BiLogOut size={20} />
           </a>
         </li>
       </Avatar>
@@ -155,7 +155,7 @@ const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
         <p>
           {props.feedback.content}
         </p>
-        <p className="text-gray-500 text-right">
+        <p className="text-gray-500 text-right italic">
           {
             !props.feedback.anonymous ?
               props.feedback.author
