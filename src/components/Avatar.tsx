@@ -18,7 +18,7 @@ const AvatarDropdown: React.FC<{
 const AvatarContent: React.FC = () => {
   const { data: sessionData } = useSession();
   if (!sessionData) {
-    return <p>We shouldn't be here</p>
+    return <p>We shouldn&apos;t be here</p>
   }
 
   if (sessionData?.user.image) return (
@@ -26,7 +26,7 @@ const AvatarContent: React.FC = () => {
       <div className="w-11 rounded-full overflow-hidden">
         <Image
           src={sessionData.user.image}
-          alt={`Tell Me Image Profile of ${sessionData.user.name}`}
+          alt={`Tell Me Image Profile of ${sessionData.user.name || "Unknown"}`}
           fill
           style={{
             objectFit: "cover",
