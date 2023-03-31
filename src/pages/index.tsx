@@ -148,9 +148,7 @@ const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
               {props.feedback.title}
             </h2>
             :
-            <h2 className="text-xl font-bold text-gray-500">
-              Untitled
-            </h2>
+            <></>
         }
         <p>
           {props.feedback.content}
