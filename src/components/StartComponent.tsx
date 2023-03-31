@@ -18,5 +18,5 @@ export const RatingComponent: React.FC<{
 const SingleRatingComponent: React.FC<{
   checked: boolean;
 }> = (props) => {
-  return <input type="radio" name="rating-1" className="mask mask-star" checked={props.checked} />
+  return <input type="radio" name="rating" className="mask mask-star" checked={props.checked} />
 }

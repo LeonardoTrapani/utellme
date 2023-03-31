@@ -5,7 +5,7 @@ import { signIn, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import Navbar from "~/components/Navbar";
 import { useState } from "react";
-import type { Feedback, Project, RatingEnum } from "@prisma/client";
+import type { Feedback, Project } from "@prisma/client";
 import { RatingComponent } from "~/components/RatingComponent";
 import LoadingIndicator from "~/components/LoadingIndicator";
 
@@ -22,7 +22,7 @@ const Home: NextPage = () => {
         <link rel='icon' href="/favicon.ico" />
       </Head>
       <main>
-        {(sessionStatus === 'loading') || isProjectsLoading ? <div className="flex items-center justify-center h-screen">
+        {(sessionStatus === 'loading') || (isProjectsLoading && sessionData?.user)? <div className="flex items-center justify-center h-screen">
           <LoadingIndicator />
         </div> :
           (isSignedIn ? <MainPageContent /> : <LoginPage />)
@@ -98,7 +98,17 @@ const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
   return (
     <li key={props.feedback.id}>
       <div className="bg-base-200 rounded-xl p-2">
-        <TitleAndRatingComponent title={props.feedback.title} rating={props.feedback.rating} />
+        <RatingComponent rating={props.feedback.rating} />
+        {
+          props.feedback.title ?
+            <h2 className="text-xl font-bold">
+              {props.feedback.title}
+            </h2>
+            :
+            <h2 className="text-xl font-bold text-gray-500">
+              Untitled
+            </h2>
+        }
         <p>
           {props.feedback.content}
         </p>
@@ -112,24 +122,6 @@ const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
         </p>
       </div>
     </li>
-  )
-}
-
-const TitleAndRatingComponent: React.FC<{ title: string | null, rating: RatingEnum }> = (props) => {
-  return (
-    <div className="flex justify-between">
-      {
-        props.title ?
-          <h2 className="text-xl font-bold">
-            {props.title}
-          </h2>
-          :
-          <h2 className="text-xl font-bold text-gray-500">
-            Untitled
-          </h2>
-      }
-      <RatingComponent rating={props.rating} />
-    </div>
   )
 }
 
