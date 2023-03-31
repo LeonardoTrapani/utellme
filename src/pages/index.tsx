@@ -22,9 +22,11 @@ const Home: NextPage = () => {
         <link rel='icon' href="/favicon.ico" />
       </Head>
       <main>
-        {(sessionStatus === 'loading') || (isProjectsLoading && sessionData?.user)? <div className="flex items-center justify-center h-screen">
-          <LoadingIndicator />
-        </div> :
+        {(sessionStatus === 'loading') || (isProjectsLoading && sessionData?.user)
+          ?
+          <div className="flex items-center justify-center h-screen">
+            <LoadingIndicator />
+          </div> :
           (isSignedIn ? <MainPageContent /> : <LoginPage />)
         }
       </main>
@@ -42,9 +44,9 @@ const MainPageContent: React.FC = () => {
     setSelectedProjectIndex(i);
   }
   return (
-    <div>
+    <div className="h-screen">
       <Navbar />
-      <body className="flex items-stretch p-2 my-2">
+      <body className="flex items-stretch p-2 my-2 h-">
         <ProjectMenuComponent projectsData={projectsData} selectedProjectIndex={selectedProjectIndex} onProjectPress={onProjectPress} />
         <ul className="gap-2 flex flex-col flex-1 mx-2">
           {
@@ -68,7 +70,7 @@ const ProjectMenuComponent: React.FC<{
 }> = (props) => {
   return (
     <ul className="menu bg-base-200 w-56 p-2 rounded-box mr-2">
-      <li><button className="btn mary mb-2">New Project</button></li>
+      <li><button className={`btn mary ${props.projectsData?.length ? 'mb-2' : ''}`}>New Project</button></li>
       {
         props.projectsData?.map((project, i) => {
           return <ProjectComponent key={i} project={project} isActive={props.selectedProjectIndex === i} onPress={props.onProjectPress} index={i} />

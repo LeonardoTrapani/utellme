@@ -1,16 +1,15 @@
 import {
   createTRPCRouter,
   protectedProcedure,
+  publicProcedure,
 } from "~/server/api/trpc";
 import { z } from "zod"
-import { TRPCError } from "@trpc/server";
 
 export const feedbacksRouter = createTRPCRouter({
 
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.feedback.findMany(({
       where: {
-        userId: ctx.session.user.id,
         project: {
           userId: ctx.session.user.id
         }
@@ -21,30 +20,18 @@ export const feedbacksRouter = createTRPCRouter({
     }))
   }),
 
-  create: protectedProcedure.input(z.object({
+  create: publicProcedure.input(z.object({
     title: z.string().nullish(),
     content: z.string(),
     projectId: z.string(),
     author: z.string().nullish(),
     rating: z.enum(["ONE", "TWO", "THREE", "FOUR", "FIVE"]),
   })).mutation(async ({ ctx, input }) => {
-    const feedbacksProject = await ctx.prisma.project.findFirst({
-      where: {
-        id: input.projectId,
-        userId: ctx.session.user.id
-      }
-    })
-    if (!feedbacksProject) throw new TRPCError({
-      code: 'INTERNAL_SERVER_ERROR',
-      message: "The selected project isn't yours"
-    })
-
     return await ctx.prisma.feedback.create({
       data: {
         title: input.title,
         content: input.content,
         projectId: input.projectId,
-        userId: ctx.session.user.id,
         author: input.author,
         rating: input.rating,
         anonymous: !input.author,
@@ -88,7 +75,9 @@ export const feedbacksRouter = createTRPCRouter({
     return await ctx.prisma.feedback.deleteMany({
       where: {
         id: input.id,
-        userId: ctx.session.user.id
+        project: {
+          userId: ctx.session.user.id
+        }
       },
     })
   })

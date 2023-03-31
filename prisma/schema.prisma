@@ -16,7 +16,6 @@ model User {
   email         String?    @unique
   emailVerified DateTime?
   image         String?
-  feedbacks     Feedback[]
   projects      Project[]
   accounts      Account[]
   sessions      Session[]
@@ -39,8 +38,6 @@ model Feedback {
   content   String     @db.Text
   projectId String
   project   Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   rating    RatingEnum
   anonymous Boolean    @default(false)
   author    String?
