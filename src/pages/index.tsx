@@ -53,7 +53,7 @@ const MainPageContent: React.FC = () => {
         selectedProjectIndex={selectedProjectIndex}
         onProjectPress={onProjectPress}
       >
-        <ul className="gap-2 flex flex-col flex-1 ml-2">
+        <ul className="gap-2 flex flex-col flex-1 lg:ml-2">
           {
             projectsData?.[selectedProjectIndex]?.feedbacks.map((feedback) => {
               return <FeedbackComponent key={feedback.id} feedback={feedback} />
