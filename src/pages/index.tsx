@@ -1,13 +1,13 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { signIn, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 import { api } from "~/utils/api";
-import Navbar from "~/components/Navbar";
 import { useState } from "react";
 import type { Feedback, Project } from "@prisma/client";
 import { RatingComponent } from "~/components/RatingComponent";
 import LoadingIndicator from "~/components/LoadingIndicator";
+import Avatar from "~/components/Avatar";
 
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -44,10 +44,12 @@ const MainPageContent: React.FC = () => {
     setSelectedProjectIndex(i);
   }
   return (
-    <div className="h-screen">
-      <Navbar />
-      <body className="flex items-stretch p-2 my-2 h-">
-        <ProjectMenuComponent projectsData={projectsData} selectedProjectIndex={selectedProjectIndex} onProjectPress={onProjectPress} />
+    <body>
+      <ProjectDrawerContainer
+        projectsData={projectsData}
+        selectedProjectIndex={selectedProjectIndex}
+        onProjectPress={onProjectPress}
+      >
         <ul className="gap-2 flex flex-col flex-1 mx-2">
           {
             projectsData?.[selectedProjectIndex]?.feedbacks.map((feedback) => {
@@ -55,8 +57,8 @@ const MainPageContent: React.FC = () => {
             })
           }
         </ul>
-      </body>
-    </div>
+      </ProjectDrawerContainer>
+    </body>
   )
 }
 
@@ -64,19 +66,49 @@ type ProjectsDataType = (Project & {
   feedbacks: Feedback[];
 })[] | undefined
 
-const ProjectMenuComponent: React.FC<{
+const ProjectDrawerContainer: React.FC<{
   projectsData: ProjectsDataType;
-  selectedProjectIndex: number; onProjectPress: (i: number) => void
+  selectedProjectIndex: number; onProjectPress: (i: number) => void;
+  children: React.ReactNode;
 }> = (props) => {
   return (
-    <ul className="menu bg-base-200 w-56 p-2 rounded-box mr-2">
-      <li><button className={`btn mary ${props.projectsData?.length ? 'mb-2' : ''}`}>New Project</button></li>
-      {
-        props.projectsData?.map((project, i) => {
-          return <ProjectComponent key={i} project={project} isActive={props.selectedProjectIndex === i} onPress={props.onProjectPress} index={i} />
-        })
-      }
-    </ul>
+    <div className="drawer drawer-mobile p-2">
+      <input id="drawer" type="checkbox" className="drawer-toggle" />
+      <div className="drawer-content flex flex-col items-center justify-center">
+        {props.children}
+        <label htmlFor="drawer" className="btn btn-primary drawer-button lg:hidden">Open drawer</label>
+      </div>
+      <div className="drawer-side">
+        <label htmlFor="drawer" className="drawer-overlay"></label>
+        <ul className="menu p-4 w-80 bg-base-200 text-base-content rounded-xl">
+          <TitleAndAvatarComponen />
+          <div className="divider mt-2" />
+          <li><button className={`btn ${props.projectsData?.length ? 'mb-2' : ''}`}>New Project</button></li>
+          {
+            props.projectsData?.map((project, i) => {
+              return <ProjectComponent
+                key={i}
+                project={project}
+                isActive={props.selectedProjectIndex === i}
+                onPress={props.onProjectPress}
+                index={i} />
+            })
+          }
+        </ul>
+
+      </div>
+    </div>
+  )
+}
+
+const TitleAndAvatarComponen = () => {
+  return (
+    <div className="flex justify-between items-center">
+      <p className="font-bold text-xl">TELL <span className="text-primary">ME!</span></p>
+      <Avatar>
+        <li><a onClick={() => void signOut()}>Sign Out</a></li>
+      </Avatar>
+    </div>
   )
 }
 
