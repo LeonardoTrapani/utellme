@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.3](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.2...v0.1.3) (2023-04-01)
+
+
+### Features
+
+* added link tooltip ([24cd1a5](https://github.com/LeonardoTrapani/tell-me/commit/24cd1a55b682ef2c8670679d2f15870c8f64f652))
+* added menu icon for mobile devices ([d1aede7](https://github.com/LeonardoTrapani/tell-me/commit/d1aede758bbd47700496c82b578d98af1d6014f0))
+* added toast with toastify ([c5f1545](https://github.com/LeonardoTrapani/tell-me/commit/c5f1545f743e0bef0e530d538c3916fc2c613dae))
+* changed rating component to not use enums but numbers ([79df068](https://github.com/LeonardoTrapani/tell-me/commit/79df0684aafb2c5ca9ec4dd8fa3d039d3e8d07f5))
+* copy to clipboard functionality + style changes ([4a80296](https://github.com/LeonardoTrapani/tell-me/commit/4a8029646ddd98b887e429944353379d8402e05c))
+* feedbacks are fetched again when the page loads ([c0a012e](https://github.com/LeonardoTrapani/tell-me/commit/c0a012e781b6385426bff4849687234211204b7e))
+* link icon ([b7335d9](https://github.com/LeonardoTrapani/tell-me/commit/b7335d952e669cc8c9ef688e5af91a3e6ad2e632))
+* removed feedback's anonymous propery + added anonymous icon ([89af900](https://github.com/LeonardoTrapani/tell-me/commit/89af9004081466b4b3fe5f39f0ef8cdc9a294187))
+
+
+### Bug Fixes
+
+* changed daisyui.d.ts file name + removed main page rendering twice ([da6c61f](https://github.com/LeonardoTrapani/tell-me/commit/da6c61f0dee9c19a474c44500d85ded64a35a520))
+* fixed daisyui theme type errors ([761e482](https://github.com/LeonardoTrapani/tell-me/commit/761e4822f608b63964ef0398b218d8f42835864a))
+* fixed link and menu layouts with responsive design ([505ea19](https://github.com/LeonardoTrapani/tell-me/commit/505ea19d21461cba6f3d3c2a0b7b8d7e07ab00f3))
+* readded lines that were removed by accident ([a56fcf6](https://github.com/LeonardoTrapani/tell-me/commit/a56fcf651b4f19eb2ef54c49626e99a15d1f4d73))
+* removed random rating code ([429384d](https://github.com/LeonardoTrapani/tell-me/commit/429384d462cecd0758f7b481a1a0a2f07abf841e))
+* removed unused files ([e6e0f33](https://github.com/LeonardoTrapani/tell-me/commit/e6e0f33de34a1d6a71ff81a358477ccc50a8bc41))
+* removed unused import ([4da5a90](https://github.com/LeonardoTrapani/tell-me/commit/4da5a900d7e00b1be0c7c9cf569f1d516b80a962))
+
 ### [0.1.2](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.1...v0.1.2) (2023-03-31)
 
 
