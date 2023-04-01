@@ -49,6 +49,7 @@ const MainPageContent: React.FC = () => {
   }
 
   const [windowWidth] = useWindowSize()
+
   return (
     <body>
       <ProjectDrawerContainer
@@ -57,39 +58,49 @@ const MainPageContent: React.FC = () => {
         onProjectPress={onProjectPress}
       >
         {
-          (windowWidth || 0) < 768
+          (windowWidth || 0) < 768 //if we are in mobile we need the icons above the main page content 
           &&
           <MenuIconsComponent />
         }
-        {projectsData &&
-          <>
-            <div className="mb-3 flex">
-              <div className="grow">
-                <h1 className="text-3xl font-bold">{projectsData[selectedProjectIndex]?.name}</h1>
-                <h3 className="italic">{projectsData[selectedProjectIndex]?.description}</h3>
-              </div>
-              {
-                (windowWidth || 0) >= 768
-                  ?
-                  <MenuIconsComponent />
-                  :
-                  <></>
-              }
-            </div>
-            {
-              projectsData && projectsData[selectedProjectIndex]?.feedbacks.length
-                ?
-                <FeedbackList feedbacks={projectsData[selectedProjectIndex]?.feedbacks} />
-                :
-                <p>No Feedbacks yet. Share the project</p>
-            }
-          </>
-        }
+        <ProjectMainContent selectedProjectIndex={selectedProjectIndex}/>
       </ProjectDrawerContainer>
     </body>
   )
 }
 
+const ProjectMainContent: React.FC<{ 
+  selectedProjectIndex: number;
+}> = (props) => {
+  const { data: projectsData } = api.projects.getAll.useQuery();
+  const [windowWidth] = useWindowSize()
+  if (!projectsData) {
+    return <></>
+  }
+  return (
+    <>
+      <div className="mb-3 flex">
+        <div className="grow">
+          <h1 className="text-3xl font-bold">{projectsData[props.selectedProjectIndex]?.name}</h1>
+          <h3 className="italic">{projectsData[props.selectedProjectIndex]?.description}</h3>
+        </div>
+        {
+          (windowWidth || 0) >= 768
+            ?
+            <MenuIconsComponent />
+            :
+            <></>
+        }
+      </div>
+      {
+        projectsData[props.selectedProjectIndex]?.feedbacks.length
+          ?
+          <FeedbackList feedbacks={projectsData[props.selectedProjectIndex]?.feedbacks} />
+          :
+          <p>No Feedbacks yet. Share the project</p>
+      }
+    </>
+  )
+}
 const MenuIconsComponent: React.FC = () => {
   const [windowWidth] = useWindowSize()
   const isSmall = (windowWidth || 0) < 768;
@@ -223,7 +234,7 @@ const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
             </p>
             :
             <div className="flex flex-row justify-end items-center gap-1">
-              <BsIncognito className="text-gray-500"/>
+              <BsIncognito className="text-gray-500" />
               <p className="text-gray-500 text-right italic align-text-bottom">
                 Anonymous
               </p>
