@@ -53,12 +53,17 @@ const MainPageContent: React.FC = () => {
         selectedProjectIndex={selectedProjectIndex}
         onProjectPress={onProjectPress}
       >
-        {
-          projectsData && projectsData[selectedProjectIndex]?.feedbacks.length
-            ?
-            <FeedbackList feedbacks={projectsData[selectedProjectIndex]?.feedbacks} />
-            :
-            <p>No Feedbacks yet. Share the project</p>
+        {projectsData &&
+          <>
+            <h1 className="text-2xl font-bold">{projectsData[selectedProjectIndex]?.name}</h1>
+            {
+              projectsData && projectsData[selectedProjectIndex]?.feedbacks.length
+                ?
+                <FeedbackList feedbacks={projectsData[selectedProjectIndex]?.feedbacks} />
+                :
+                <p>No Feedbacks yet. Share the project</p>
+            }
+          </>
         }
       </ProjectDrawerContainer>
     </body>
@@ -66,10 +71,13 @@ const MainPageContent: React.FC = () => {
 }
 
 const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined }> = (props) => {
+  const { data: feedbacksData, isLoading: isFeedbackDataLoading } = api.feedbacks.getAll.useQuery();
   return (
-    <ul className="gap-2 grid lg:ml-2 md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4">
+    <ul className="gap-2 grid md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4">
       {
-        props.feedbacks?.map((feedback) => {
+        isFeedbackDataLoading ? props.feedbacks?.map((feedback) => {
+          return <FeedbackComponent key={feedback.id} feedback={feedback} />
+        }) : feedbacksData?.map((feedback) => {
           return <FeedbackComponent key={feedback.id} feedback={feedback} />
         })
       }
@@ -89,7 +97,7 @@ const ProjectDrawerContainer: React.FC<{
   return (
     <div className="drawer drawer-mobile p-2">
       <input id="drawer" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content flex flex-col">
+      <div className="drawer-content flex flex-col lg:ml-2 ">
         {props.children}
         <label htmlFor="drawer" className="btn btn-primary drawer-button lg:hidden">Open drawer</label>
       </div>
