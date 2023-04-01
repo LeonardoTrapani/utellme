@@ -62,13 +62,13 @@ const MainPageContent: React.FC = () => {
           &&
           <MenuIconsComponent />
         }
-        <ProjectMainContent selectedProjectIndex={selectedProjectIndex}/>
+        <ProjectMainContent selectedProjectIndex={selectedProjectIndex} />
       </ProjectDrawerContainer>
     </body>
   )
 }
 
-const ProjectMainContent: React.FC<{ 
+const ProjectMainContent: React.FC<{
   selectedProjectIndex: number;
 }> = (props) => {
   const { data: projectsData } = api.projects.getAll.useQuery();
@@ -112,9 +112,11 @@ const MenuIconsComponent: React.FC = () => {
         isMedium ? 'flex flex-col-reverse items-start justify-end ml-4' :
           isBig ? 'ml-4' : ''
     }>
-      <a className="cursor-pointer">
-        <BiLink size={30} />
-      </a>
+      <div className="tooltip tooltip-left" data-tip="share to get feedback">
+        <a className="cursor-pointer">
+          <BiLink size={30} className="text-green-400"/>
+        </a>
+      </div>
       {
         !isBig && <label htmlFor="drawer" className="drawer-button cursor-pointer">
           <BiMenu size={36} />
