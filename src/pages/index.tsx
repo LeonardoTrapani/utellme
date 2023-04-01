@@ -106,7 +106,7 @@ const ProjectDrawerContainer: React.FC<{
 const TitleAndAvatarComponen = () => {
   return (
     <div className="flex justify-between items-center">
-      <p className="font-bold text-xl">TELL <span className="text-primary">ME!</span></p>
+      <p className="font-bold text-xl select-none">TELL <span className="text-primary">ME!</span></p>
       <Avatar>
         <li>
           <a onClick={() => void signOut()} className="flex justify-between">
@@ -148,9 +148,7 @@ const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
               {props.feedback.title}
             </h2>
             :
-            <h2 className="text-xl font-bold text-gray-500">
-              Untitled
-            </h2>
+            <></>
         }
         <p>
           {props.feedback.content}

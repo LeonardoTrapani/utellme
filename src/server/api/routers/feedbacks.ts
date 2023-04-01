@@ -13,7 +13,7 @@ export const feedbacksRouter = createTRPCRouter({
         project: {
           userId: ctx.session.user.id
         }
-      }, 
+      },
       orderBy: {
         createdAt: "desc"
       }
@@ -25,7 +25,7 @@ export const feedbacksRouter = createTRPCRouter({
     content: z.string(),
     projectId: z.string(),
     author: z.string().nullish(),
-    rating: z.enum(["ONE", "TWO", "THREE", "FOUR", "FIVE"]),
+    rating: z.number().min(1).max(5),
   })).mutation(async ({ ctx, input }) => {
     return await ctx.prisma.feedback.create({
       data: {

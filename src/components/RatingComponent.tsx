@@ -1,17 +1,29 @@
-import type { RatingEnum } from "@prisma/client";
 import React from "react";
 
 export const RatingComponent: React.FC<{
-  rating: RatingEnum;
-  editable?: boolean;
+  rating: number;
 }> = (props) => {
   return (
-    <div className="rating rating-md">
-      <input type="radio" name="rating-1" className="mask mask-star" checked={props.rating === 'ONE'} />
-      <input type="radio" name="rating-1" className="mask mask-star" checked={props.rating === 'TWO'} />
-      <input type="radio" name="rating-1" className="mask mask-star" checked={props.rating === 'THREE'} />
-      <input type="radio" name="rating-1" className="mask mask-star" checked={props.rating === 'FOUR'} />
-      <input type="radio" name="rating-1" className="mask mask-star" checked={props.rating === 'FIVE'} />
-    </div>
+    <ul className="">
+      <SingleRatingComponent rating={props.rating} i={1} />
+      <SingleRatingComponent rating={props.rating} i={2} />
+      <SingleRatingComponent rating={props.rating} i={3} />
+      <SingleRatingComponent rating={props.rating} i={4} />
+      <SingleRatingComponent rating={props.rating} i={5} />
+    </ul>
+  )
+}
+
+const SingleRatingComponent: React.FC<{
+  rating: number;
+  i: number;
+}> = (props) => {
+  const active = props.rating >= props.i;
+  return (
+    <a
+      className={`${active ? 'text-yellow-300' : ''} select-none`}
+    >
+      &#9733;
+    </a >
   )
 }
