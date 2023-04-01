@@ -34,7 +34,6 @@ export const feedbacksRouter = createTRPCRouter({
         projectId: input.projectId,
         author: input.author,
         rating: input.rating,
-        anonymous: !input.author,
       },
     })
   }),

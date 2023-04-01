@@ -4,6 +4,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useState } from "react";
 import { BiLink, BiMenu } from "react-icons/bi"
+import { BsIncognito } from "react-icons/bs"
 import type { Feedback, Project } from "@prisma/client";
 import { RatingComponent } from "~/components/RatingComponent";
 import LoadingIndicator from "~/components/LoadingIndicator";
@@ -215,16 +216,21 @@ const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
             {props.feedback.content}
           </p>
         </div>
-        <p className="text-gray-500 text-right italic align-text-bottom">
-          {
-            !props.feedback.anonymous ?
-              props.feedback.author
-              :
-              "Anonymous"
-          }
-        </p>
+        {
+          props.feedback.author ?
+            <p className="text-gray-500 text-right italic align-text-bottom">
+              {props.feedback.author}
+            </p>
+            :
+            <div className="flex flex-row justify-end items-center gap-1">
+              <BsIncognito className="text-gray-500"/>
+              <p className="text-gray-500 text-right italic align-text-bottom">
+                Anonymous
+              </p>
+            </div>
+        }
       </div>
-    </li>
+    </li >
   )
 }
 
