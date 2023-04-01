@@ -12,7 +12,12 @@ export const projectsRouter = createTRPCRouter({
         userId: ctx.session.user.id,
       },
       include: {
-        feedbacks: true,
+        feedbacks: {
+          orderBy: {
+            createdAt: "desc"
+          },
+          take: 3
+        }
       },
       orderBy: {
         createdAt: "desc"

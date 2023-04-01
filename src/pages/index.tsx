@@ -1,15 +1,16 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import { signIn, signOut, useSession } from "next-auth/react";
-
 import { api } from "~/utils/api";
 import { useState } from "react";
+import { BiLink, BiMenu } from "react-icons/bi"
 import type { Feedback, Project } from "@prisma/client";
 import { RatingComponent } from "~/components/RatingComponent";
 import LoadingIndicator from "~/components/LoadingIndicator";
 import Avatar from "~/components/Avatar";
 
 import { BiLogOut } from "react-icons/bi";
+import useWindowSize from "~/utils/hooks";
 
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -46,6 +47,7 @@ const MainPageContent: React.FC = () => {
     setSelectedProjectIndex(i);
   }
 
+  const [windowWidth] = useWindowSize()
   return (
     <body>
       <ProjectDrawerContainer
@@ -53,15 +55,74 @@ const MainPageContent: React.FC = () => {
         selectedProjectIndex={selectedProjectIndex}
         onProjectPress={onProjectPress}
       >
-        <ul className="gap-2 flex flex-col flex-1 lg:ml-2">
-          {
-            projectsData?.[selectedProjectIndex]?.feedbacks.map((feedback) => {
-              return <FeedbackComponent key={feedback.id} feedback={feedback} />
-            })
-          }
-        </ul>
+        {
+          (windowWidth || 0) < 768
+          &&
+          <MenuIconsComponent />
+        }
+        {projectsData &&
+          <>
+            <div className="mb-3 flex">
+              <div className="grow">
+                <h1 className="text-3xl font-bold">{projectsData[selectedProjectIndex]?.name}</h1>
+                <h3 className="italic">{projectsData[selectedProjectIndex]?.description}</h3>
+              </div>
+              {
+                (windowWidth || 0) >= 768
+                  ?
+                  <MenuIconsComponent />
+                  :
+                  <></>
+              }
+            </div>
+            {
+              projectsData && projectsData[selectedProjectIndex]?.feedbacks.length
+                ?
+                <FeedbackList feedbacks={projectsData[selectedProjectIndex]?.feedbacks} />
+                :
+                <p>No Feedbacks yet. Share the project</p>
+            }
+          </>
+        }
       </ProjectDrawerContainer>
     </body>
+  )
+}
+
+const MenuIconsComponent: React.FC = () => {
+  const [windowWidth] = useWindowSize()
+  const isSmall = (windowWidth || 0) < 768;
+  const isMedium = ((windowWidth || 0) < 1024) && ((windowWidth || 0) >= 768);
+  const isBig = (windowWidth || 0) >= 1024;
+  return (
+    <div className={
+      isSmall ? 'flex flex-row justify-end items-center' :
+        isMedium ? 'flex flex-col-reverse items-start justify-end ml-4' :
+          isBig ? 'ml-4' : ''
+    }>
+      <a className="cursor-pointer">
+        <BiLink size={30} />
+      </a>
+      {
+        !isBig && <label htmlFor="drawer" className="drawer-button cursor-pointer">
+          <BiMenu size={36} />
+        </label>
+      }
+    </div>
+  )
+}
+const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined }> = (props) => {
+  const { data: feedbacksData, isLoading: isFeedbackDataLoading } = api.feedbacks.getAll.useQuery();
+  return (
+    <ul className="gap-2 grid md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4">
+      {
+        isFeedbackDataLoading ? props.feedbacks?.map((feedback) => {
+          return <FeedbackComponent key={feedback.id} feedback={feedback} />
+        }) : feedbacksData?.map((feedback) => {
+          return <FeedbackComponent key={feedback.id} feedback={feedback} />
+        })
+      }
+    </ul>
   )
 }
 
@@ -77,9 +138,8 @@ const ProjectDrawerContainer: React.FC<{
   return (
     <div className="drawer drawer-mobile p-2">
       <input id="drawer" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content flex flex-col justify-center">
+      <div className="drawer-content flex flex-col lg:ml-2 ">
         {props.children}
-        <label htmlFor="drawer" className="btn btn-primary drawer-button lg:hidden">Open drawer</label>
       </div>
       <div className="drawer-side">
         <label htmlFor="drawer" className="drawer-overlay"></label>
@@ -140,20 +200,22 @@ const ProjectComponent: React.FC<{
 const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
   return (
     <li key={props.feedback.id}>
-      <div className="bg-base-200 rounded-xl p-2">
-        <RatingComponent rating={props.feedback.rating} />
-        {
-          props.feedback.title ?
-            <h2 className="text-xl font-bold">
-              {props.feedback.title}
-            </h2>
-            :
-            <></>
-        }
-        <p>
-          {props.feedback.content}
-        </p>
-        <p className="text-gray-500 text-right italic">
+      <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between">
+        <div>
+          <RatingComponent rating={props.feedback.rating} />
+          {
+            props.feedback.title ?
+              <h2 className="text-xl font-bold">
+                {props.feedback.title}
+              </h2>
+              :
+              <></>
+          }
+          <p>
+            {props.feedback.content}
+          </p>
+        </div>
+        <p className="text-gray-500 text-right italic align-text-bottom">
           {
             !props.feedback.anonymous ?
               props.feedback.author
