@@ -3,7 +3,7 @@ import Head from "next/head";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useState } from "react";
-import { BiLink, BiMenu } from "react-icons/bi"
+import { BiEdit, BiLink, BiMenu, BiTrash, BiQr } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs"
 import type { Feedback, Project } from "@prisma/client";
 import { RatingComponent } from "~/components/RatingComponent";
@@ -60,7 +60,7 @@ const MainPageContent: React.FC = () => {
         {
           (windowWidth || 0) < 768 //if we are in mobile we need the icons above the main page content 
           &&
-          <MenuIconsComponent />
+          <ActionIconsComponent />
         }
         <ProjectMainContent selectedProjectIndex={selectedProjectIndex} />
       </ProjectDrawerContainer>
@@ -86,7 +86,7 @@ const ProjectMainContent: React.FC<{
         {
           (windowWidth || 0) >= 768
             ?
-            <MenuIconsComponent />
+            <ActionIconsComponent />
             :
             <></>
         }
@@ -101,30 +101,66 @@ const ProjectMainContent: React.FC<{
     </>
   )
 }
-const MenuIconsComponent: React.FC = () => {
+const ActionIconsComponent: React.FC = () => {
   const [windowWidth] = useWindowSize()
   const isSmall = (windowWidth || 0) < 768;
   const isMedium = ((windowWidth || 0) < 1024) && ((windowWidth || 0) >= 768);
   const isBig = (windowWidth || 0) >= 1024;
+
+  const onGenerateQr = () => {
+    console.log('generate qr')
+  }
+
+  const onCopyLink = () => {
+    console.log('copy link')
+  }
+
+  const onEditProject = () => {
+    console.log('edit project')
+  }
+
+  const onDeleteProject = () => {
+    console.log('delete project')
+  }
+
   return (
     <div className={
       isSmall ? 'flex flex-row justify-end items-center' :
-        isMedium ? 'flex flex-col-reverse items-start justify-end ml-4' :
-          isBig ? 'ml-4' : ''
+        isMedium || isBig ? 'flex flex-row items-start justify-end ml-4' :
+          ''
     }>
-      <div className="tooltip tooltip-left" data-tip="share to get feedback">
-        <a className="cursor-pointer">
-          <BiLink size={30} className="text-green-400"/>
-        </a>
-      </div>
+      <SingleActionIcon onPress={onGenerateQr}>
+        <BiQr size={26} />
+      </SingleActionIcon>
+      <SingleActionIcon onPress={onCopyLink}>
+        <BiLink size={26} />
+      </SingleActionIcon>
+      <SingleActionIcon onPress={onEditProject}>
+        <BiEdit size={26} />
+      </SingleActionIcon>
+      <SingleActionIcon onPress={onDeleteProject}>
+        <BiTrash size={26} />
+      </SingleActionIcon>
       {
-        !isBig && <label htmlFor="drawer" className="drawer-button cursor-pointer">
-          <BiMenu size={36} />
+        !isBig && <label htmlFor="drawer" className="cursor-pointer">
+          <BiMenu size={26} className="text-primary"/>
         </label>
       }
     </div>
   )
 }
+
+const SingleActionIcon: React.FC<{
+  children: React.ReactNode;
+  onPress: () => void;
+}> = (props) => {
+  return (
+    <a className="cursor-pointer">
+      {props.children}
+    </a>
+  )
+}
+
 const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined }> = (props) => {
   const { data: feedbacksData, isLoading: isFeedbackDataLoading } = api.feedbacks.getAll.useQuery();
   return (
@@ -202,7 +238,7 @@ const ProjectComponent: React.FC<{
   return (
     <li key={props.project.id}>
       <a
-        className={`${props.isActive ? "active font-semibold" : ""}`}
+        className={`${props.isActive ? "active bg-yellow-500" : ""}`}
         onClick={() => props.onPress(props.index)}
       >
         {props.project.name}
