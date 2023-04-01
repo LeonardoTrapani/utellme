@@ -53,15 +53,27 @@ const MainPageContent: React.FC = () => {
         selectedProjectIndex={selectedProjectIndex}
         onProjectPress={onProjectPress}
       >
-        <ul className="gap-2 flex flex-col flex-1 lg:ml-2">
-          {
-            projectsData?.[selectedProjectIndex]?.feedbacks.map((feedback) => {
-              return <FeedbackComponent key={feedback.id} feedback={feedback} />
-            })
-          }
-        </ul>
+        {
+          projectsData && projectsData[selectedProjectIndex]?.feedbacks.length
+            ?
+            <FeedbackList feedbacks={projectsData[selectedProjectIndex]?.feedbacks} />
+            :
+            <p>No Feedbacks yet. Share the project</p>
+        }
       </ProjectDrawerContainer>
     </body>
+  )
+}
+
+const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined }> = (props) => {
+  return (
+    <ul className="gap-2 grid lg:ml-2 md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4">
+      {
+        props.feedbacks?.map((feedback) => {
+          return <FeedbackComponent key={feedback.id} feedback={feedback} />
+        })
+      }
+    </ul>
   )
 }
 
@@ -77,7 +89,7 @@ const ProjectDrawerContainer: React.FC<{
   return (
     <div className="drawer drawer-mobile p-2">
       <input id="drawer" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content flex flex-col justify-center">
+      <div className="drawer-content flex flex-col">
         {props.children}
         <label htmlFor="drawer" className="btn btn-primary drawer-button lg:hidden">Open drawer</label>
       </div>
@@ -140,20 +152,22 @@ const ProjectComponent: React.FC<{
 const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
   return (
     <li key={props.feedback.id}>
-      <div className="bg-base-200 rounded-xl p-2">
-        <RatingComponent rating={props.feedback.rating} />
-        {
-          props.feedback.title ?
-            <h2 className="text-xl font-bold">
-              {props.feedback.title}
-            </h2>
-            :
-            <></>
-        }
-        <p>
-          {props.feedback.content}
-        </p>
-        <p className="text-gray-500 text-right italic">
+      <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between">
+        <div>
+          <RatingComponent rating={props.feedback.rating} />
+          {
+            props.feedback.title ?
+              <h2 className="text-xl font-bold">
+                {props.feedback.title}
+              </h2>
+              :
+              <></>
+          }
+          <p>
+            {props.feedback.content}
+          </p>
+        </div>
+        <p className="text-gray-500 text-right italic align-text-bottom">
           {
             !props.feedback.anonymous ?
               props.feedback.author
