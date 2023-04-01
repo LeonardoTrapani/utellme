@@ -16,8 +16,6 @@ import useWindowSize from "~/utils/hooks";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
-import ProjectsAndFeedbacksPageContent from "~/components/ProjectsAndFeedbacksPageContent";
-
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
   const isSignedIn = sessionStatus === 'authenticated';
