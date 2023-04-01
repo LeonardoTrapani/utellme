@@ -1,15 +1,16 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import { signIn, signOut, useSession } from "next-auth/react";
-
 import { api } from "~/utils/api";
 import { useState } from "react";
+import { BiMenu } from "react-icons/bi"
 import type { Feedback, Project } from "@prisma/client";
 import { RatingComponent } from "~/components/RatingComponent";
 import LoadingIndicator from "~/components/LoadingIndicator";
 import Avatar from "~/components/Avatar";
 
 import { BiLogOut } from "react-icons/bi";
+import useWindowSize from "~/utils/hooks";
 
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -46,6 +47,7 @@ const MainPageContent: React.FC = () => {
     setSelectedProjectIndex(i);
   }
 
+  const [windowWidth] = useWindowSize()
   return (
     <body>
       <ProjectDrawerContainer
@@ -53,9 +55,28 @@ const MainPageContent: React.FC = () => {
         selectedProjectIndex={selectedProjectIndex}
         onProjectPress={onProjectPress}
       >
+        {
+          (windowWidth || 0) < 768
+          &&
+          <label htmlFor="drawer" className="drawer-button self-end">
+            <BiMenu size={42} />
+          </label>
+        }
         {projectsData &&
           <>
-            <h1 className="text-2xl font-bold">{projectsData[selectedProjectIndex]?.name}</h1>
+            <div className="mb-3 flex">
+              <div className="grow">
+                <h1 className="text-3xl font-bold">{projectsData[selectedProjectIndex]?.name}</h1>
+                <h3 className="italic">{projectsData[selectedProjectIndex]?.description}</h3>
+              </div>
+              {
+                ((windowWidth || 0) >= 768 && (windowWidth || 0) < 1024)
+                &&
+                <label htmlFor="drawer" className="drawer-button">
+                  <BiMenu size={42} />
+                </label>
+              }
+            </div>
             {
               projectsData && projectsData[selectedProjectIndex]?.feedbacks.length
                 ?
@@ -99,7 +120,6 @@ const ProjectDrawerContainer: React.FC<{
       <input id="drawer" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content flex flex-col lg:ml-2 ">
         {props.children}
-        <label htmlFor="drawer" className="btn btn-primary drawer-button lg:hidden">Open drawer</label>
       </div>
       <div className="drawer-side">
         <label htmlFor="drawer" className="drawer-overlay"></label>
