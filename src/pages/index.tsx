@@ -97,8 +97,8 @@ const MenuIconsComponent: React.FC = () => {
   return (
     <div className={
       isSmall ? 'flex flex-row justify-end items-center' :
-        isMedium ? 'flex flex-col-reverse items-start justify-end' :
-          isBig ? '' : ''
+        isMedium ? 'flex flex-col-reverse items-start justify-end ml-4' :
+          isBig ? 'ml-4' : ''
     }>
       <a className="cursor-pointer">
         <BiLink size={30} />
