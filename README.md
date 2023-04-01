@@ -10,3 +10,4 @@ Get feedback from your clients or your friends about anything you want! Make the
 - [Prisma](https://prisma.io)
 - [Tailwind CSS](https://tailwindcss.com)
 - [tRPC](https://trpc.io)
+- [DaisyUI](https://daisyui.com/)
