@@ -58,7 +58,7 @@ const MainPageContent: React.FC = () => {
         {
           (windowWidth || 0) < 768
           &&
-          <MenuIconsComponent row />
+          <MenuIconsComponent />
         }
         {projectsData &&
           <>
@@ -68,7 +68,7 @@ const MainPageContent: React.FC = () => {
                 <h3 className="italic">{projectsData[selectedProjectIndex]?.description}</h3>
               </div>
               {
-                ((windowWidth || 0) >= 768 && (windowWidth || 0) < 1024)
+                (windowWidth || 0) >= 768
                   ?
                   <MenuIconsComponent />
                   :
@@ -89,15 +89,25 @@ const MainPageContent: React.FC = () => {
   )
 }
 
-const MenuIconsComponent: React.FC<{ row?: boolean }> = (props) => {
+const MenuIconsComponent: React.FC = () => {
+  const [windowWidth] = useWindowSize()
+  const isSmall = (windowWidth || 0) < 768;
+  const isMedium = ((windowWidth || 0) < 1024) && ((windowWidth || 0) >= 768);
+  const isBig = (windowWidth || 0) >= 1024;
   return (
-    <div className={`flex ${props.row ? 'flex self-end' : 'flex-col ml-4'}`}>
-      <label htmlFor="drawer" className="drawer-button cursor-pointer">
-        <BiMenu size={36} />
-      </label>
+    <div className={
+      isSmall ? 'flex flex-row justify-end items-center' :
+        isMedium ? 'flex flex-col-reverse items-start justify-end' :
+          isBig ? '' : ''
+    }>
       <a className="cursor-pointer">
-        <BiLink size={36} />
+        <BiLink size={30} />
       </a>
+      {
+        !isBig && <label htmlFor="drawer" className="drawer-button cursor-pointer">
+          <BiMenu size={36} />
+        </label>
+      }
     </div>
   )
 }
