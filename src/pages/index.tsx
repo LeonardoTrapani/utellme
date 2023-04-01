@@ -53,7 +53,6 @@ const Home: NextPage = () => {
           (isSignedIn ? <MainPageContent /> : <LoginPage />)
         }
       </main>
-      <ProjectsAndFeedbacksPageContent />
     </>
   );
 };
