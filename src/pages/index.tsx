@@ -50,6 +50,10 @@ const MainPageContent: React.FC = () => {
 
   const [windowWidth] = useWindowSize()
 
+  if (!projectsData) {
+    return <></>
+  }
+
   return (
     <body>
       <ProjectDrawerContainer
@@ -60,7 +64,7 @@ const MainPageContent: React.FC = () => {
         {
           (windowWidth || 0) < 768 //if we are in mobile we need the icons above the main page content 
           &&
-          <ActionIconsComponent />
+          <ActionIconsComponent projectId={projectsData[selectedProjectIndex]?.id} />
         }
         <ProjectMainContent selectedProjectIndex={selectedProjectIndex} />
       </ProjectDrawerContainer>
@@ -86,7 +90,7 @@ const ProjectMainContent: React.FC<{
         {
           (windowWidth || 0) >= 768
             ?
-            <ActionIconsComponent />
+            <ActionIconsComponent projectId={projectsData[props.selectedProjectIndex]?.id} />
             :
             <></>
         }
@@ -101,7 +105,7 @@ const ProjectMainContent: React.FC<{
     </>
   )
 }
-const ActionIconsComponent: React.FC = () => {
+const ActionIconsComponent: React.FC<{ projectId: string | undefined }> = (props) => {
   const [windowWidth] = useWindowSize()
   const isSmall = (windowWidth || 0) < 768;
   const isMedium = ((windowWidth || 0) < 1024) && ((windowWidth || 0) >= 768);
@@ -112,7 +116,8 @@ const ActionIconsComponent: React.FC = () => {
   }
 
   const onCopyLink = () => {
-    console.log('copy link')
+    const projectLink = `https://tell-me-leonardotrapani.vercel.app/project/${props.projectId || "ERROR"}`
+    void navigator.clipboard.writeText(projectLink)
   }
 
   const onEditProject = () => {
@@ -125,8 +130,8 @@ const ActionIconsComponent: React.FC = () => {
 
   return (
     <div className={
-      isSmall ? 'flex flex-row justify-end items-center' :
-        isMedium || isBig ? 'flex flex-row items-start justify-end ml-4' :
+      isSmall ? 'flex flex-row justify-end items-center gap-1' :
+        isMedium || isBig ? 'flex flex-row items-start justify-end ml-4 gap-1' :
           ''
     }>
       <SingleActionIcon onPress={onGenerateQr}>
@@ -143,7 +148,7 @@ const ActionIconsComponent: React.FC = () => {
       </SingleActionIcon>
       {
         !isBig && <label htmlFor="drawer" className="cursor-pointer">
-          <BiMenu size={26} className="text-primary"/>
+          <BiMenu size={26} className="text-primary" />
         </label>
       }
     </div>
@@ -155,7 +160,7 @@ const SingleActionIcon: React.FC<{
   onPress: () => void;
 }> = (props) => {
   return (
-    <a className="cursor-pointer">
+    <a className="cursor-pointer" onClick={props.onPress}>
       {props.children}
     </a>
   )
