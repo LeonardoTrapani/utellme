@@ -1,10 +1,7 @@
-import type { NextPage } from "next";
-import Head from "next/head";
-
 import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
-import { useState } from "react";
-import { BiEdit, BiLink, BiMenu, BiTrash, BiQr } from "react-icons/bi"
+import { useEffect, useState } from "react";
+import { BiLink, BiMenu } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs"
 import type { Feedback, Project } from "@prisma/client";
 import { RatingComponent } from "~/components/RatingComponent";
@@ -13,176 +10,123 @@ import Avatar from "~/components/Avatar";
 
 import { BiLogOut } from "react-icons/bi";
 import useWindowSize from "~/utils/hooks";
-import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
 
-import ProjectsAndFeedbacksPageContent from "~/components/ProjectsAndFeedbacksPageContent";
+const ProjectsAndFeedbacksPageContent: React.FC<{
+  initialProjectId?: string | string[] | undefined
+}> = (props) => {
+  const { data: sessionData, status: sessionStatus } = useSession();
+  const { isLoading: isProjectsLoading } = api.projects.getAll.useQuery();
+  const isSignedIn = !!sessionData
+  const { data: projectsData } = api.projects.getAll.useQuery();
+  const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
 
-const Home: NextPage = () => {
+  const [hasSetInitialProject, setHasSetInitialProject] = useState(false)
+  useEffect(() => {
+    if (props.initialProjectId && projectsData && !hasSetInitialProject) {
+      const index = projectsData.findIndex((p) => p.id === props.initialProjectId);
+      if (index !== -1) {
+        setSelectedProjectIndex(index);
+        setHasSetInitialProject(true);
+      }
+    }
+  }, [hasSetInitialProject, projectsData, props.initialProjectId])
+
+  const onProjectPress = (i: number) => {
+    setSelectedProjectIndex(i);
+  }
+
   return (
     <>
-      <Head>
-        <title>Tell Me</title>
-        <meta name="description" content="a web app to get feedback" />
-        <link rel='icon' href="/favicon.ico" />
-      </Head>
-      <ToastContainer
-        position="bottom-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        theme={"dark"}
-        pauseOnHover
-        bodyStyle={{ borderRadius: 12 }}
-        progressStyle={{ background: "#eab308" }}
-      />
       <main>
         {(sessionStatus === 'loading') || (isProjectsLoading && sessionData?.user)
           ?
           <div className="flex items-center justify-center h-screen">
             <LoadingIndicator />
           </div> :
-          (isSignedIn ? <MainPageContent /> : <LoginPage />)
+          (
+            isSignedIn ?
+              <MainPageContent onProjectPress={onProjectPress} selectedProjectIndex={selectedProjectIndex} />
+              :
+              <LoginPage />
+          )
         }
       </main>
-      <ProjectsAndFeedbacksPageContent />
     </>
   );
 };
 
-export default Home;
+export default ProjectsAndFeedbacksPageContent;
 
-const MainPageContent: React.FC = () => {
+const MainPageContent: React.FC<{
+  selectedProjectIndex: number;
+  onProjectPress: (i: number) => void
+}> = (props) => {
   const { data: projectsData } = api.projects.getAll.useQuery();
-  const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
-
-  const onProjectPress = (i: number) => {
-    setSelectedProjectIndex(i);
-  }
 
   const [windowWidth] = useWindowSize()
-
-  if (!projectsData) {
-    return <></>
-  }
-
   return (
     <body>
       <ProjectDrawerContainer
         projectsData={projectsData}
-        selectedProjectIndex={selectedProjectIndex}
-        onProjectPress={onProjectPress}
+        selectedProjectIndex={props.selectedProjectIndex}
+        onProjectPress={props.onProjectPress}
       >
         {
-          (windowWidth || 0) < 768 //if we are in mobile we need the icons above the main page content 
+          (windowWidth || 0) < 768
           &&
-          <ActionIconsComponent projectId={projectsData[selectedProjectIndex]?.id} />
+          <MenuIconsComponent />
         }
-        <ProjectMainContent selectedProjectIndex={selectedProjectIndex} />
+        {projectsData &&
+          <>
+            <div className="mb-3 flex">
+              <div className="grow">
+                <h1 className="text-3xl font-bold">{projectsData[props.selectedProjectIndex]?.name}</h1>
+                <h3 className="italic">{projectsData[props.selectedProjectIndex]?.description}</h3>
+              </div>
+              {
+                (windowWidth || 0) >= 768
+                  ?
+                  <MenuIconsComponent />
+                  :
+                  <></>
+              }
+            </div>
+            {
+              projectsData && projectsData[props.selectedProjectIndex]?.feedbacks.length
+                ?
+                <FeedbackList feedbacks={projectsData[props.selectedProjectIndex]?.feedbacks} />
+                :
+                <p>No Feedbacks yet. Share the project</p>
+            }
+          </>
+        }
       </ProjectDrawerContainer>
     </body>
   )
 }
 
-const ProjectMainContent: React.FC<{
-  selectedProjectIndex: number;
-}> = (props) => {
-  const { data: projectsData } = api.projects.getAll.useQuery();
-  const [windowWidth] = useWindowSize()
-  if (!projectsData) {
-    return <></>
-  }
-  return (
-    <>
-      <div className="mb-3 flex">
-        <div className="grow">
-          <h1 className="text-3xl font-bold">{projectsData[props.selectedProjectIndex]?.name}</h1>
-          <h3 className="italic">{projectsData[props.selectedProjectIndex]?.description}</h3>
-        </div>
-        {
-          (windowWidth || 0) >= 768
-            ?
-            <ActionIconsComponent projectId={projectsData[props.selectedProjectIndex]?.id} />
-            :
-            <></>
-        }
-      </div>
-      {
-        projectsData[props.selectedProjectIndex]?.feedbacks.length
-          ?
-          <FeedbackList feedbacks={projectsData[props.selectedProjectIndex]?.feedbacks} />
-          :
-          <p>No Feedbacks yet. Share the project</p>
-      }
-    </>
-  )
-}
-const ActionIconsComponent: React.FC<{ projectId: string | undefined }> = (props) => {
+const MenuIconsComponent: React.FC = () => {
   const [windowWidth] = useWindowSize()
   const isSmall = (windowWidth || 0) < 768;
   const isMedium = ((windowWidth || 0) < 1024) && ((windowWidth || 0) >= 768);
   const isBig = (windowWidth || 0) >= 1024;
-
-  const onGenerateQr = () => {
-    console.log('generate qr')
-  }
-
-  const onCopyLink = () => {
-    const projectLink = `https://tell-me-leonardotrapani.vercel.app/project/${props.projectId || "ERROR"}`
-    toast('✅ Copied link succesfully. Share it to get feedback!', {progressStyle: {background: 'rgb(34 197 94)'}})
-    void navigator.clipboard.writeText(projectLink)
-  }
-
-  const onEditProject = () => {
-    console.log('edit project')
-  }
-
-  const onDeleteProject = () => {
-    console.log('delete project')
-  }
-
   return (
     <div className={
-      isSmall ? 'flex flex-row justify-end items-center gap-1' :
-        isMedium || isBig ? 'flex flex-row items-start justify-end ml-4 gap-1' :
-          ''
+      isSmall ? 'flex flex-row justify-end items-center' :
+        isMedium ? 'flex flex-col-reverse items-start justify-end ml-4' :
+          isBig ? 'ml-4' : ''
     }>
-      <SingleActionIcon onPress={onGenerateQr}>
-        <BiQr size={26} />
-      </SingleActionIcon>
-      <SingleActionIcon onPress={onCopyLink}>
-        <BiLink size={26} />
-      </SingleActionIcon>
-      <SingleActionIcon onPress={onEditProject}>
-        <BiEdit size={26} />
-      </SingleActionIcon>
-      <SingleActionIcon onPress={onDeleteProject}>
-        <BiTrash size={26} />
-      </SingleActionIcon>
+      <a className="cursor-pointer">
+        <BiLink size={30} />
+      </a>
       {
-        !isBig && <label htmlFor="drawer" className="cursor-pointer">
-          <BiMenu size={26} className="text-primary" />
+        !isBig && <label htmlFor="drawer" className="drawer-button cursor-pointer">
+          <BiMenu size={36} />
         </label>
       }
     </div>
   )
 }
-
-const SingleActionIcon: React.FC<{
-  children: React.ReactNode;
-  onPress: () => void;
-}> = (props) => {
-  return (
-    <a className="cursor-pointer" onClick={props.onPress}>
-      {props.children}
-    </a>
-  )
-}
-
 const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined }> = (props) => {
   const { data: feedbacksData, isLoading: isFeedbackDataLoading } = api.feedbacks.getAll.useQuery();
   return (
@@ -260,7 +204,7 @@ const ProjectComponent: React.FC<{
   return (
     <li key={props.project.id}>
       <a
-        className={`${props.isActive ? "active bg-yellow-500" : ""}`}
+        className={`${props.isActive ? "active font-semibold" : ""}`}
         onClick={() => props.onPress(props.index)}
       >
         {props.project.name}
