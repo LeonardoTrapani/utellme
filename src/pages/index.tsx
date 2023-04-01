@@ -19,6 +19,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import ProjectsAndFeedbacksPageContent from "~/components/ProjectsAndFeedbacksPageContent";
 
 const Home: NextPage = () => {
+  const { data: sessionData, status: sessionStatus } = useSession();
+  const isSignedIn = sessionStatus === 'authenticated';
+  const { isLoading: isProjectsLoading } = api.projects.getAll.useQuery();
+
   return (
     <>
       <Head>
