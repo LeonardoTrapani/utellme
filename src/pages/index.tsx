@@ -12,6 +12,8 @@ import Avatar from "~/components/Avatar";
 
 import { BiLogOut } from "react-icons/bi";
 import useWindowSize from "~/utils/hooks";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -25,6 +27,20 @@ const Home: NextPage = () => {
         <meta name="description" content="a web app to get feedback" />
         <link rel='icon' href="/favicon.ico" />
       </Head>
+      <ToastContainer
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        theme={"dark"}
+        pauseOnHover
+        bodyStyle={{ borderRadius: 12 }}
+        progressStyle={{ background: "#eab308" }}
+      />
       <main>
         {(sessionStatus === 'loading') || (isProjectsLoading && sessionData?.user)
           ?
@@ -117,6 +133,7 @@ const ActionIconsComponent: React.FC<{ projectId: string | undefined }> = (props
 
   const onCopyLink = () => {
     const projectLink = `https://tell-me-leonardotrapani.vercel.app/project/${props.projectId || "ERROR"}`
+    toast('✅ Copied link succesfully. Share it to get feedback!', {progressStyle: {background: 'rgb(34 197 94)'}})
     void navigator.clipboard.writeText(projectLink)
   }
 
