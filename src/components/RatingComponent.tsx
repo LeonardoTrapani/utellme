@@ -21,7 +21,7 @@ const SingleRatingComponent: React.FC<{
   const active = props.rating >= props.i;
   return (
     <a
-      className={`${active ? 'text-yellow-300' : ''} select-none`}
+      className={`${active ? 'text-primary' : 'text-current'} select-none`}
     >
       &#9733;
     </a >
