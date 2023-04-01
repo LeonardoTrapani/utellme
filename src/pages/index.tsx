@@ -3,7 +3,7 @@ import Head from "next/head";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useState } from "react";
-import { BiMenu } from "react-icons/bi"
+import { BiLink, BiMenu } from "react-icons/bi"
 import type { Feedback, Project } from "@prisma/client";
 import { RatingComponent } from "~/components/RatingComponent";
 import LoadingIndicator from "~/components/LoadingIndicator";
@@ -58,9 +58,7 @@ const MainPageContent: React.FC = () => {
         {
           (windowWidth || 0) < 768
           &&
-          <label htmlFor="drawer" className="drawer-button self-end">
-            <BiMenu size={42} />
-          </label>
+          <MenuIconsComponent row />
         }
         {projectsData &&
           <>
@@ -71,10 +69,10 @@ const MainPageContent: React.FC = () => {
               </div>
               {
                 ((windowWidth || 0) >= 768 && (windowWidth || 0) < 1024)
-                &&
-                <label htmlFor="drawer" className="drawer-button">
-                  <BiMenu size={42} />
-                </label>
+                  ?
+                  <MenuIconsComponent />
+                  :
+                  <></>
               }
             </div>
             {
@@ -91,6 +89,18 @@ const MainPageContent: React.FC = () => {
   )
 }
 
+const MenuIconsComponent: React.FC<{ row?: boolean }> = (props) => {
+  return (
+    <div className={`flex ${props.row ? 'flex self-end' : 'flex-col ml-4'}`}>
+      <label htmlFor="drawer" className="drawer-button cursor-pointer">
+        <BiMenu size={36} />
+      </label>
+      <a className="cursor-pointer">
+        <BiLink size={36} />
+      </a>
+    </div>
+  )
+}
 const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined }> = (props) => {
   const { data: feedbacksData, isLoading: isFeedbackDataLoading } = api.feedbacks.getAll.useQuery();
   return (
