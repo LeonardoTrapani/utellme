@@ -13,8 +13,6 @@ import Avatar from "~/components/Avatar";
 
 import { BiLogOut } from "react-icons/bi";
 import useWindowSize from "~/utils/hooks";
-import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
 
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -27,20 +25,6 @@ const Home: NextPage = () => {
         <title>Tell Me!</title>
         <meta name="description" content="a web app to get feedback" />
       </Head>
-      <ToastContainer
-        position="bottom-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        theme={"dark"}
-        pauseOnHover
-        bodyStyle={{ borderRadius: 12 }}
-        progressStyle={{ background: "#eab308" }}
-      />
       <main>
         {(sessionStatus === 'loading') || (isProjectsLoading && sessionData?.user)
           ?
@@ -126,15 +110,20 @@ const ActionIconsComponent: React.FC<{ projectId: string | undefined }> = (props
   const isSmall = (windowWidth || 0) < 768;
   const isMedium = ((windowWidth || 0) < 1024) && ((windowWidth || 0) >= 768);
   const isBig = (windowWidth || 0) >= 1024;
+  const [isCopySuccesfull, setIsCopySuccesfull] = useState(false);
+
 
   const onGenerateQr = () => {
     console.log('generate qr')
   }
 
-  const onCopyLink = () => {
+  const onCopyLink = async () => {
     const projectLink = `https://tell-me-leonardotrapani.vercel.app/newfeedback/${props.projectId || "ERROR"}`
-    toast('✅ Copied link succesfully. Share it to get feedback!', { progressStyle: { background: 'rgb(34 197 94)' } })
-    void navigator.clipboard.writeText(projectLink)
+    await navigator.clipboard.writeText(projectLink)
+    setIsCopySuccesfull(true)
+    setTimeout(() => {
+      setIsCopySuccesfull(false);
+    }, 1000)
   }
 
   const onEditProject = () => {
@@ -151,16 +140,29 @@ const ActionIconsComponent: React.FC<{ projectId: string | undefined }> = (props
         isMedium || isBig ? 'flex flex-row items-start justify-end ml-4 gap-1' :
           ''
     }>
-      <SingleActionIcon onPress={onGenerateQr}>
+      <SingleActionIcon
+        onPress={onGenerateQr}
+        tooltipName="Generate QR"
+      >
         <BiQr size={26} />
       </SingleActionIcon>
-      <SingleActionIcon onPress={onCopyLink}>
+      <SingleActionIcon
+        onPress={() => { void onCopyLink() }}
+        tooltipName={isCopySuccesfull ? "copied" : "Copy Link"}
+        isTooltipSuccess={isCopySuccesfull}
+      >
         <BiLink size={26} />
       </SingleActionIcon>
-      <SingleActionIcon onPress={onEditProject}>
+      <SingleActionIcon
+        onPress={onEditProject}
+        tooltipName="Edit Project"
+      >
         <BiEdit size={26} />
       </SingleActionIcon>
-      <SingleActionIcon onPress={onDeleteProject}>
+      <SingleActionIcon
+        onPress={onDeleteProject}
+        tooltipName="Delete Project"
+      >
         <BiTrash size={26} />
       </SingleActionIcon>
       {
@@ -175,11 +177,15 @@ const ActionIconsComponent: React.FC<{ projectId: string | undefined }> = (props
 const SingleActionIcon: React.FC<{
   children: React.ReactNode;
   onPress: () => void;
+  tooltipName?: string;
+  isTooltipSuccess?: boolean;
 }> = (props) => {
   return (
-    <a className="cursor-pointer" onClick={props.onPress}>
-      {props.children}
-    </a>
+    <div className={`tooltip tooltip-left ${props.isTooltipSuccess ? 'tooltip-success' : ''}`} data-tip={props.tooltipName?.toLowerCase()}>
+      <a className="cursor-pointer" onClick={props.onPress}>
+        {props.children}
+      </a>
+    </div>
   )
 }
 
