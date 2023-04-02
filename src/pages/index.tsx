@@ -117,7 +117,7 @@ const ProjectMainContent: React.FC<{
           ?
           <FeedbackList feedbacks={projectsData[props.selectedProjectIndex]?.feedbacks} />
           :
-          <p>No Feedbacks yet. Share the project</p>
+          <p>No Feedbacks yet. Share the project to get some!</p>
       }
     </>
   )
@@ -134,7 +134,7 @@ const ActionIconsComponent: React.FC<{ projectId: string | undefined }> = (props
 
   const onCopyLink = () => {
     const projectLink = `https://tell-me-leonardotrapani.vercel.app/project/${props.projectId || "ERROR"}`
-    toast('✅ Copied link succesfully. Share it to get feedback!', {progressStyle: {background: 'rgb(34 197 94)'}})
+    toast('✅ Copied link succesfully. Share it to get feedback!', { progressStyle: { background: 'rgb(34 197 94)' } })
     void navigator.clipboard.writeText(projectLink)
   }
 
@@ -205,9 +205,32 @@ type ProjectsDataType = (Project & {
 
 const ProjectDrawerContainer: React.FC<{
   projectsData: ProjectsDataType;
-  selectedProjectIndex: number; onProjectPress: (i: number) => void;
+  selectedProjectIndex: number;
+  onProjectPress: (i: number) => void;
   children: React.ReactNode;
 }> = (props) => {
+  const createMutation = api.projects.create.useMutation()
+  const { refetch: refetchProjects, isFetching: isProjectFetching } = api.projects.getAll.useQuery();
+  const session = useSession()
+
+  const [newProjectInputHasError, setNewProjectInputHasError] = useState(false);
+
+  const projectSubmitHandler = (projectTitle: string) => {
+    if (!projectTitle.length) {
+      setNewProjectInputHasError(true);
+      return;
+    }
+    const userId = session.data?.user.id;
+    if (userId) {
+      createMutation.mutate({ name: projectTitle, userId: session.data.user.id }, {
+        onSuccess: () => {
+          void refetchProjects()
+          props.onProjectPress(0)
+        }
+      });
+    }
+  }
+
   return (
     <div className="drawer drawer-mobile p-2">
       <input id="drawer" type="checkbox" className="drawer-toggle" />
@@ -218,17 +241,37 @@ const ProjectDrawerContainer: React.FC<{
         <label htmlFor="drawer" className="drawer-overlay"></label>
         <ul className="menu p-4 w-80 bg-base-200 text-base-content rounded-xl">
           <TitleAndAvatarComponen />
-          <div className="divider mt-2" />
-          <li><button className={`btn ${props.projectsData?.length ? 'mb-2' : ''}`}>New Project</button></li>
+          <div className="divider mt-2 mb-2" />
+          <input
+            type="text"
+            placeholder="New Project"
+            className={`input input-bordered w-full max-w-xs ${newProjectInputHasError ? 'input-error' : ''}`}
+            onKeyDown={(e) => {
+              if (newProjectInputHasError) {
+                setNewProjectInputHasError(false)
+              }
+              if (e.key === "Enter") {
+                projectSubmitHandler(e.currentTarget.value);
+                e.currentTarget.value = "";
+              }
+            }}
+          />
+          <div className="divider mt-2 mb-2" />
           {
-            props.projectsData?.map((project, i) => {
-              return <ProjectComponent
-                key={i}
-                project={project}
-                isActive={props.selectedProjectIndex === i}
-                onPress={props.onProjectPress}
-                index={i} />
-            })
+            isProjectFetching
+              ?
+              <div className="text-center mt-2">
+                <LoadingIndicator />
+              </div>
+              :
+              props.projectsData?.map((project, i) => {
+                return <ProjectComponent
+                  key={i}
+                  project={project}
+                  isActive={props.selectedProjectIndex === i}
+                  onPress={props.onProjectPress}
+                  index={i} />
+              })
           }
         </ul>
       </div>
