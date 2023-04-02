@@ -7,7 +7,7 @@ import { useState } from "react";
 import { BiEdit, BiLink, BiMenu, BiTrash, BiQr } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs"
 import type { Feedback, Project } from "@prisma/client";
-import { RatingComponent } from "~/components/RatingComponent";
+import { StaticRatingComponent } from "~/components/RatingComponent";
 import LoadingIndicator from "~/components/LoadingIndicator";
 import Avatar from "~/components/Avatar";
 
@@ -24,9 +24,8 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Tell Me</title>
+        <title>Tell Me!</title>
         <meta name="description" content="a web app to get feedback" />
-        <link rel='icon' href="/favicon.ico" />
       </Head>
       <ToastContainer
         position="bottom-center"
@@ -133,7 +132,7 @@ const ActionIconsComponent: React.FC<{ projectId: string | undefined }> = (props
   }
 
   const onCopyLink = () => {
-    const projectLink = `https://tell-me-leonardotrapani.vercel.app/project/${props.projectId || "ERROR"}`
+    const projectLink = `https://tell-me-leonardotrapani.vercel.app/newfeedback/${props.projectId || "ERROR"}`
     toast('✅ Copied link succesfully. Share it to get feedback!', { progressStyle: { background: 'rgb(34 197 94)' } })
     void navigator.clipboard.writeText(projectLink)
   }
@@ -320,7 +319,7 @@ const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
     <li key={props.feedback.id}>
       <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between">
         <div>
-          <RatingComponent rating={props.feedback.rating} />
+          <StaticRatingComponent rating={props.feedback.rating} />
           {
             props.feedback.title ?
               <h2 className="text-xl font-bold">
