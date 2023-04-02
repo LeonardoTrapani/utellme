@@ -80,8 +80,8 @@ const SingleSelectRatingComponent: React.FC<{
     <input
       type="radio"
       name="rating-3"
-      className="mask mask-star bg-primary"
-      defaultChecked={props.i === 4}
+      className="mask mask-star bg-yellow-400"
+      defaultChecked={props.i === 5}
       onClick={() => {
         props.onRatingChange(props.i);
       }}
