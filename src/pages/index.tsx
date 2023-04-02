@@ -209,14 +209,17 @@ const ProjectDrawerContainer: React.FC<{
   children: React.ReactNode;
 }> = (props) => {
   const createMutation = api.projects.create.useMutation()
-  const { refetch: refetchProjects } = api.projects.getAll.useQuery();
+  const { refetch: refetchProjects, isFetching: isProjectFetching } = api.projects.getAll.useQuery();
   const session = useSession()
 
   const projectSubmitHandler = (projectTitle: string) => {
     const userId = session.data?.user.id;
     if (userId) {
-      createMutation.mutate({ name: projectTitle, userId: session.data.user.id });
-      void refetchProjects()
+      createMutation.mutate({ name: projectTitle, userId: session.data.user.id }, {
+        onSuccess: () => {
+          void refetchProjects()
+        }
+      });
     }
   }
 
@@ -244,14 +247,20 @@ const ProjectDrawerContainer: React.FC<{
           />
           <div className="divider mt-2 mb-2" />
           {
-            props.projectsData?.map((project, i) => {
-              return <ProjectComponent
-                key={i}
-                project={project}
-                isActive={props.selectedProjectIndex === i}
-                onPress={props.onProjectPress}
-                index={i} />
-            })
+            isProjectFetching
+              ?
+              <div className="text-center mt-2">
+                <LoadingIndicator />
+              </div>
+              :
+              props.projectsData?.map((project, i) => {
+                return <ProjectComponent
+                  key={i}
+                  project={project}
+                  isActive={props.selectedProjectIndex === i}
+                  onPress={props.onProjectPress}
+                  index={i} />
+              })
           }
         </ul>
       </div>
