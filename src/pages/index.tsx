@@ -17,7 +17,25 @@ import useWindowSize from "~/utils/hooks";
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
   const isSignedIn = sessionStatus === 'authenticated';
-  const { isLoading: isProjectsLoading } = api.projects.getAll.useQuery();
+
+  const { isLoading: isProjectsLoading, refetch: refetchProjects, data: projects} = api.projects.getAll.useQuery();
+  const { mutate: deleteProject } = api.projects.delete.useMutation({
+    onSuccess: () => {
+      void refetchProjects();
+      setSelectedProjectIndex(0);
+    }
+  });
+
+  const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
+
+  const projectDeleteHandler = () => {
+    if (!projects) return;
+    const currentProjectId = projects[selectedProjectIndex]?.id;
+    if (!currentProjectId) return;
+    void deleteProject({
+      projectId: currentProjectId
+    })
+  }
 
   return (
     <>
@@ -25,27 +43,79 @@ const Home: NextPage = () => {
         <title>Tell Me!</title>
         <meta name="description" content="a web app to get feedback" />
       </Head>
+      <DeleteProjectModal onDelete={projectDeleteHandler}/>
       <main>
         {(sessionStatus === 'loading') || (isProjectsLoading && sessionData?.user)
           ?
           <div className="flex items-center justify-center h-screen">
             <LoadingIndicator />
           </div> :
-          (isSignedIn ? <MainPageContent /> : <LoginPage />)
+          (isSignedIn ? <MainPageContent 
+            setSelectedProjectIndex={setSelectedProjectIndex}
+            selectedProjectIndex={selectedProjectIndex}
+          /> : <LoginPage />)
         }
-      </main>
+      </main >
     </>
   );
 };
 
 export default Home;
 
-const MainPageContent: React.FC = () => {
+const DeleteProjectModal: React.FC<{
+  onDelete: () => void;
+}> = (props) => {
+  return (
+    <>
+      <input type="checkbox" id="delete-project-modal" className="modal-toggle" />
+      <label htmlFor="delete-project-modal" className="modal cursor-pointer">
+        <label className="modal-box relative" htmlFor="">
+          <h3 className="text-lg font-bold">Are you sure you want to delete this project?</h3>
+          <p className="py-4">You will lose all its feedback</p>
+          {/*TODO: enter project name to confirm*/}
+          <div className="modal-action">
+            <ModalActionButton
+              modalId="delete-project-modal"
+            >
+              No
+            </ModalActionButton>
+            <ModalActionButton
+              modalId="delete-project-modal"
+              isRed
+              onClick={props.onDelete}
+            >
+              Confirm
+            </ModalActionButton>
+          </div>
+        </label>
+      </label>
+    </>
+  )
+}
+
+const ModalActionButton: React.FC<{
+  modalId: string;
+  children: React.ReactNode;
+  isRed?: boolean;
+  onClick?: () => void;
+}> = (props) => {
+  return (
+    <label htmlFor={props.modalId} className={`btn ${props.isRed ? 'btn-error' : ''}`}>
+      <a onClick={props.onClick}>
+        {props.children}
+      </a>
+    </label>
+  )
+}
+
+const MainPageContent: React.FC<{
+  selectedProjectIndex: number;
+  setSelectedProjectIndex: (i: number) => void;
+}> = (props) => {
   const { data: projectsData } = api.projects.getAll.useQuery();
-  const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
 
   const onProjectPress = (i: number) => {
-    setSelectedProjectIndex(i);
+    props.setSelectedProjectIndex(i);
   }
 
   const [windowWidth] = useWindowSize()
@@ -58,15 +128,15 @@ const MainPageContent: React.FC = () => {
     <body>
       <ProjectDrawerContainer
         projectsData={projectsData}
-        selectedProjectIndex={selectedProjectIndex}
+        selectedProjectIndex={props.selectedProjectIndex}
         onProjectPress={onProjectPress}
       >
         {
           (windowWidth || 0) < 768 //if we are in mobile we need the icons above the main page content 
           &&
-          <ActionIconsComponent projectId={projectsData[selectedProjectIndex]?.id} />
+          <ActionIconsComponent projectId={projectsData[props.selectedProjectIndex]?.id} />
         }
-        <ProjectMainContent selectedProjectIndex={selectedProjectIndex} />
+        <ProjectMainContent selectedProjectIndex={props.selectedProjectIndex} />
       </ProjectDrawerContainer>
     </body>
   )
@@ -130,10 +200,6 @@ const ActionIconsComponent: React.FC<{ projectId: string | undefined }> = (props
     console.log('edit project')
   }
 
-  const onDeleteProject = () => {
-    console.log('delete project')
-  }
-
   return (
     <div className={
       isSmall ? 'flex flex-row justify-end items-center gap-1' :
@@ -158,12 +224,13 @@ const ActionIconsComponent: React.FC<{ projectId: string | undefined }> = (props
       >
         <BiEdit size={26} />
       </SingleActionIcon>
-      <SingleActionIcon
-        onPress={onDeleteProject}
+      <DeleteProjectActionIcon
         tooltipName="Delete Project"
       >
-        <BiTrash size={26} />
-      </SingleActionIcon>
+        <label htmlFor="delete-project-modal" className="cursor-pointer">
+          <BiTrash size={26} />
+        </label>
+      </DeleteProjectActionIcon>
       {
         !isBig && <label htmlFor="drawer" className="cursor-pointer">
           <BiMenu size={26} className="text-primary" />
@@ -190,6 +257,28 @@ const SingleActionIcon: React.FC<{
     </div>
   )
 }
+
+
+const DeleteProjectActionIcon: React.FC<{
+  children: React.ReactNode;
+  tooltipName?: string;
+  isTooltipSuccess?: boolean;
+}> = (props) => {
+  return (
+    <div
+      className={`${!!props.tooltipName ? ' tooltip tooltip-left' : ''}`}
+      data-tip={props.tooltipName?.toLowerCase()}
+    >
+      {props.children}
+    </div>
+  )
+}
+/*
+//The button to open modal  
+<label htmlFor="delete-project-modal" className="btn">open modal</label>
+
+//Put this part before </body> tag 
+*/
 
 const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined; projectId: string | undefined; }> = (props) => {
   const {
