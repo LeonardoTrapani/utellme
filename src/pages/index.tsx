@@ -112,9 +112,9 @@ const ProjectMainContent: React.FC<{
         }
       </div>
       {
-        projectsData[props.selectedProjectIndex]?.feedbacks.length
+        (!!projectsData && projectsData[props.selectedProjectIndex]?.feedbacks.length)
           ?
-          <FeedbackList feedbacks={projectsData[props.selectedProjectIndex]?.feedbacks} />
+          <FeedbackList feedbacks={projectsData[props.selectedProjectIndex]?.feedbacks} projectId={projectsData[props.selectedProjectIndex]?.id} />
           :
           <p>No Feedbacks yet. Share the project to get some!</p>
       }
@@ -183,8 +183,14 @@ const SingleActionIcon: React.FC<{
   )
 }
 
-const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined }> = (props) => {
-  const { data: feedbacksData, isLoading: isFeedbackDataLoading } = api.feedbacks.getAll.useQuery();
+const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined; projectId: string | undefined; }> = (props) => {
+  const {
+    data: feedbacksData,
+    isLoading: isFeedbackDataLoading
+  } = api.feedbacks.getAll.useQuery({
+    projectId: props.projectId || "-1"
+  });
+
   return (
     <ul className="gap-2 grid md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4">
       {
