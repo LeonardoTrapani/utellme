@@ -100,25 +100,25 @@ const MainGetFeedbackContent: React.FC<{
   ratingHasError: boolean;
 }> = (props) => {
   return (
-    <div className="bg-base-200 lg:w-3/5 m-auto my-4 p-4 rounded-xl">
+    <div className="max-w-xl md:max-w-3xl m-auto my-4 p-4 rounded-xl">
       <GetFeedbackTitle projectName={props.projectName} />
       <div className="divider mt-2 mb-2" />
-      <div className=" flex gap-2 h-10 mt-4">
+      <div className={`h-10 items-center w-min m-auto rounded-xl mb-2 ${props.ratingHasError ? "border-error border-2" : ""}`}>
         <SelectRatingComponent
           rating={props.currentRating}
           onRatingChange={(rating) => {
             props.setRating(rating);
           }}
         />
-        {props.ratingHasError && <span className="text-error text-center align-middle">please select a rating</span>}
+        {/*props.ratingHasError && <span className="text-error text-center align-middle">please select a rating</span>*/}
       </div>
       <form>
         <div className="form-control gap-4">
-          <textarea placeholder="Feedback"
+          <textarea placeholder={`This is my feedback about ${props.projectName || "this project"}: ...`}
             className={`mt-2 textarea textarea-bordered textarea-md w-full placeholder:text-gray-500 ${props.contentHasError ? "border-red-400 textarea-error" : ""}}`}
             onChange={(e) => props.setFeedbackContent(e.target.value)}
           />
-          <div className="grid gap-4 grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2">
             <FeedbackInput name="Title" placeholder={`my opinion about ${props.projectName || "this project"}`}
               onChange={props.setFeedbackTitle}
             />
@@ -139,7 +139,7 @@ const GetFeedbackTitle: React.FC<{
   projectName?: string;
 }> = (props) => {
   return (
-    <div className="grid grid-cols-2">
+    <div className="grid">
       <div>
         <h3 className="text-xl">Tell me your feedback about</h3>
         <h1 className="text-4xl font-bold">{props.projectName || "my project"}</h1>
