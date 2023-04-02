@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.4](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.3...v0.1.4) (2023-04-02)
+
+
+### Features
+
+* added input new project functionality ([4126da3](https://github.com/LeonardoTrapani/tell-me/commit/4126da3d47e0ec3382632e271279b0156b6dcbca))
+* added loading indicator and fixed fetching functionality ([19abe9d](https://github.com/LeonardoTrapani/tell-me/commit/19abe9d9f4487565e319c92f94a248f811163476))
+* improved projects loading on new project ([3c277a9](https://github.com/LeonardoTrapani/tell-me/commit/3c277a96f62b94191ce59eb3d8a025e11fae6dea))
+* new-project error handling ([acfbe68](https://github.com/LeonardoTrapani/tell-me/commit/acfbe68862b8773e2d51bde0812afad67e42fc6f))
+* new-project mutation ([95a6ebf](https://github.com/LeonardoTrapani/tell-me/commit/95a6ebfeea771456317a103439dc1c5b8416da63))
+
 ### [0.1.3](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.2...v0.1.3) (2023-04-01)
 
 
