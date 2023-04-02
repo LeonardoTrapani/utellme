@@ -22,8 +22,8 @@ export const feedbacksRouter = createTRPCRouter({
 
   create: publicProcedure.input(z.object({
     title: z.string().nullish(),
-    content: z.string(),
-    projectId: z.string(),
+    content: z.string().min(1),
+    projectId: z.string().min(1),
     author: z.string().nullish(),
     rating: z.number().min(1).max(5),
   })).mutation(async ({ ctx, input }) => {
@@ -37,36 +37,6 @@ export const feedbacksRouter = createTRPCRouter({
       },
     })
   }),
-
-  /* Commented because people can post feedbacks without an account, so they can't edit them
-    edit: protectedProcedure.input(z.object({
-      id: z.string(),
-      newTitle: z.string().nullish(),
-      newContent: z.string().nullish(),
-      newProjectId: z.string().nullish(),
-    })).mutation(async ({ ctx, input }) => {
-      const currProject = await ctx.prisma.project.findFirst({
-        where: {
-          id: input.newProjectId || undefined,
-          userId: ctx.session.user.id
-        }
-      })
-      if (!currProject) throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: "The selected project isn't yours"
-      })
-      return await ctx.prisma.feedback.update({
-        where: {
-          id: input.id
-        },
-        data: {
-          title: input.newTitle || undefined,
-          content: input.newContent || undefined,
-          projectId: input.newProjectId || undefined
-        }
-      })
-    }),
-  */
 
   delete: protectedProcedure.input(z.object({
     id: z.string(),

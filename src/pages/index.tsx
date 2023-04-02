@@ -208,8 +208,16 @@ const ProjectDrawerContainer: React.FC<{
   selectedProjectIndex: number; onProjectPress: (i: number) => void;
   children: React.ReactNode;
 }> = (props) => {
+  const createMutation = api.projects.create.useMutation()
+  const { refetch: refetchProjects } = api.projects.getAll.useQuery();
+  const session = useSession()
+
   const projectSubmitHandler = (projectTitle: string) => {
-    console.log("new project?", projectTitle)
+    const userId = session.data?.user.id;
+    if (userId) {
+      createMutation.mutate({ name: projectTitle, userId: session.data.user.id });
+      void refetchProjects()
+    }
   }
 
   return (
