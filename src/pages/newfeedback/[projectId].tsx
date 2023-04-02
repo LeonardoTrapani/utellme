@@ -14,6 +14,9 @@ const NewFeedbackPage: NextPage = () => {
   const [feedbackTitle, setFeedbackTitle] = React.useState<string | undefined>(undefined);
   const [feedbackAuthor, setFeedbackAuthor] = React.useState<string | undefined>(undefined);
 
+  const [contentHasError, setContentHasError] = React.useState(false);
+  const [ratingHasError, setRatingHasError] = React.useState(false);
+
   const router = useRouter();
   const projectId = Array.isArray(router.query.projectId) ? router.query.projectId[0] : router.query.projectId;
 
@@ -29,8 +32,13 @@ const NewFeedbackPage: NextPage = () => {
 
   const submitFeedbackHandler = () => {
     if (!project) return;
-    if (!feedbackContent) return;
-    if (!rating) return;
+    if (!feedbackContent) {
+      setContentHasError(true);
+    }
+    if (!rating) {
+      setRatingHasError(true);
+    }
+    if (!feedbackContent || !rating) return;
 
     createFeedbackMutation({
       title: feedbackTitle,
@@ -63,6 +71,8 @@ const NewFeedbackPage: NextPage = () => {
                   setFeedbackTitle={(title) => setFeedbackTitle(title)}
                   setFeedbackAuthor={(author) => setFeedbackAuthor(author)}
                   setFeedbackContent={(content) => setFeedbackContent(content)}
+                  contentHasError={contentHasError}
+                  ratingHasError={ratingHasError}
                 /> :
                 <h1>Thanks for the feedback</h1>
             )
@@ -79,6 +89,8 @@ const MainGetFeedbackContent: React.FC<{
   setFeedbackTitle: (title: string) => void;
   setFeedbackAuthor: (author: string) => void;
   setFeedbackContent: (content: string) => void;
+  contentHasError: boolean;
+  ratingHasError: boolean;
 }> = (props) => {
   return (
     <div className="bg-base-200 lg:w-3/5 m-auto my-4 p-4 rounded-xl">
@@ -91,10 +103,12 @@ const MainGetFeedbackContent: React.FC<{
             props.setRating(rating);
           }}
         />
+        {props.ratingHasError && <span className="text-red-500">Please select a rating</span>}
       </div>
       <form>
         <div className="form-control gap-4">
-          <textarea placeholder="Feedback" className="textarea textarea-bordered textarea-md w-full placeholder:text-gray-500"
+          <textarea placeholder="Feedback"
+            className={`textarea textarea-bordered textarea-md w-full placeholder:text-gray-500 ${props.contentHasError ? "border-red-400 textarea-error" : ""}}`}
             onChange={(e) => props.setFeedbackContent(e.target.value)}
           />
           <div className="grid gap-4 grid-cols-2">
