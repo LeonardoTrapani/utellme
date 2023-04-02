@@ -134,7 +134,7 @@ const ActionIconsComponent: React.FC<{ projectId: string | undefined }> = (props
 
   const onCopyLink = () => {
     const projectLink = `https://tell-me-leonardotrapani.vercel.app/project/${props.projectId || "ERROR"}`
-    toast('✅ Copied link succesfully. Share it to get feedback!', {progressStyle: {background: 'rgb(34 197 94)'}})
+    toast('✅ Copied link succesfully. Share it to get feedback!', { progressStyle: { background: 'rgb(34 197 94)' } })
     void navigator.clipboard.writeText(projectLink)
   }
 
@@ -208,6 +208,10 @@ const ProjectDrawerContainer: React.FC<{
   selectedProjectIndex: number; onProjectPress: (i: number) => void;
   children: React.ReactNode;
 }> = (props) => {
+  const projectSubmitHandler = (projectTitle: string) => {
+    console.log("new project?", projectTitle)
+  }
+
   return (
     <div className="drawer drawer-mobile p-2">
       <input id="drawer" type="checkbox" className="drawer-toggle" />
@@ -218,8 +222,19 @@ const ProjectDrawerContainer: React.FC<{
         <label htmlFor="drawer" className="drawer-overlay"></label>
         <ul className="menu p-4 w-80 bg-base-200 text-base-content rounded-xl">
           <TitleAndAvatarComponen />
-          <div className="divider mt-2" />
-          <li><button className={`btn ${props.projectsData?.length ? 'mb-2' : ''}`}>New Project</button></li>
+          <div className="divider mt-2 mb-2" />
+          <input
+            type="text"
+            placeholder="New Project"
+            className="input input-bordered w-full max-w-xs"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                projectSubmitHandler(e.currentTarget.value);
+                e.currentTarget.value = "";
+              }
+            }}
+          />
+          <div className="divider mt-2 mb-2" />
           {
             props.projectsData?.map((project, i) => {
               return <ProjectComponent
