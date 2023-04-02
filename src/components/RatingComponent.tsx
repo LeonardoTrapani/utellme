@@ -1,4 +1,5 @@
 import React from "react";
+import {AiFillStar} from "react-icons/ai";
 
 export const StaticRatingComponent: React.FC<{
   rating: number;
@@ -48,11 +49,11 @@ const SingleRatingComponent: React.FC<{
 }
 
 export const SelectRatingComponent: React.FC<{
-  rating: number;
+  rating: number | undefined;
   onRatingChange: (rating: number) => void;
 }> = (props) => {
   return (
-    <div className="rating rating-lg items-center justify-center">
+    <div className="mb-4 flex gap-0 items-center">
       <SingleSelectRatingComponent i={1} rating={props.rating} onRatingChange={(i: number) => {
         props.onRatingChange(i);
       }} />
@@ -72,19 +73,24 @@ export const SelectRatingComponent: React.FC<{
 }
 
 const SingleSelectRatingComponent: React.FC<{
-  rating: number;
+  rating: number | undefined;
   i: number;
   onRatingChange: (rating: number) => void;
 }> = (props) => {
+  const active = (props.rating || 0) >= props.i;
   return (
-    <input
-      type="radio"
-      name="rating-3"
-      className="mask mask-star bg-yellow-400"
-      defaultChecked={props.i === 5}
+    <a
+      className={`
+        ${active ? 'text-primary' : 'text-gray-500'} 
+        select-none cursor-pointer text-4xl hover:border-red-600 
+        self-center
+        `
+      }
       onClick={() => {
         props.onRatingChange(props.i);
       }}
-    />
+    >
+      <AiFillStar />
+    </a >
   )
 }

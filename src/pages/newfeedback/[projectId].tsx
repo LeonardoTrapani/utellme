@@ -65,12 +65,18 @@ const NewFeedbackPage: NextPage = () => {
               !hasGivenFeedback ?
                 <MainGetFeedbackContent
                   projectName={project?.name}
-                  setRating={(rating) =>
-                    setRating(rating)}
+                  currentRating={rating}
+                  setRating={(rating) => {
+                    setRating(rating);
+                    setRatingHasError(false);
+                  }}
                   onSubmitFeedback={submitFeedbackHandler}
                   setFeedbackTitle={(title) => setFeedbackTitle(title)}
                   setFeedbackAuthor={(author) => setFeedbackAuthor(author)}
-                  setFeedbackContent={(content) => setFeedbackContent(content)}
+                  setFeedbackContent={(content) => {
+                    setFeedbackContent(content);
+                    setContentHasError(false);
+                  }}
                   contentHasError={contentHasError}
                   ratingHasError={ratingHasError}
                 /> :
@@ -84,6 +90,7 @@ const NewFeedbackPage: NextPage = () => {
 
 const MainGetFeedbackContent: React.FC<{
   projectName?: string;
+  currentRating: number | undefined;
   onSubmitFeedback: () => void;
   setRating: (rating: number) => void;
   setFeedbackTitle: (title: string) => void;
@@ -96,19 +103,19 @@ const MainGetFeedbackContent: React.FC<{
     <div className="bg-base-200 lg:w-3/5 m-auto my-4 p-4 rounded-xl">
       <GetFeedbackTitle projectName={props.projectName} />
       <div className="divider mt-2 mb-2" />
-      <div className="mb-2">
+      <div className=" flex gap-2 h-10 mt-4">
         <SelectRatingComponent
-          rating={0}
+          rating={props.currentRating}
           onRatingChange={(rating) => {
             props.setRating(rating);
           }}
         />
-        {props.ratingHasError && <span className="text-red-500">Please select a rating</span>}
+        {props.ratingHasError && <span className="text-error text-center align-middle">please select a rating</span>}
       </div>
       <form>
         <div className="form-control gap-4">
           <textarea placeholder="Feedback"
-            className={`textarea textarea-bordered textarea-md w-full placeholder:text-gray-500 ${props.contentHasError ? "border-red-400 textarea-error" : ""}}`}
+            className={`mt-2 textarea textarea-bordered textarea-md w-full placeholder:text-gray-500 ${props.contentHasError ? "border-red-400 textarea-error" : ""}}`}
             onChange={(e) => props.setFeedbackContent(e.target.value)}
           />
           <div className="grid gap-4 grid-cols-2">
