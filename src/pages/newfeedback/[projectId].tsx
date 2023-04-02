@@ -1,7 +1,8 @@
 import type { NextPage } from "next";
 import Head from "next/head";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import LoadingIndicator from "~/components/LoadingIndicator";
 import { SelectRatingComponent, } from "~/components/RatingComponent";
 import { api } from "~/utils/api";
@@ -80,7 +81,7 @@ const NewFeedbackPage: NextPage = () => {
                   contentHasError={contentHasError}
                   ratingHasError={ratingHasError}
                 /> :
-                <h1>Thanks for the feedback</h1>
+                <FeedbackCompletedPage />
             )
         }
       </main>
@@ -99,6 +100,29 @@ const MainGetFeedbackContent: React.FC<{
   contentHasError: boolean;
   ratingHasError: boolean;
 }> = (props) => {
+  const [textAreaPlaceHolder, setTextAreaPlaceHolder] = useState("This is my feedback about this project");
+  useEffect(() => {
+    const projectName = props.projectName || "this project";
+    if (!props.currentRating) {
+      setTextAreaPlaceHolder(`What did I like about ${projectName}? What can be improved?`);
+    }
+    if (props.currentRating === 1) {
+      setTextAreaPlaceHolder(`I hated ${projectName} because...`);
+    }
+    if (props.currentRating === 2) {
+      setTextAreaPlaceHolder(`I didn't like ${projectName} because...`);
+    }
+    if (props.currentRating === 3) {
+      setTextAreaPlaceHolder(`I was indifferent ${projectName} because...`);
+    }
+    if (props.currentRating === 4) {
+      setTextAreaPlaceHolder(`I liked ${projectName} because...`);
+    }
+    if (props.currentRating === 5) {
+      setTextAreaPlaceHolder(`I loved ${projectName} because...`);
+    }
+  }, [props.currentRating, props.projectName]);
+
   return (
     <div className="max-w-xl md:max-w-3xl m-auto my-4 p-4 rounded-xl">
       <GetFeedbackTitle projectName={props.projectName} />
@@ -114,15 +138,15 @@ const MainGetFeedbackContent: React.FC<{
       </div>
       <form>
         <div className="form-control gap-4">
-          <textarea placeholder={`This is my feedback about ${props.projectName || "this project"}: ...`}
+          <textarea placeholder={textAreaPlaceHolder}
             className={`mt-2 textarea textarea-bordered textarea-md w-full placeholder:text-gray-500 ${props.contentHasError ? "border-red-400 textarea-error" : ""}}`}
             onChange={(e) => props.setFeedbackContent(e.target.value)}
           />
           <div className="grid gap-4 md:grid-cols-2">
-            <FeedbackInput name="Title" placeholder={`my opinion about ${props.projectName || "this project"}`}
+            <FeedbackInput name="Title" placeholder={`My opinion about ${props.projectName || "this project"}`}
               onChange={props.setFeedbackTitle}
             />
-            <FeedbackInput name="Author" placeholder={"my name"}
+            <FeedbackInput name="Author" placeholder={"My Name"}
               onChange={props.setFeedbackAuthor}
             />
           </div>
@@ -166,6 +190,20 @@ const FeedbackInput: React.FC<{
           onChange={(e) => props.onChange(e.target.value)}
         />
       </label>
+    </div>
+  )
+}
+
+const FeedbackCompletedPage = () => {
+  return (
+    <div className="flex h-screen justify-center items-center flex-col gap-10">
+      <h1 className="text-2xl"><span className="text-primary font-semibold">Thank you </span>for the feedback!</h1>
+      <div className="text-center">
+        <h3>powered by</h3>
+        <Link className="font-bold text-xl select-none cursor-pointer" href={{
+          pathname: '/'
+        }}>TELL&nbsp;<span className="text-primary">ME!</span></Link>
+      </div>
     </div>
   )
 }
