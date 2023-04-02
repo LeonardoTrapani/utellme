@@ -213,6 +213,7 @@ const ProjectDrawerContainer: React.FC<{
   const { refetch: refetchProjects, isFetching: isProjectFetching } = api.projects.getAll.useQuery();
   const session = useSession()
 
+  const [showLoading, setShowLoading] = useState(false); //this is used to show the loading animation between fetch and mutatin
   const [newProjectInputHasError, setNewProjectInputHasError] = useState(false);
 
   const projectSubmitHandler = (projectTitle: string) => {
@@ -220,14 +221,21 @@ const ProjectDrawerContainer: React.FC<{
       setNewProjectInputHasError(true);
       return;
     }
+    setShowLoading(true)
     const userId = session.data?.user.id;
     if (userId) {
       createMutation.mutate({ name: projectTitle, userId: session.data.user.id }, {
         onSuccess: () => {
           void refetchProjects()
+          setShowLoading(false);
           props.onProjectPress(0)
-        }
+        },
+        onError: () => {
+          setShowLoading(false)
+        },
       });
+    } else {
+      setShowLoading(false)
     }
   }
 
@@ -258,7 +266,7 @@ const ProjectDrawerContainer: React.FC<{
           />
           <div className="divider mt-2 mb-2" />
           {
-            isProjectFetching
+            isProjectFetching || showLoading
               ?
               <div className="text-center mt-2">
                 <LoadingIndicator />
