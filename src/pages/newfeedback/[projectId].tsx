@@ -1,5 +1,6 @@
 import type { NextPage } from "next";
 import Head from "next/head";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import LoadingIndicator from "~/components/LoadingIndicator";
@@ -80,7 +81,7 @@ const NewFeedbackPage: NextPage = () => {
                   contentHasError={contentHasError}
                   ratingHasError={ratingHasError}
                 /> :
-                <h1>Thanks for the feedback</h1>
+                <FeedbackCompletedPage />
             )
         }
       </main>
@@ -189,6 +190,20 @@ const FeedbackInput: React.FC<{
           onChange={(e) => props.onChange(e.target.value)}
         />
       </label>
+    </div>
+  )
+}
+
+const FeedbackCompletedPage = () => {
+  return (
+    <div className="flex h-screen justify-center items-center flex-col gap-10">
+      <h1 className="text-2xl"><span className="text-primary font-semibold">Thank you </span>for the feedback!</h1>
+      <div className="text-center">
+        <h3>powered by</h3>
+        <Link className="font-bold text-xl select-none cursor-pointer" href={{
+          pathname: '/'
+        }}>TELL&nbsp;<span className="text-primary">ME!</span></Link>
+      </div>
     </div>
   )
 }
