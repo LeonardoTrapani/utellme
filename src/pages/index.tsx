@@ -117,7 +117,7 @@ const ProjectMainContent: React.FC<{
           ?
           <FeedbackList feedbacks={projectsData[props.selectedProjectIndex]?.feedbacks} />
           :
-          <p>No Feedbacks yet. Share the project</p>
+          <p>No Feedbacks yet. Share the project to get some!</p>
       }
     </>
   )
@@ -205,19 +205,27 @@ type ProjectsDataType = (Project & {
 
 const ProjectDrawerContainer: React.FC<{
   projectsData: ProjectsDataType;
-  selectedProjectIndex: number; onProjectPress: (i: number) => void;
+  selectedProjectIndex: number;
+  onProjectPress: (i: number) => void;
   children: React.ReactNode;
 }> = (props) => {
   const createMutation = api.projects.create.useMutation()
   const { refetch: refetchProjects, isFetching: isProjectFetching } = api.projects.getAll.useQuery();
   const session = useSession()
 
+  const [inputHasError, setInputHasError] = useState(false);
+
   const projectSubmitHandler = (projectTitle: string) => {
+    if (!projectTitle.length) {
+      setInputHasError(true);
+      return;
+    }
     const userId = session.data?.user.id;
     if (userId) {
       createMutation.mutate({ name: projectTitle, userId: session.data.user.id }, {
         onSuccess: () => {
           void refetchProjects()
+          props.onProjectPress(0)
         }
       });
     }
@@ -237,8 +245,11 @@ const ProjectDrawerContainer: React.FC<{
           <input
             type="text"
             placeholder="New Project"
-            className="input input-bordered w-full max-w-xs"
+            className={`input input-bordered w-full max-w-xs ${inputHasError ? 'input-error' : ''}`}
             onKeyDown={(e) => {
+              if (inputHasError) {
+                setInputHasError(false)
+              }
               if (e.key === "Enter") {
                 projectSubmitHandler(e.currentTarget.value);
                 e.currentTarget.value = "";
