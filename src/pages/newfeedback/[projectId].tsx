@@ -7,6 +7,13 @@ import { SelectRatingComponent, } from "~/components/RatingComponent";
 import { api } from "~/utils/api";
 
 const NewFeedbackPage: NextPage = () => {
+  const [hasGivenFeedback, setHasGivenFeedback] = React.useState(false);
+
+  const [rating, setRating] = React.useState<number | undefined>(undefined);
+  const [feedbackContent, setFeedbackContent] = React.useState<string | undefined>(undefined);
+  const [feedbackTitle, setFeedbackTitle] = React.useState<string | undefined>(undefined);
+  const [feedbackAuthor, setFeedbackAuthor] = React.useState<string | undefined>(undefined);
+
   const router = useRouter();
   const projectId = Array.isArray(router.query.projectId) ? router.query.projectId[0] : router.query.projectId;
 
@@ -14,10 +21,24 @@ const NewFeedbackPage: NextPage = () => {
     enabled: !!projectId,
   });
 
-  const [rating, setRating] = React.useState(0);
+  const { mutate: createFeedbackMutation, isLoading: isCreateFeedbackLoading } = api.feedbacks.create.useMutation({
+    onSuccess: () => {
+      setHasGivenFeedback(true);
+    },
+  })
 
   const submitFeedbackHandler = () => {
-    console.log(rating)
+    if (!project) return;
+    if (!feedbackContent) return;
+    if (!rating) return;
+
+    createFeedbackMutation({
+      title: feedbackTitle,
+      content: feedbackContent,
+      rating: rating,
+      author: feedbackAuthor,
+      projectId: project?.id
+    })
   }
 
   return (
@@ -28,16 +49,23 @@ const NewFeedbackPage: NextPage = () => {
       </Head>
       <main>
         {
-          isProjectLoading ?
+          isProjectLoading || isCreateFeedbackLoading ?
             <div className="flex items-center justify-center h-screen">
               <LoadingIndicator />
             </div> :
-            <MainGetFeedbackContent
-              projectName={project?.name}
-              setRating={(rating) =>
-                setRating(rating)}
-              onSubmitFeedback={submitFeedbackHandler}
-            />
+            (
+              !hasGivenFeedback ?
+                <MainGetFeedbackContent
+                  projectName={project?.name}
+                  setRating={(rating) =>
+                    setRating(rating)}
+                  onSubmitFeedback={submitFeedbackHandler}
+                  setFeedbackTitle={(title) => setFeedbackTitle(title)}
+                  setFeedbackAuthor={(author) => setFeedbackAuthor(author)}
+                  setFeedbackContent={(content) => setFeedbackContent(content)}
+                /> :
+                <h1>Thanks for the feedback</h1>
+            )
         }
       </main>
     </>
@@ -48,6 +76,9 @@ const MainGetFeedbackContent: React.FC<{
   projectName?: string;
   onSubmitFeedback: () => void;
   setRating: (rating: number) => void;
+  setFeedbackTitle: (title: string) => void;
+  setFeedbackAuthor: (author: string) => void;
+  setFeedbackContent: (content: string) => void;
 }> = (props) => {
   return (
     <div className="bg-base-200 lg:w-3/5 m-auto my-4 p-4 rounded-xl">
@@ -63,10 +94,16 @@ const MainGetFeedbackContent: React.FC<{
       </div>
       <form>
         <div className="form-control gap-4">
-          <textarea placeholder="Feedback" className="textarea textarea-bordered textarea-md w-full placeholder:text-gray-500" ></textarea>
+          <textarea placeholder="Feedback" className="textarea textarea-bordered textarea-md w-full placeholder:text-gray-500"
+            onChange={(e) => props.setFeedbackContent(e.target.value)}
+          />
           <div className="grid gap-4 grid-cols-2">
-            <FeedbackInput name="Title" placeholder={`my opinion about ${props.projectName || "this project"}`} />
-            <FeedbackInput name="Author" placeholder={"my name"} />
+            <FeedbackInput name="Title" placeholder={`my opinion about ${props.projectName || "this project"}`}
+              onChange={props.setFeedbackTitle}
+            />
+            <FeedbackInput name="Author" placeholder={"my name"}
+              onChange={props.setFeedbackAuthor}
+            />
           </div>
         </div>
         <div className="flex justify-end mt-4">
@@ -94,6 +131,7 @@ const FeedbackInput: React.FC<{
   name: string;
   placeholder: string;
   optional?: boolean;
+  onChange: (value: string) => void;
 }> = (props) => {
   return (
     <div>
@@ -104,6 +142,7 @@ const FeedbackInput: React.FC<{
           type="text"
           placeholder={props.placeholder}
           className="input input-bordered placeholder:text-gray-500 w-full"
+          onChange={(e) => props.onChange(e.target.value)}
         />
       </label>
     </div>
