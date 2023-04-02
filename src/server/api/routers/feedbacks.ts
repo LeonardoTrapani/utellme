@@ -7,11 +7,14 @@ import { z } from "zod"
 
 export const feedbacksRouter = createTRPCRouter({
 
-  getAll: protectedProcedure.query(async ({ ctx }) => {
+  getAll: protectedProcedure.input(z.object({
+    projectId: z.string().min(1),
+  })).query(async ({ ctx, input }) => {
     return await ctx.prisma.feedback.findMany(({
       where: {
         project: {
-          userId: ctx.session.user.id
+          userId: ctx.session.user.id,
+          id: input.projectId
         }
       },
       orderBy: {

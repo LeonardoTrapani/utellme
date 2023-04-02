@@ -7,7 +7,7 @@ import { useState } from "react";
 import { BiEdit, BiLink, BiMenu, BiTrash, BiQr } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs"
 import type { Feedback, Project } from "@prisma/client";
-import { RatingComponent } from "~/components/RatingComponent";
+import { StaticRatingComponent } from "~/components/RatingComponent";
 import LoadingIndicator from "~/components/LoadingIndicator";
 import Avatar from "~/components/Avatar";
 
@@ -24,9 +24,8 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Tell Me</title>
+        <title>Tell Me!</title>
         <meta name="description" content="a web app to get feedback" />
-        <link rel='icon' href="/favicon.ico" />
       </Head>
       <ToastContainer
         position="bottom-center"
@@ -113,9 +112,9 @@ const ProjectMainContent: React.FC<{
         }
       </div>
       {
-        projectsData[props.selectedProjectIndex]?.feedbacks.length
+        (!!projectsData && projectsData[props.selectedProjectIndex]?.feedbacks.length)
           ?
-          <FeedbackList feedbacks={projectsData[props.selectedProjectIndex]?.feedbacks} />
+          <FeedbackList feedbacks={projectsData[props.selectedProjectIndex]?.feedbacks} projectId={projectsData[props.selectedProjectIndex]?.id} />
           :
           <p>No Feedbacks yet. Share the project to get some!</p>
       }
@@ -133,7 +132,7 @@ const ActionIconsComponent: React.FC<{ projectId: string | undefined }> = (props
   }
 
   const onCopyLink = () => {
-    const projectLink = `https://tell-me-leonardotrapani.vercel.app/project/${props.projectId || "ERROR"}`
+    const projectLink = `https://tell-me-leonardotrapani.vercel.app/newfeedback/${props.projectId || "ERROR"}`
     toast('✅ Copied link succesfully. Share it to get feedback!', { progressStyle: { background: 'rgb(34 197 94)' } })
     void navigator.clipboard.writeText(projectLink)
   }
@@ -184,8 +183,14 @@ const SingleActionIcon: React.FC<{
   )
 }
 
-const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined }> = (props) => {
-  const { data: feedbacksData, isLoading: isFeedbackDataLoading } = api.feedbacks.getAll.useQuery();
+const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined; projectId: string | undefined; }> = (props) => {
+  const {
+    data: feedbacksData,
+    isLoading: isFeedbackDataLoading
+  } = api.feedbacks.getAll.useQuery({
+    projectId: props.projectId || "-1"
+  });
+
   return (
     <ul className="gap-2 grid md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4">
       {
@@ -211,7 +216,6 @@ const ProjectDrawerContainer: React.FC<{
 }> = (props) => {
   const createMutation = api.projects.create.useMutation()
   const { refetch: refetchProjects, isFetching: isProjectFetching } = api.projects.getAll.useQuery();
-  const session = useSession()
 
   const [showLoading, setShowLoading] = useState(false); //this is used to show the loading animation between fetch and mutatin
   const [newProjectInputHasError, setNewProjectInputHasError] = useState(false);
@@ -222,21 +226,16 @@ const ProjectDrawerContainer: React.FC<{
       return;
     }
     setShowLoading(true)
-    const userId = session.data?.user.id;
-    if (userId) {
-      createMutation.mutate({ name: projectTitle, userId: session.data.user.id }, {
-        onSuccess: () => {
-          void refetchProjects()
-          setShowLoading(false);
-          props.onProjectPress(0)
-        },
-        onError: () => {
-          setShowLoading(false)
-        },
-      });
-    } else {
-      setShowLoading(false)
-    }
+    createMutation.mutate({ name: projectTitle }, {
+      onSuccess: () => {
+        void refetchProjects()
+        setShowLoading(false);
+        props.onProjectPress(0)
+      },
+      onError: () => {
+        setShowLoading(false)
+      },
+    });
   }
 
   return (
@@ -326,7 +325,7 @@ const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
     <li key={props.feedback.id}>
       <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between">
         <div>
-          <RatingComponent rating={props.feedback.rating} />
+          <StaticRatingComponent rating={props.feedback.rating} />
           {
             props.feedback.title ?
               <h2 className="text-xl font-bold">

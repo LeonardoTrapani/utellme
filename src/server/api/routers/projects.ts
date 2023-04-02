@@ -25,14 +25,24 @@ export const projectsRouter = createTRPCRouter({
     }))
   }),
 
+  getOne: protectedProcedure.input(z.object({
+    projectId: z.string()
+  })).query(async ({ ctx, input }) => {
+    return await ctx.prisma.project.findFirst({
+      where: {
+        id: input.projectId,
+        userId: ctx.session.user.id
+      },
+    })
+  }),
+
   create: protectedProcedure.input(z.object({
-    userId: z.string(),
     name: z.string().min(1),
     description: z.string().nullish(),
   })).mutation(async ({ ctx, input }) => {
     return await ctx.prisma.project.create({
       data: {
-        userId: input.userId,
+        userId: ctx.session.user.id,
         name: input.name,
         description: input.description,
       }
