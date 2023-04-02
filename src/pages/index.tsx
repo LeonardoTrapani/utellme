@@ -213,11 +213,11 @@ const ProjectDrawerContainer: React.FC<{
   const { refetch: refetchProjects, isFetching: isProjectFetching } = api.projects.getAll.useQuery();
   const session = useSession()
 
-  const [inputHasError, setInputHasError] = useState(false);
+  const [newProjectInputHasError, setNewProjectInputHasError] = useState(false);
 
   const projectSubmitHandler = (projectTitle: string) => {
     if (!projectTitle.length) {
-      setInputHasError(true);
+      setNewProjectInputHasError(true);
       return;
     }
     const userId = session.data?.user.id;
@@ -245,10 +245,10 @@ const ProjectDrawerContainer: React.FC<{
           <input
             type="text"
             placeholder="New Project"
-            className={`input input-bordered w-full max-w-xs ${inputHasError ? 'input-error' : ''}`}
+            className={`input input-bordered w-full max-w-xs ${newProjectInputHasError ? 'input-error' : ''}`}
             onKeyDown={(e) => {
-              if (inputHasError) {
-                setInputHasError(false)
+              if (newProjectInputHasError) {
+                setNewProjectInputHasError(false)
               }
               if (e.key === "Enter") {
                 projectSubmitHandler(e.currentTarget.value);
