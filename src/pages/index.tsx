@@ -123,7 +123,7 @@ const ActionIconsComponent: React.FC<{ projectId: string | undefined }> = (props
     setIsCopySuccesfull(true)
     setTimeout(() => {
       setIsCopySuccesfull(false);
-    }, 1000)
+    }, 1500)
   }
 
   const onEditProject = () => {
@@ -149,7 +149,6 @@ const ActionIconsComponent: React.FC<{ projectId: string | undefined }> = (props
       <SingleActionIcon
         onPress={() => { void onCopyLink() }}
         tooltipName={isCopySuccesfull ? "copied" : "Copy Link"}
-        isTooltipSuccess={isCopySuccesfull}
       >
         <BiLink size={26} />
       </SingleActionIcon>
@@ -181,7 +180,10 @@ const SingleActionIcon: React.FC<{
   isTooltipSuccess?: boolean;
 }> = (props) => {
   return (
-    <div className={`tooltip tooltip-left ${props.isTooltipSuccess ? 'tooltip-success' : ''}`} data-tip={props.tooltipName?.toLowerCase()}>
+    <div
+      className={`${!!props.tooltipName ? ' tooltip tooltip-left' : ''}`}
+      data-tip={props.tooltipName?.toLowerCase()}
+    >
       <a className="cursor-pointer" onClick={props.onPress}>
         {props.children}
       </a>
