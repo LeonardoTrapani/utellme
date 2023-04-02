@@ -211,7 +211,6 @@ const ProjectDrawerContainer: React.FC<{
 }> = (props) => {
   const createMutation = api.projects.create.useMutation()
   const { refetch: refetchProjects, isFetching: isProjectFetching } = api.projects.getAll.useQuery();
-  const session = useSession()
 
   const [showLoading, setShowLoading] = useState(false); //this is used to show the loading animation between fetch and mutatin
   const [newProjectInputHasError, setNewProjectInputHasError] = useState(false);
@@ -222,21 +221,16 @@ const ProjectDrawerContainer: React.FC<{
       return;
     }
     setShowLoading(true)
-    const userId = session.data?.user.id;
-    if (userId) {
-      createMutation.mutate({ name: projectTitle, userId: session.data.user.id }, {
-        onSuccess: () => {
-          void refetchProjects()
-          setShowLoading(false);
-          props.onProjectPress(0)
-        },
-        onError: () => {
-          setShowLoading(false)
-        },
-      });
-    } else {
-      setShowLoading(false)
-    }
+    createMutation.mutate({ name: projectTitle }, {
+      onSuccess: () => {
+        void refetchProjects()
+        setShowLoading(false);
+        props.onProjectPress(0)
+      },
+      onError: () => {
+        setShowLoading(false)
+      },
+    });
   }
 
   return (
