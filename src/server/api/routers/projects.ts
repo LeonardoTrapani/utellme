@@ -36,6 +36,7 @@ export const projectsRouter = createTRPCRouter({
       select: {
         name: true,
         description: true,
+        id: true,
       }
     })
   }),

@@ -49,7 +49,7 @@ const NewFeedbackPage: NextPage = () => {
       content: feedbackContent,
       rating: rating,
       author: feedbackAuthor,
-      projectId: project?.id
+      projectId: project.id
     })
   }
 
