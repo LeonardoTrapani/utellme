@@ -13,13 +13,31 @@ import Avatar from "~/components/Avatar";
 
 import { BiLogOut } from "react-icons/bi";
 import useWindowSize from "~/utils/hooks";
-import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
 
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
   const isSignedIn = sessionStatus === 'authenticated';
-  const { isLoading: isProjectsLoading } = api.projects.getAll.useQuery();
+
+  const { isLoading: isProjectsLoading, refetch: refetchProjects, data: projects } = api.projects.getAll.useQuery();
+  const { mutate: deleteProject } = api.projects.delete.useMutation({
+    onSuccess: () => {
+      void refetchProjects();
+      setSelectedProjectIndex(0);
+    }
+  });
+
+  const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
+
+  const projectDeleteHandler = () => {
+    if (!projects) return;
+    const currentProjectId = projects[selectedProjectIndex]?.id;
+    if (!currentProjectId) return;
+    void deleteProject({
+      projectId: currentProjectId
+    });
+    const element = document.getElementById('delete-project-modal') as HTMLInputElement;
+    element.checked = false;
+  }
 
   return (
     <>
@@ -27,41 +45,121 @@ const Home: NextPage = () => {
         <title>Tell Me!</title>
         <meta name="description" content="a web app to get feedback" />
       </Head>
-      <ToastContainer
-        position="bottom-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        theme={"dark"}
-        pauseOnHover
-        bodyStyle={{ borderRadius: 12 }}
-        progressStyle={{ background: "#eab308" }}
-      />
       <main>
         {(sessionStatus === 'loading') || (isProjectsLoading && sessionData?.user)
           ?
           <div className="flex items-center justify-center h-screen">
             <LoadingIndicator />
           </div> :
-          (isSignedIn ? <MainPageContent /> : <LoginPage />)
+          (isSignedIn ?
+            <>
+              <DeleteProjectModal onDelete={projectDeleteHandler} projectTitle={projects?.[selectedProjectIndex]?.name} />
+              <MainPageContent
+                setSelectedProjectIndex={setSelectedProjectIndex}
+                selectedProjectIndex={selectedProjectIndex}
+              />
+            </> : <LoginPage />)
         }
-      </main>
+      </main >
     </>
   );
 };
 
 export default Home;
 
-const MainPageContent: React.FC = () => {
+const DeleteProjectModal: React.FC<{
+  onDelete: () => void;
+  projectTitle: string | undefined;
+}> = (props) => {
+  const [modalHasError, setModalHasError] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  console.log(inputValue)
+
+  const deleteHandler = (updatedValue?: string) => {
+    if (!props.projectTitle) return;
+    const value = updatedValue || inputValue;
+    console.log(value, props.projectTitle)
+    if (value === props.projectTitle) {
+      props.onDelete();
+    } else {
+      setModalHasError(true);
+    }
+  }
+  //todo: reset state of modal
+  //todo: fix not working confirm button if not pressed 1000 times
+
+  return (
+    <>
+      <input type="checkbox" id="delete-project-modal" className="modal-toggle" />
+      <label htmlFor="delete-project-modal" className="modal cursor-pointer">
+        <label className="modal-box relative" htmlFor="">
+          <h3 className="text-lg font-bold">Are you sure you want to delete this project?</h3>
+          <p className="py-4">This action cannot be undone. You will lose all <span>{props.projectTitle || "your project"}</span>&apos;s feedback forever</p>
+          <div className="divider mt-0 mb-0" />
+          <div className="form-control w-full max-w-xs">
+            <label className="label">
+              <span className={`label-text ${modalHasError ? 'text-error' : 'text-warning'}`}>Insert project name to confirm</span>
+            </label>
+            <input
+              type="text"
+              placeholder="Project Name"
+              className={`input input-bordered w-full input-warning ${modalHasError ? 'input-error' : ''}`}
+              onChange={(e) => {
+                setInputValue(e.currentTarget.value);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  deleteHandler(e.currentTarget.value);
+                  e.currentTarget.value = "";
+                }
+              }}
+            />
+          </div>
+          <div className="modal-action">
+            <ModalActionButton
+              modalId="delete-project-modal"
+            >
+              No
+            </ModalActionButton>
+            <ModalActionButton
+              modalId="delete-project-modal"
+              isRed
+              onClick={() => deleteHandler()}
+              disableClose
+            >
+              Confirm
+            </ModalActionButton>
+          </div>
+        </label>
+      </label>
+    </>
+  )
+}
+
+const ModalActionButton: React.FC<{
+  modalId: string;
+  children: React.ReactNode;
+  isRed?: boolean;
+  onClick?: () => void;
+  disableClose?: boolean;
+}> = (props) => {
+  return (
+    <a onClick={props.onClick}>
+      <label htmlFor={!props.disableClose ? props.modalId : 'you are not closing'} className={`btn ${props.isRed ? 'btn-error' : ''}`}>
+        {props.children}
+      </label>
+    </a>
+  )
+}
+
+const MainPageContent: React.FC<{
+  selectedProjectIndex: number;
+  setSelectedProjectIndex: (i: number) => void;
+}> = (props) => {
   const { data: projectsData } = api.projects.getAll.useQuery();
-  const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
 
   const onProjectPress = (i: number) => {
-    setSelectedProjectIndex(i);
+    props.setSelectedProjectIndex(i);
   }
 
   const [windowWidth] = useWindowSize()
@@ -71,20 +169,18 @@ const MainPageContent: React.FC = () => {
   }
 
   return (
-    <body>
-      <ProjectDrawerContainer
-        projectsData={projectsData}
-        selectedProjectIndex={selectedProjectIndex}
-        onProjectPress={onProjectPress}
-      >
-        {
-          (windowWidth || 0) < 768 //if we are in mobile we need the icons above the main page content 
-          &&
-          <ActionIconsComponent projectId={projectsData[selectedProjectIndex]?.id} />
-        }
-        <ProjectMainContent selectedProjectIndex={selectedProjectIndex} />
-      </ProjectDrawerContainer>
-    </body>
+    <ProjectDrawerContainer
+      projectsData={projectsData}
+      selectedProjectIndex={props.selectedProjectIndex}
+      onProjectPress={onProjectPress}
+    >
+      {
+        (windowWidth || 0) < 768 //if we are in mobile we need the icons above the main page content 
+        &&
+        <ActionIconsComponent projectId={projectsData[props.selectedProjectIndex]?.id} />
+      }
+      <ProjectMainContent selectedProjectIndex={props.selectedProjectIndex} />
+    </ProjectDrawerContainer>
   )
 }
 
@@ -126,23 +222,24 @@ const ActionIconsComponent: React.FC<{ projectId: string | undefined }> = (props
   const isSmall = (windowWidth || 0) < 768;
   const isMedium = ((windowWidth || 0) < 1024) && ((windowWidth || 0) >= 768);
   const isBig = (windowWidth || 0) >= 1024;
+  const [isCopySuccesfull, setIsCopySuccesfull] = useState(false);
+
 
   const onGenerateQr = () => {
     console.log('generate qr')
   }
 
-  const onCopyLink = () => {
+  const onCopyLink = async () => {
     const projectLink = `https://tell-me-leonardotrapani.vercel.app/newfeedback/${props.projectId || "ERROR"}`
-    toast('✅ Copied link succesfully. Share it to get feedback!', { progressStyle: { background: 'rgb(34 197 94)' } })
-    void navigator.clipboard.writeText(projectLink)
+    await navigator.clipboard.writeText(projectLink)
+    setIsCopySuccesfull(true)
+    setTimeout(() => {
+      setIsCopySuccesfull(false);
+    }, 1500)
   }
 
   const onEditProject = () => {
     console.log('edit project')
-  }
-
-  const onDeleteProject = () => {
-    console.log('delete project')
   }
 
   return (
@@ -151,18 +248,31 @@ const ActionIconsComponent: React.FC<{ projectId: string | undefined }> = (props
         isMedium || isBig ? 'flex flex-row items-start justify-end ml-4 gap-1' :
           ''
     }>
-      <SingleActionIcon onPress={onGenerateQr}>
+      <SingleActionIcon
+        onPress={onGenerateQr}
+        tooltipName="Generate QR"
+      >
         <BiQr size={26} />
       </SingleActionIcon>
-      <SingleActionIcon onPress={onCopyLink}>
+      <SingleActionIcon
+        onPress={() => { void onCopyLink() }}
+        tooltipName={isCopySuccesfull ? "copied" : "Copy Link"}
+      >
         <BiLink size={26} />
       </SingleActionIcon>
-      <SingleActionIcon onPress={onEditProject}>
+      <SingleActionIcon
+        onPress={onEditProject}
+        tooltipName="Edit Project"
+      >
         <BiEdit size={26} />
       </SingleActionIcon>
-      <SingleActionIcon onPress={onDeleteProject}>
-        <BiTrash size={26} />
-      </SingleActionIcon>
+      <DeleteProjectActionIcon
+        tooltipName="Delete Project"
+      >
+        <label htmlFor="delete-project-modal" className="cursor-pointer">
+          <BiTrash size={26} />
+        </label>
+      </DeleteProjectActionIcon>
       {
         !isBig && <label htmlFor="drawer" className="cursor-pointer">
           <BiMenu size={26} className="text-primary" />
@@ -175,13 +285,42 @@ const ActionIconsComponent: React.FC<{ projectId: string | undefined }> = (props
 const SingleActionIcon: React.FC<{
   children: React.ReactNode;
   onPress: () => void;
+  tooltipName?: string;
+  isTooltipSuccess?: boolean;
 }> = (props) => {
   return (
-    <a className="cursor-pointer" onClick={props.onPress}>
-      {props.children}
-    </a>
+    <div
+      className={`${!!props.tooltipName ? ' tooltip tooltip-left' : ''}`}
+      data-tip={props.tooltipName?.toLowerCase()}
+    >
+      <a className="cursor-pointer" onClick={props.onPress}>
+        {props.children}
+      </a>
+    </div>
   )
 }
+
+
+const DeleteProjectActionIcon: React.FC<{
+  children: React.ReactNode;
+  tooltipName?: string;
+  isTooltipSuccess?: boolean;
+}> = (props) => {
+  return (
+    <div
+      className={`${!!props.tooltipName ? ' tooltip tooltip-left' : ''}`}
+      data-tip={props.tooltipName?.toLowerCase()}
+    >
+      {props.children}
+    </div>
+  )
+}
+/*
+//The button to open modal  
+<label htmlFor="delete-project-modal" className="btn">open modal</label>
+
+//Put this part before </body> tag 
+*/
 
 const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined; projectId: string | undefined; }> = (props) => {
   const {
