@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.5](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.4...v0.1.5) (2023-04-03)
+
+
+### Features
+
+* added tooltips to action buttons and removed tostify ([c121003](https://github.com/LeonardoTrapani/tell-me/commit/c121003961a8eed4d993b64585b321185a14a6fe))
+* added validation to render tooltip ([e35909a](https://github.com/LeonardoTrapani/tell-me/commit/e35909abc2e6ca8cda7d21f5410e5aacbf2ca9f9))
+* basic validation ([a7061ac](https://github.com/LeonardoTrapani/tell-me/commit/a7061ac8f7dfad28af411823998a0d39aa569c7f))
+* delete project functionality ([aba5dc6](https://github.com/LeonardoTrapani/tell-me/commit/aba5dc63f96cb3e46e4df2bdbd5f5bec5c5f0a16))
+* mutations to craete feedback ([d622f7c](https://github.com/LeonardoTrapani/tell-me/commit/d622f7c8a3a6e29053dc7da82ee9aaabc1a865fe))
+* placeholders dependent on rating ([bd14ca4](https://github.com/LeonardoTrapani/tell-me/commit/bd14ca4cf7353de7ef9c4101f10a72257796a49a))
+* project delete confirm input ([910b076](https://github.com/LeonardoTrapani/tell-me/commit/910b0768e85137ee13f84ff40f35fae74b5b5af0))
+* started newfeedback page layout and functionality ([c940e02](https://github.com/LeonardoTrapani/tell-me/commit/c940e021759bedbaa95d7773236b9d852140d664))
+* thanks for feedback page ([29da692](https://github.com/LeonardoTrapani/tell-me/commit/29da69249090198c85cb3fa060d66e59cf77d929))
+* updated style of getfeedback ([46a65be](https://github.com/LeonardoTrapani/tell-me/commit/46a65befe5d0fb6a73424ec3feaa67c0538bc6e7))
+
+
+### Bug Fixes
+
+* confirm modal button not working ([20e6d8d](https://github.com/LeonardoTrapani/tell-me/commit/20e6d8dea9c3744e31901b93e02c014b0d796587))
+* feedbacks.getAll needs a projectId ([282f7bf](https://github.com/LeonardoTrapani/tell-me/commit/282f7bf7bfe64534e63cc82f17f0609c3728de50))
+* fixed add project trying to get project info without being logged in ([b2295be](https://github.com/LeonardoTrapani/tell-me/commit/b2295befaf7ca7e3896bbb59ecf7ea4178695acf))
+* improved feedback error handling ([2803a9b](https://github.com/LeonardoTrapani/tell-me/commit/2803a9bcac0cadba6ce631b9f120a92381145ebb))
+* now taking userId from session on some feedback routes ([be57f9b](https://github.com/LeonardoTrapani/tell-me/commit/be57f9bbbab3752e883e8dfef44b698f873fc78f))
+* projects.getInfo gives id too ([daf19fe](https://github.com/LeonardoTrapani/tell-me/commit/daf19fe28184f01c888ac60c56cfe37ebcadc41c))
+
 ### [0.1.4](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.3...v0.1.4) (2023-04-02)
 
 
