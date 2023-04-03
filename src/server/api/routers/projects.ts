@@ -1,6 +1,7 @@
 import {
   createTRPCRouter,
   protectedProcedure,
+  publicProcedure,
 } from "~/server/api/trpc";
 import { z } from "zod"
 
@@ -25,14 +26,17 @@ export const projectsRouter = createTRPCRouter({
     }))
   }),
 
-  getOne: protectedProcedure.input(z.object({
+  getInfo: publicProcedure.input(z.object({
     projectId: z.string()
   })).query(async ({ ctx, input }) => {
     return await ctx.prisma.project.findFirst({
       where: {
         id: input.projectId,
-        userId: ctx.session.user.id
       },
+      select: {
+        name: true,
+        description: true,
+      }
     })
   }),
 

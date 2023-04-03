@@ -21,9 +21,12 @@ const NewFeedbackPage: NextPage = () => {
   const router = useRouter();
   const projectId = Array.isArray(router.query.projectId) ? router.query.projectId[0] : router.query.projectId;
 
-  const { data: project, isLoading: isProjectLoading } = api.projects.getOne.useQuery({ projectId: projectId || "-1" }, {
-    enabled: !!projectId,
-  });
+  const { data: project, isLoading: isProjectLoading } =
+    api.projects.getInfo.useQuery({
+      projectId: projectId || "-1"
+    }, {
+      enabled: !!projectId,
+    });
 
   const { mutate: createFeedbackMutation, isLoading: isCreateFeedbackLoading } = api.feedbacks.create.useMutation({
     onSuccess: () => {
