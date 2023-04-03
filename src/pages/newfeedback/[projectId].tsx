@@ -168,7 +168,7 @@ const GetFeedbackTitle: React.FC<{
   return (
     <div className="grid">
       <div>
-        <h3 className="text-xl">Tell me your feedback about</h3>
+        <h3 className="text-xl"><span className="text-primary">Tell me&nbsp;</span>your feedback about</h3>
         <h1 className="text-4xl font-bold">{props.projectName || "my project"}</h1>
       </div>
     </div>);
