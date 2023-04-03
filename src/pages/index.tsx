@@ -78,12 +78,12 @@ const DeleteProjectModal: React.FC<{
   const deleteHandler = (updatedValue?: string) => {
     if (!props.projectTitle) return;
     const value = updatedValue || inputValue;
-      console.log(value, props.projectTitle)
-      if (value === props.projectTitle) {
-        props.onDelete();
-      } else {
-        setModalHasError(true);
-      }
+    console.log(value, props.projectTitle)
+    if (value === props.projectTitle) {
+      props.onDelete();
+    } else {
+      setModalHasError(true);
+    }
   }
   //todo: reset state of modal
   //todo: fix not working confirm button if not pressed 1000 times
@@ -144,11 +144,11 @@ const ModalActionButton: React.FC<{
   disableClose?: boolean;
 }> = (props) => {
   return (
-    <label htmlFor={!props.disableClose ? props.modalId : 'you are not closing'} className={`btn ${props.isRed ? 'btn-error' : ''}`}>
-      <a onClick={props.onClick}>
+    <a onClick={props.onClick}>
+      <label htmlFor={!props.disableClose ? props.modalId : 'you are not closing'} className={`btn ${props.isRed ? 'btn-error' : ''}`}>
         {props.children}
-      </a>
-    </label>
+      </label>
+    </a>
   )
 }
 
