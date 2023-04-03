@@ -73,25 +73,28 @@ const DeleteProjectModal: React.FC<{
 }> = (props) => {
   const [modalHasError, setModalHasError] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  console.log(inputValue)
 
   const deleteHandler = (updatedValue?: string) => {
     if (!props.projectTitle) return;
     const value = updatedValue || inputValue;
-    console.log(value, props.projectTitle)
     if (value === props.projectTitle) {
+      resetModalState()
       props.onDelete();
     } else {
       setModalHasError(true);
     }
   }
-  //todo: reset state of modal
-  //todo: fix not working confirm button if not pressed 1000 times
+
+  //todo: fix setModalHasError resets modal state
+  const resetModalState = () => {
+    setModalHasError(false);
+    setInputValue('');
+  }
 
   return (
     <>
       <input type="checkbox" id="delete-project-modal" className="modal-toggle" />
-      <label htmlFor="delete-project-modal" className="modal cursor-pointer">
+      <label htmlFor="delete-project-modal" className="modal cursor-pointer" onClick={resetModalState}>
         <label className="modal-box relative" htmlFor="">
           <h3 className="text-lg font-bold">Are you sure you want to delete this project?</h3>
           <p className="py-4">This action cannot be undone. You will lose all <span>{props.projectTitle || "your project"}</span>&apos;s feedback forever</p>
@@ -107,6 +110,7 @@ const DeleteProjectModal: React.FC<{
               onChange={(e) => {
                 setInputValue(e.currentTarget.value);
               }}
+              value={inputValue}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   deleteHandler(e.currentTarget.value);
@@ -118,6 +122,7 @@ const DeleteProjectModal: React.FC<{
           <div className="modal-action">
             <ModalActionButton
               modalId="delete-project-modal"
+              onClick={resetModalState}
             >
               No
             </ModalActionButton>
@@ -354,9 +359,9 @@ const ProjectDrawerContainer: React.FC<{
   children: React.ReactNode;
 }> = (props) => {
   const createMutation = api.projects.create.useMutation()
-  const { refetch: refetchProjects, isFetching: isProjectFetching } = api.projects.getAll.useQuery();
+  const { refetch: refetchProjects } = api.projects.getAll.useQuery();
 
-  const [showLoading, setShowLoading] = useState(false); //this is used to show the loading animation between fetch and mutatin
+  //const [showLoading, setShowLoading] = useState(false); //this is used to show the loading animation between fetch and mutatin
   const [newProjectInputHasError, setNewProjectInputHasError] = useState(false);
 
   const projectSubmitHandler = (projectTitle: string) => {
@@ -364,15 +369,15 @@ const ProjectDrawerContainer: React.FC<{
       setNewProjectInputHasError(true);
       return;
     }
-    setShowLoading(true)
+    // setShowLoading(true)
     createMutation.mutate({ name: projectTitle }, {
       onSuccess: () => {
         void refetchProjects()
-        setShowLoading(false);
+        //setShowLoading(false);
         props.onProjectPress(0)
       },
       onError: () => {
-        setShowLoading(false)
+        //setShowLoading(false)
       },
     });
   }
