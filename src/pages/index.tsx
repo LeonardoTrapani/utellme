@@ -404,20 +404,20 @@ const ProjectDrawerContainer: React.FC<{
           />
           <div className="divider mt-2 mb-2" />
           {
-            isProjectFetching || showLoading
+            /*isProjectFetching || showLoading
               ?
               <div className="text-center mt-2">
                 <LoadingIndicator />
               </div>
-              :
-              props.projectsData?.map((project, i) => {
-                return <ProjectComponent
-                  key={i}
-                  project={project}
-                  isActive={props.selectedProjectIndex === i}
-                  onPress={props.onProjectPress}
-                  index={i} />
-              })
+              : */
+            props.projectsData?.map((project, i) => {
+              return <ProjectComponent
+                key={i}
+                project={project}
+                isActive={props.selectedProjectIndex === i}
+                onPress={props.onProjectPress}
+                index={i} />
+            })
           }
         </ul>
       </div>
