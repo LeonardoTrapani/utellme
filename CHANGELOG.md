@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.7](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.6...v0.1.7) (2023-04-04)
+
+
+### Features
+
+* copying to clipboard takes window.location.origin ([9c83c21](https://github.com/LeonardoTrapani/tell-me/commit/9c83c21fa54bccb0725de7683ba79eb29648c3ab))
+* qr code has file name of your projetc ([b44e8bc](https://github.com/LeonardoTrapani/tell-me/commit/b44e8bcba278774e85d6732d54890776afbb6280))
+* qr code share or copies to clipboard ([069096b](https://github.com/LeonardoTrapani/tell-me/commit/069096bb1de5882462c442321999959fd3524618))
+
 ### [0.1.6](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.5...v0.1.6) (2023-04-04)
 
 
