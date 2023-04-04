@@ -4,7 +4,7 @@ import Head from "next/head";
 import { signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useState } from "react";
-import { BiEdit, BiLink, BiMenu, BiTrash, BiQr } from "react-icons/bi"
+import { BiEdit, BiLink, BiMenu, BiTrash, BiQr, BiShareAlt } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs"
 import type { Feedback, Project } from "@prisma/client";
 import { StaticRatingComponent } from "~/components/RatingComponent";
@@ -279,7 +279,7 @@ const ProjectInstructions: React.FC<{
   projectId: string;
 }> = (props) => {
   return (
-    <div className="flex justify-center mt-4 items-center">
+    <div className="flex justify-center mt-4 items-center flex-col md:flex-row gap-2">
       <ProjectInstructionsRow
         onPress={onGenerateQr}
         instructionName="Create QR-Code"
@@ -288,13 +288,20 @@ const ProjectInstructions: React.FC<{
           <BiQr size={26} />
         </SingleActionIcon>
       </ProjectInstructionsRow>
-      <div className="divider divider-horizontal">OR</div>
       <ProjectInstructionsRow
         onPress={() => { void onCopyLink(props.projectId) }}
-        instructionName="Share link"
+        instructionName="Copy Link"
       >
         <SingleActionIcon>
           <BiLink size={26} />
+        </SingleActionIcon>
+      </ProjectInstructionsRow>
+      <ProjectInstructionsRow
+        onPress={() => { onShareLink() }}
+        instructionName="Share Link"
+      >
+        <SingleActionIcon>
+          <BiShareAlt size={26} />
         </SingleActionIcon>
       </ProjectInstructionsRow>
     </div>
@@ -307,7 +314,7 @@ const ProjectInstructionsRow: React.FC<{
   children: React.ReactNode;
 }> = (props) => {
   return (
-    <button 
+    <button
       className="gap-1 btn"
       onClick={props.onPress}
     >
@@ -325,6 +332,10 @@ const onCopyLink = async (projectId: string) => {
   console.log("copying")
   const projectLink = `https://tell-me-leonardotrapani.vercel.app/newfeedback/${projectId || "ERROR"}`
   await navigator.clipboard.writeText(projectLink)
+}
+
+const onShareLink = () => {
+  console.log("sharing")
 }
 
 const NoProjectsComponent: React.FC = () => {
@@ -396,6 +407,14 @@ const ActionIconsComponent: React.FC<{
               tooltipName={isCopySuccesfull ? "copied" : "Copy Link"}
             >
               <BiLink size={26} />
+            </SingleActionIcon>
+            <SingleActionIcon
+              onPress={() => {
+                onShareLink()
+              }}
+              tooltipName="share project"
+            >
+              <BiShareAlt size={26} />
             </SingleActionIcon>
             <SingleActionIcon
               onPress={onEditProject}
