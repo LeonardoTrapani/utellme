@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useState } from "react";
 import { BiEdit, BiLink, BiMenu, BiTrash, BiQr } from "react-icons/bi"
@@ -13,12 +13,21 @@ import Avatar from "~/components/Avatar";
 
 import { BiLogOut } from "react-icons/bi";
 import useWindowSize from "~/utils/hooks";
+import LoginPage from "./signin";
 
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
   const isSignedIn = sessionStatus === 'authenticated';
 
-  const { isLoading: isProjectsLoading, refetch: refetchProjects, data: projects } = api.projects.getAll.useQuery();
+  const {
+    isLoading: isProjectsLoading,
+    refetch: refetchProjects,
+    data: projects
+  } =
+    api.projects.getAll.useQuery(undefined, {
+      enabled: isSignedIn
+    });
+
   const { mutate: deleteProject } = api.projects.delete.useMutation({
     onSuccess: () => {
       void refetchProjects();
@@ -58,7 +67,7 @@ const Home: NextPage = () => {
           <div className="flex items-center justify-center h-screen">
             <LoadingIndicator />
           </div> :
-          (isSignedIn ?
+          isSignedIn ? (
             <>
               <DeleteProjectModal
                 onDelete={projectDeleteHandler}
@@ -76,7 +85,10 @@ const Home: NextPage = () => {
                 }}
                 selectedProjectIndex={selectedProjectIndex}
               />
-            </> : <LoginPage />)
+            </>
+          )
+            :
+            <LoginPage />
         }
       </main >
     </>
@@ -514,16 +526,3 @@ const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
     </li >
   )
 }
-
-const LoginPage: React.FC = () => {
-  return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      <button
-        className="btn"
-        onClick={() => void signIn()}
-      >
-        Sign In
-      </button>
-    </div>
-  );
-};

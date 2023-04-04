@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import LoadingIndicator from "~/components/LoadingIndicator";
 import { SelectRatingComponent, } from "~/components/RatingComponent";
+import { TellMeComponent } from "~/components/TellMeComponent";
 import { api } from "~/utils/api";
 
 const NewFeedbackPage: NextPage = () => {
@@ -204,9 +205,7 @@ const FeedbackCompletedPage = () => {
       <h1 className="text-2xl"><span className="text-primary font-semibold">Thank you </span>for the feedback!</h1>
       <div className="text-center">
         <h3>powered by</h3>
-        <Link className="font-bold text-xl select-none cursor-pointer" href={{
-          pathname: '/'
-        }}>TELL&nbsp;<span className="text-primary">ME!</span></Link>
+        <TellMeComponent />
       </div>
     </div>
   )
