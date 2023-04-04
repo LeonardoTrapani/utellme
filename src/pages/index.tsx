@@ -14,6 +14,7 @@ import Avatar from "~/components/Avatar";
 import { BiLogOut } from "react-icons/bi";
 import useWindowSize from "~/utils/hooks";
 import LoginPage from "./signin";
+import { toast } from "react-hot-toast";
 
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -338,6 +339,7 @@ const onGenerateQr = () => {
 const onCopyLink = (projectId: string) => {
   const projectLink = getProjectLink(projectId);
   void navigator.clipboard.writeText(projectLink);
+  toast('Link copied to the clipboard')
 }
 
 const onShareLink = (projectId: string, projectName: string | undefined) => {
