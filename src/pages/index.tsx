@@ -28,6 +28,13 @@ const Home: NextPage = () => {
 
   const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
 
+  const [deleteModalInputValue, setDeleteModalInputValue] = useState('');
+  const [modalHasError, setModalHasError] = useState(false);
+  const resetModalState = () => {
+    setModalHasError(false);
+    setDeleteModalInputValue('');
+  }
+
   const projectDeleteHandler = () => {
     if (!projects) return;
     const currentProjectId = projects[selectedProjectIndex]?.id;
@@ -53,9 +60,20 @@ const Home: NextPage = () => {
           </div> :
           (isSignedIn ?
             <>
-              <DeleteProjectModal onDelete={projectDeleteHandler} projectTitle={projects?.[selectedProjectIndex]?.name} />
+              <DeleteProjectModal
+                onDelete={projectDeleteHandler}
+                projectTitle={projects?.[selectedProjectIndex]?.name}
+                modalHasError={modalHasError}
+                setModalHasError={setModalHasError}
+                resetModalState={resetModalState}
+                inputValue={deleteModalInputValue}
+                setInputValue={setDeleteModalInputValue}
+              />
               <MainPageContent
-                setSelectedProjectIndex={setSelectedProjectIndex}
+                setSelectedProjectIndex={(i: number) => {
+                  setSelectedProjectIndex(i);
+                  resetModalState();
+                }}
                 selectedProjectIndex={selectedProjectIndex}
               />
             </> : <LoginPage />)
@@ -70,47 +88,44 @@ export default Home;
 const DeleteProjectModal: React.FC<{
   onDelete: () => void;
   projectTitle: string | undefined;
+  modalHasError: boolean;
+  setModalHasError: (value: boolean) => void;
+  resetModalState: () => void;
+  inputValue: string;
+  setInputValue: (value: string) => void;
 }> = (props) => {
-  const [modalHasError, setModalHasError] = useState(false);
-  const [inputValue, setInputValue] = useState('');
-
   const deleteHandler = (updatedValue?: string) => {
     if (!props.projectTitle) return;
-    const value = updatedValue || inputValue;
+    const value = updatedValue || props.inputValue;
     if (value === props.projectTitle) {
-      resetModalState()
+      props.resetModalState()
       props.onDelete();
     } else {
-      setModalHasError(true);
+      props.setModalHasError(true);
     }
   }
 
-  //todo: fix setModalHasError resets modal state
-  const resetModalState = () => {
-    setModalHasError(false);
-    setInputValue('');
-  }
 
   return (
     <>
       <input type="checkbox" id="delete-project-modal" className="modal-toggle" />
-      <label htmlFor="delete-project-modal" className="modal cursor-pointer" onClick={resetModalState}>
+      <label htmlFor="delete-project-modal" className="modal cursor-pointer">
         <label className="modal-box relative" htmlFor="">
           <h3 className="text-lg font-bold">Are you sure you want to delete this project?</h3>
           <p className="py-4">This action cannot be undone. You will lose all <span>{props.projectTitle || "your project"}</span>&apos;s feedback forever</p>
           <div className="divider mt-0 mb-0" />
           <div className="form-control w-full max-w-xs">
             <label className="label">
-              <span className={`label-text ${modalHasError ? 'text-error' : 'text-warning'}`}>Insert project name to confirm</span>
+              <span className={`label-text ${props.modalHasError ? 'text-error' : 'text-warning'}`}>Insert project name to confirm</span>
             </label>
             <input
               type="text"
               placeholder="Project Name"
-              className={`input input-bordered w-full input-warning ${modalHasError ? 'input-error' : ''}`}
+              className={`input input-bordered w-full input-warning ${props.modalHasError ? 'input-error' : ''}`}
               onChange={(e) => {
-                setInputValue(e.currentTarget.value);
+                props.setInputValue(e.currentTarget.value);
               }}
-              value={inputValue}
+              value={props.inputValue}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   deleteHandler(e.currentTarget.value);
@@ -122,7 +137,7 @@ const DeleteProjectModal: React.FC<{
           <div className="modal-action">
             <ModalActionButton
               modalId="delete-project-modal"
-              onClick={resetModalState}
+              onClick={props.resetModalState}
             >
               No
             </ModalActionButton>
