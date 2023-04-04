@@ -4,7 +4,7 @@ import Head from "next/head";
 import { signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useState } from "react";
-import { BiEdit, BiLink, BiMenu, BiTrash, BiQr, BiShareAlt } from "react-icons/bi"
+import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs"
 import type { Feedback, Project } from "@prisma/client";
 import { StaticRatingComponent } from "~/components/RatingComponent";
@@ -274,7 +274,7 @@ const NoFeedbackComponent: React.FC<{
     <div className="flex flex-col items-center justify-center h-full gap-4">
       <div>
         <h1 className="font-bold text-2xl lg:text-3xl text-center">No feedback yet</h1>
-        <p className="text-center text-lg">Share your project&apos;s link to start collecting feedback</p>
+        <p className="text-center text-lg">Share your project to start collecting feedback</p>
         <div className="divider" />
         <ProjectInstructions projectId={props.projectId} projectName={props.projectName} />
       </div>
@@ -297,7 +297,7 @@ const ProjectInstructions: React.FC<{
         </SingleActionIcon>
       </ProjectInstructionsRow>
       <ProjectInstructionsRow
-        onPress={() => { onShareLink(props.projectId, props.projectName) }}
+        onPress={() => { onShareLink(props.projectId, props.projectName, ) }}
         instructionName="Share Link"
       >
         <SingleActionIcon>
@@ -347,7 +347,7 @@ const onShareLink = (projectId: string, projectName: string | undefined) => {
 }
 
 const getProjectLink = (projectId: string) => {
-  return `https://tell-me-leonardotrapani.vercel.app/newfeedback/${projectId || "ERROR"}`
+  return `${window.location.origin}/newfeedback/${projectId || "ERROR"}`
 }
 
 const NoProjectsComponent: React.FC = () => {
