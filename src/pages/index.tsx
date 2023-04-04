@@ -254,17 +254,84 @@ const ProjectMainContent: React.FC<{
           ?
           <FeedbackList feedbacks={projectsData[props.selectedProjectIndex]?.feedbacks} projectId={projectsData[props.selectedProjectIndex]?.id} />
           :
-          <p>No Feedbacks yet. Share the project to get some!</p>
+          <NoFeedbackComponent projectId={projectsData[props.selectedProjectIndex]?.id || "-1"} />
       }
     </>
   )
+}
+
+const NoFeedbackComponent: React.FC<{
+  projectId: string;
+}> = (props) => {
+  return (
+    <div className="flex flex-col items-center justify-center h-full gap-4">
+      <div>
+        <h1 className="font-bold text-2xl lg:text-3xl text-center">No feedback yet</h1>
+        <p className="text-center text-lg">Share your project&apos;s link to start collecting feedback</p>
+        <div className="divider" />
+        <ProjectInstructions projectId={props.projectId} />
+      </div>
+    </div>
+  )
+}
+
+const ProjectInstructions: React.FC<{
+  projectId: string;
+}> = (props) => {
+  return (
+    <div className="flex justify-center mt-4 items-center">
+      <ProjectInstructionsRow
+        onPress={onGenerateQr}
+        instructionName="Create QR-Code"
+      >
+        <SingleActionIcon>
+          <BiQr size={26} />
+        </SingleActionIcon>
+      </ProjectInstructionsRow>
+      <div className="divider divider-horizontal">OR</div>
+      <ProjectInstructionsRow
+        onPress={() => { void onCopyLink(props.projectId) }}
+        instructionName="Share link"
+      >
+        <SingleActionIcon>
+          <BiLink size={26} />
+        </SingleActionIcon>
+      </ProjectInstructionsRow>
+    </div>
+  )
+}
+
+const ProjectInstructionsRow: React.FC<{
+  instructionName: string;
+  onPress?: () => void;
+  children: React.ReactNode;
+}> = (props) => {
+  return (
+    <button 
+      className="gap-1 btn"
+      onClick={props.onPress}
+    >
+      {props.children}
+      <p>{props.instructionName}</p>
+    </button>
+  )
+}
+
+const onGenerateQr = () => {
+  console.log('generate qr')
+}
+
+const onCopyLink = async (projectId: string) => {
+  console.log("copying")
+  const projectLink = `https://tell-me-leonardotrapani.vercel.app/newfeedback/${projectId || "ERROR"}`
+  await navigator.clipboard.writeText(projectLink)
 }
 
 const NoProjectsComponent: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center h-full gap-4">
       <div>
-        <h1 className="font-bold text-2xl lg:text-3xl ">You don&apos;t have any projects yet</h1>
+        <h1 className="font-bold text-2xl lg:text-3xl text-center">You don&apos;t have any projects yet</h1>
         <p className="text-center">Create a new project to start collecting feedback</p>
       </div>
       <a
@@ -297,18 +364,6 @@ const ActionIconsComponent: React.FC<{
   const [isCopySuccesfull, setIsCopySuccesfull] = useState(false);
 
 
-  const onGenerateQr = () => {
-    console.log('generate qr')
-  }
-
-  const onCopyLink = async () => {
-    const projectLink = `https://tell-me-leonardotrapani.vercel.app/newfeedback/${props.projectId || "ERROR"}`
-    await navigator.clipboard.writeText(projectLink)
-    setIsCopySuccesfull(true)
-    setTimeout(() => {
-      setIsCopySuccesfull(false);
-    }, 1500)
-  }
 
   const onEditProject = () => {
     console.log('edit project')
@@ -331,7 +386,13 @@ const ActionIconsComponent: React.FC<{
               <BiQr size={26} />
             </SingleActionIcon>
             <SingleActionIcon
-              onPress={() => { void onCopyLink() }}
+              onPress={() => {
+                void onCopyLink(props.projectId || "-1")
+                setIsCopySuccesfull(true)
+                setTimeout(() => {
+                  setIsCopySuccesfull(false);
+                }, 1500)
+              }}
               tooltipName={isCopySuccesfull ? "copied" : "Copy Link"}
             >
               <BiLink size={26} />
@@ -363,7 +424,7 @@ const ActionIconsComponent: React.FC<{
 
 const SingleActionIcon: React.FC<{
   children: React.ReactNode;
-  onPress: () => void;
+  onPress?: () => void;
   tooltipName?: string;
   isTooltipSuccess?: boolean;
 }> = (props) => {
