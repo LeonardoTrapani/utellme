@@ -297,14 +297,6 @@ const ProjectInstructions: React.FC<{
         </SingleActionIcon>
       </ProjectInstructionsRow>
       <ProjectInstructionsRow
-        onPress={() => { void onCopyLink(props.projectId) }}
-        instructionName="Copy Link"
-      >
-        <SingleActionIcon>
-          <BiLink size={26} />
-        </SingleActionIcon>
-      </ProjectInstructionsRow>
-      <ProjectInstructionsRow
         onPress={() => { onShareLink(props.projectId, props.projectName) }}
         instructionName="Share Link"
       >
@@ -393,9 +385,6 @@ const ActionIconsComponent: React.FC<{
   const isSmall = (windowWidth || 0) < 768;
   const isMedium = ((windowWidth || 0) < 1024) && ((windowWidth || 0) >= 768);
   const isBig = (windowWidth || 0) >= 1024;
-  const [isCopySuccesfull, setIsCopySuccesfull] = useState(false);
-
-
 
   const onEditProject = () => {
     console.log('edit project')
@@ -416,18 +405,6 @@ const ActionIconsComponent: React.FC<{
               tooltipName="Generate QR"
             >
               <BiQr size={26} />
-            </SingleActionIcon>
-            <SingleActionIcon
-              onPress={() => {
-                void onCopyLink(props.projectId || "-1")
-                setIsCopySuccesfull(true)
-                setTimeout(() => {
-                  setIsCopySuccesfull(false);
-                }, 1500)
-              }}
-              tooltipName={isCopySuccesfull ? "copied" : "Copy Link"}
-            >
-              <BiLink size={26} />
             </SingleActionIcon>
             <SingleActionIcon
               onPress={() => {
