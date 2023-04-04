@@ -15,6 +15,7 @@ import { BiLogOut } from "react-icons/bi";
 import useWindowSize from "~/utils/hooks";
 import LoginPage from "./signin";
 import { toast } from "react-hot-toast";
+import QRCode from 'qrcode'
 
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -289,15 +290,25 @@ const ProjectInstructions: React.FC<{
   return (
     <div className="flex justify-center mt-4 items-center flex-col md:flex-row gap-2">
       <ProjectInstructionsRow
-        onPress={onGenerateQr}
-        instructionName="Create QR-Code"
+        onPress={() => { void onGenerateQr(props.projectId, props.projectName || "this project") }}
+        instructionName="Generate QR-Code"
       >
         <SingleActionIcon>
           <BiQr size={26} />
         </SingleActionIcon>
       </ProjectInstructionsRow>
       <ProjectInstructionsRow
-        onPress={() => { onShareLink(props.projectId, props.projectName, ) }}
+        onPress={() => {
+          void shareOrCopyToClipboard(
+            {
+              description: `Scan this QR-Code to give feedback to ${props.projectName || "thisProject"}!`,
+              isFile: false,
+              text: getProjectUrl(props.projectId || "-1"),
+              title: `What do you think about ${props.projectName || "this project"}?`
+            }
+          )
+
+        }}
         instructionName="Share Link"
       >
         <SingleActionIcon>
@@ -324,16 +335,81 @@ const ProjectInstructionsRow: React.FC<{
   )
 }
 
-const onGenerateQr = () => {
-  console.log('generate qr')
+const onGenerateQr = async (projectId: string, projectName: string) => {
+  const projectLink = getProjectUrl(projectId);
+  try {
+    const qrImage = await QRCode.toDataURL(
+      projectLink,
+      { type: 'image/png' },
+    )
+    await shareOrCopyToClipboard({
+      title: `${projectName || "My project"}'s QR-Code!`,
+      isFile: true,
+      description: `Scan this QR-Code to give feedback about ${projectName || "my project"}!`,
+      text: qrImage
+    })
+  } catch (err) {
+    toast('Something went wrong generating the QR-Code', {
+      className: 'bg-error text-error'
+    })
+  }
 }
 
-const onCopyLink = (projectId: string) => {
-  const projectLink = getProjectLink(projectId);
-  void navigator.clipboard.writeText(projectLink);
-  toast('Link copied to the clipboard')
+
+const shareOrCopyToClipboard = async ({
+  text,
+  title,
+  isFile,
+  fileName,
+  description
+}: {
+  text: string,
+  title?: string,
+  isFile?: boolean
+  description: string
+  fileName?: string;
+}) => {
+  if (navigator.share) {
+    if (isFile) {
+      const blob = await (await fetch(text)).blob()
+      const file = new File([blob], (fileName || 'projectQr.png'), { type: blob.type })
+      void navigator.share({
+        title,
+        text: description,
+        files: [file],
+      })
+    } else {
+      void navigator.share({
+        title,
+        url: text,
+        text: description
+      })
+    }
+  } else {
+    if (isFile) {
+      const blob = await (await fetch(text)).blob()
+      const file = new File([blob], (fileName || 'projectQr.png'), { type: blob.type })
+      void copyFileToClipboard(file);
+    } else {
+      void copyToClipboard(text);
+    }
+  }
 }
 
+const copyToClipboard = async (text: string) => {
+  await navigator.clipboard.writeText(text)
+  toast('Copied to the clipboard')
+}
+
+const copyFileToClipboard = async (blob: Blob) => {
+  await navigator.clipboard.write([
+    new ClipboardItem({
+      [blob.type]: blob
+    })
+  ])
+  toast('Copied to the clipboard')
+}
+/*
 const onShareLink = (projectId: string, projectName: string | undefined) => {
   const projectLink = getProjectLink(projectId);
   if (navigator.share) {
@@ -345,9 +421,10 @@ const onShareLink = (projectId: string, projectName: string | undefined) => {
     onCopyLink(projectId)
   }
 }
+*/
 
-const getProjectLink = (projectId: string) => {
-  return `${window.location.origin}/newfeedback/${projectId || "ERROR"}`
+const getProjectUrl = (projectId: string) => {
+  return `${window.location.origin}/newfeedback/${projectId}`
 }
 
 const NoProjectsComponent: React.FC = () => {
@@ -401,14 +478,21 @@ const ActionIconsComponent: React.FC<{
         (
           <>
             <SingleActionIcon
-              onPress={onGenerateQr}
+              onPress={() => { void onGenerateQr(props.projectId || "-1", props.projectName || "this project") }}
               tooltipName="Generate QR"
             >
               <BiQr size={26} />
             </SingleActionIcon>
             <SingleActionIcon
               onPress={() => {
-                onShareLink(props.projectId || "-1", props.projectName || "this project")
+                void shareOrCopyToClipboard(
+                  {
+                    description: `open this link to give feedback to ${props.projectName || "this project"}`,
+                    isFile: false,
+                    text: getProjectUrl(props.projectId || "-1"),
+                    title: `What do you think about ${props.projectName || "this project"}?`
+                  }
+                )
               }}
               tooltipName="share project"
             >
@@ -435,7 +519,7 @@ const ActionIconsComponent: React.FC<{
           <BiMenu size={26} className="text-primary" />
         </label>
       }
-    </div>
+    </div >
   )
 }
 
