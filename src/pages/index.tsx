@@ -197,7 +197,10 @@ const MainPageContent: React.FC<{
       {
         (windowWidth || 0) < 768 //if we are in mobile we need the icons above the main page content 
         &&
-        <ActionIconsComponent projectId={projectsData[props.selectedProjectIndex]?.id} />
+        <ActionIconsComponent
+          projectId={projectsData[props.selectedProjectIndex]?.id}
+          areThereProjects={projectsData.length > 0}
+        />
       }
       <ProjectMainContent selectedProjectIndex={props.selectedProjectIndex} />
     </ProjectDrawerContainer>
@@ -212,6 +215,10 @@ const ProjectMainContent: React.FC<{
   if (!projectsData) {
     return <></>
   }
+  if (!projectsData.length) {
+    return <NoProjectsComponent />
+  }
+
   return (
     <>
       <div className="mb-3 flex">
@@ -222,7 +229,10 @@ const ProjectMainContent: React.FC<{
         {
           (windowWidth || 0) >= 768
             ?
-            <ActionIconsComponent projectId={projectsData[props.selectedProjectIndex]?.id} />
+            <ActionIconsComponent
+              projectId={projectsData[props.selectedProjectIndex]?.id}
+              areThereProjects={projectsData.length > 0}
+            />
             :
             <></>
         }
@@ -237,7 +247,37 @@ const ProjectMainContent: React.FC<{
     </>
   )
 }
-const ActionIconsComponent: React.FC<{ projectId: string | undefined }> = (props) => {
+
+const NoProjectsComponent: React.FC = () => {
+  return (
+    <div className="flex flex-col items-center justify-center h-full gap-4">
+      <div>
+        <h1 className="font-bold text-2xl lg:text-3xl ">You don&apos;t have any projects yet</h1>
+        <p className="text-center">Create a new project to start collecting feedback</p>
+      </div>
+      <a
+        onClick={() => {
+          setTimeout(() => {
+            const newProjectInput = document.getElementById('new-project-input') as HTMLInputElement;
+            newProjectInput.focus();
+          }, 100)
+        }}
+      >
+        <label
+          htmlFor="drawer"
+          className="cursor-pointer btn"
+        >
+          New Project
+        </label>
+      </a>
+    </div>
+  )
+}
+
+const ActionIconsComponent: React.FC<{
+  projectId: string | undefined;
+  areThereProjects: boolean;
+}> = (props) => {
   const [windowWidth] = useWindowSize()
   const isSmall = (windowWidth || 0) < 768;
   const isMedium = ((windowWidth || 0) < 1024) && ((windowWidth || 0) >= 768);
@@ -268,31 +308,38 @@ const ActionIconsComponent: React.FC<{ projectId: string | undefined }> = (props
         isMedium || isBig ? 'flex flex-row items-start justify-end ml-4 gap-1' :
           ''
     }>
-      <SingleActionIcon
-        onPress={onGenerateQr}
-        tooltipName="Generate QR"
-      >
-        <BiQr size={26} />
-      </SingleActionIcon>
-      <SingleActionIcon
-        onPress={() => { void onCopyLink() }}
-        tooltipName={isCopySuccesfull ? "copied" : "Copy Link"}
-      >
-        <BiLink size={26} />
-      </SingleActionIcon>
-      <SingleActionIcon
-        onPress={onEditProject}
-        tooltipName="Edit Project"
-      >
-        <BiEdit size={26} />
-      </SingleActionIcon>
-      <DeleteProjectActionIcon
-        tooltipName="Delete Project"
-      >
-        <label htmlFor="delete-project-modal" className="cursor-pointer">
-          <BiTrash size={26} />
-        </label>
-      </DeleteProjectActionIcon>
+      {
+        props.areThereProjects &&
+        (
+          <>
+            <SingleActionIcon
+              onPress={onGenerateQr}
+              tooltipName="Generate QR"
+            >
+              <BiQr size={26} />
+            </SingleActionIcon>
+            <SingleActionIcon
+              onPress={() => { void onCopyLink() }}
+              tooltipName={isCopySuccesfull ? "copied" : "Copy Link"}
+            >
+              <BiLink size={26} />
+            </SingleActionIcon>
+            <SingleActionIcon
+              onPress={onEditProject}
+              tooltipName="Edit Project"
+            >
+              <BiEdit size={26} />
+            </SingleActionIcon>
+            <DeleteProjectActionIcon
+              tooltipName="Delete Project"
+            >
+              <label htmlFor="delete-project-modal" className="cursor-pointer">
+                <BiTrash size={26} />
+              </label>
+            </DeleteProjectActionIcon>
+          </>
+        )
+      }
       {
         !isBig && <label htmlFor="drawer" className="cursor-pointer">
           <BiMenu size={26} className="text-primary" />
@@ -335,12 +382,6 @@ const DeleteProjectActionIcon: React.FC<{
     </div>
   )
 }
-/*
-//The button to open modal  
-<label htmlFor="delete-project-modal" className="btn">open modal</label>
-
-//Put this part before </body> tag 
-*/
 
 const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined; projectId: string | undefined; }> = (props) => {
   const {
@@ -410,6 +451,7 @@ const ProjectDrawerContainer: React.FC<{
           <div className="divider mt-2 mb-2" />
           <input
             type="text"
+            id="new-project-input"
             placeholder="New Project"
             className={`input input-bordered w-full max-w-xs ${newProjectInputHasError ? 'input-error' : ''}`}
             onKeyDown={(e) => {
@@ -424,12 +466,6 @@ const ProjectDrawerContainer: React.FC<{
           />
           <div className="divider mt-2 mb-2" />
           {
-            /*isProjectFetching || showLoading
-              ?
-              <div className="text-center mt-2">
-                <LoadingIndicator />
-              </div>
-              : */
             props.projectsData?.map((project, i) => {
               return <ProjectComponent
                 key={i}
