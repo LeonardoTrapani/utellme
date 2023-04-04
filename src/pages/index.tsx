@@ -18,7 +18,15 @@ const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
   const isSignedIn = sessionStatus === 'authenticated';
 
-  const { isLoading: isProjectsLoading, refetch: refetchProjects, data: projects } = api.projects.getAll.useQuery();
+  const {
+    isLoading: isProjectsLoading,
+    refetch: refetchProjects,
+    data: projects
+  } =
+    api.projects.getAll.useQuery(undefined, {
+      enabled: isSignedIn
+    });
+
   const { mutate: deleteProject } = api.projects.delete.useMutation({
     onSuccess: () => {
       void refetchProjects();
