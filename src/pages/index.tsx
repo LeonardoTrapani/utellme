@@ -211,6 +211,7 @@ const MainPageContent: React.FC<{
         &&
         <ActionIconsComponent
           projectId={projectsData[props.selectedProjectIndex]?.id}
+          projectName={projectsData[props.selectedProjectIndex]?.name}
           areThereProjects={projectsData.length > 0}
         />
       }
@@ -244,6 +245,7 @@ const ProjectMainContent: React.FC<{
             <ActionIconsComponent
               projectId={projectsData[props.selectedProjectIndex]?.id}
               areThereProjects={projectsData.length > 0}
+              projectName={projectsData[props.selectedProjectIndex]?.name}
             />
             :
             <></>
@@ -254,7 +256,10 @@ const ProjectMainContent: React.FC<{
           ?
           <FeedbackList feedbacks={projectsData[props.selectedProjectIndex]?.feedbacks} projectId={projectsData[props.selectedProjectIndex]?.id} />
           :
-          <NoFeedbackComponent projectId={projectsData[props.selectedProjectIndex]?.id || "-1"} />
+          <NoFeedbackComponent
+            projectId={projectsData[props.selectedProjectIndex]?.id || "-1"}
+            projectName={projectsData[props.selectedProjectIndex]?.name}
+          />
       }
     </>
   )
@@ -262,6 +267,7 @@ const ProjectMainContent: React.FC<{
 
 const NoFeedbackComponent: React.FC<{
   projectId: string;
+  projectName: string | undefined;
 }> = (props) => {
   return (
     <div className="flex flex-col items-center justify-center h-full gap-4">
@@ -269,7 +275,7 @@ const NoFeedbackComponent: React.FC<{
         <h1 className="font-bold text-2xl lg:text-3xl text-center">No feedback yet</h1>
         <p className="text-center text-lg">Share your project&apos;s link to start collecting feedback</p>
         <div className="divider" />
-        <ProjectInstructions projectId={props.projectId} />
+        <ProjectInstructions projectId={props.projectId} projectName={props.projectName} />
       </div>
     </div>
   )
@@ -277,6 +283,7 @@ const NoFeedbackComponent: React.FC<{
 
 const ProjectInstructions: React.FC<{
   projectId: string;
+  projectName: string | undefined
 }> = (props) => {
   return (
     <div className="flex justify-center mt-4 items-center flex-col md:flex-row gap-2">
@@ -297,7 +304,7 @@ const ProjectInstructions: React.FC<{
         </SingleActionIcon>
       </ProjectInstructionsRow>
       <ProjectInstructionsRow
-        onPress={() => { onShareLink() }}
+        onPress={() => { onShareLink(props.projectId, props.projectName) }}
         instructionName="Share Link"
       >
         <SingleActionIcon>
@@ -328,14 +335,25 @@ const onGenerateQr = () => {
   console.log('generate qr')
 }
 
-const onCopyLink = async (projectId: string) => {
-  console.log("copying")
-  const projectLink = `https://tell-me-leonardotrapani.vercel.app/newfeedback/${projectId || "ERROR"}`
-  await navigator.clipboard.writeText(projectLink)
+const onCopyLink = (projectId: string) => {
+  const projectLink = getProjectLink(projectId);
+  void navigator.clipboard.writeText(projectLink);
 }
 
-const onShareLink = () => {
-  console.log("sharing")
+const onShareLink = (projectId: string, projectName: string | undefined) => {
+  const projectLink = getProjectLink(projectId);
+  if (navigator.share) {
+    void navigator.share({
+      title: `What do you think about ${projectName || "this project"}?`,
+      url: projectLink,
+    })
+  } else {
+    onCopyLink(projectId)
+  }
+}
+
+const getProjectLink = (projectId: string) => {
+  return `https://tell-me-leonardotrapani.vercel.app/newfeedback/${projectId || "ERROR"}`
 }
 
 const NoProjectsComponent: React.FC = () => {
@@ -367,6 +385,7 @@ const NoProjectsComponent: React.FC = () => {
 const ActionIconsComponent: React.FC<{
   projectId: string | undefined;
   areThereProjects: boolean;
+  projectName: string | undefined;
 }> = (props) => {
   const [windowWidth] = useWindowSize()
   const isSmall = (windowWidth || 0) < 768;
@@ -410,7 +429,7 @@ const ActionIconsComponent: React.FC<{
             </SingleActionIcon>
             <SingleActionIcon
               onPress={() => {
-                onShareLink()
+                onShareLink(props.projectId || "-1", props.projectName || "this project")
               }}
               tooltipName="share project"
             >
