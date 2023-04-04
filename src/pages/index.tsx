@@ -343,8 +343,9 @@ const onGenerateQr = async (projectId: string, projectName: string) => {
       { type: 'image/png' },
     )
     await shareOrCopyToClipboard({
-      title: `${projectName || "My project"}'s QR-Code!`,
+      title: `${projectName || "My project"}'s QR-Code`,
       isFile: true,
+      fileName: `${projectName || "My project"}'s QR-Code`,
       description: `Scan this QR-Code to give feedback about ${projectName || "my project"}!`,
       text: qrImage
     })
@@ -388,7 +389,7 @@ const shareOrCopyToClipboard = async ({
   } else {
     if (isFile) {
       const blob = await (await fetch(text)).blob()
-      const file = new File([blob], (fileName || 'projectQr.png'), { type: blob.type })
+      const file = new File([blob], (fileName || 'project Qr.png'), { type: blob.type })
       void copyFileToClipboard(file);
     } else {
       void copyToClipboard(text);
