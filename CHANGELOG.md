@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.6](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.5...v0.1.6) (2023-04-04)
+
+
+### Features
+
+* login page ([0a1b541](https://github.com/LeonardoTrapani/tell-me/commit/0a1b541a7e39f843bdf218497042c89f4e4348d6))
+* modal state resets when changing project ([886a7d1](https://github.com/LeonardoTrapani/tell-me/commit/886a7d10acd26f129cb920ff58af00956032d06a))
+* no feedback page + instructions to get feedback ([5544a91](https://github.com/LeonardoTrapani/tell-me/commit/5544a919e4d3a281535294d593307a05af53f5f6))
+* no project message and input focus ([d970110](https://github.com/LeonardoTrapani/tell-me/commit/d97011008c9c0922b38c61f25ec09e59d98e2466))
+* removed project loading ([1e093a3](https://github.com/LeonardoTrapani/tell-me/commit/1e093a30b4f86854af50fb860d7d448ace8b59fb))
+* reset modal state ([7e1d311](https://github.com/LeonardoTrapani/tell-me/commit/7e1d31107637759744b0924bdacd52c95df64ccf))
+* share action ([d972114](https://github.com/LeonardoTrapani/tell-me/commit/d972114823e1c990ccf4e813b46dd25f3fb745ce))
+* share functionality ([6e99c2b](https://github.com/LeonardoTrapani/tell-me/commit/6e99c2bb17c2900c74c5499a7b1088ff5d0aba20))
+* toast clipboard functionalityg ([5a212bc](https://github.com/LeonardoTrapani/tell-me/commit/5a212bc8a26c4fc1908aa6ebe0c0aed0994f554e))
+
+
+### Bug Fixes
+
+* projects not fetched in login screen ([a127ae3](https://github.com/LeonardoTrapani/tell-me/commit/a127ae35cc9d1686de3cb45f91250ae45275a969))
+* removed copy action button and instruction button ([91e1963](https://github.com/LeonardoTrapani/tell-me/commit/91e19635a9508f09e750e5000917c46bff720cf4))
+
 ### [0.1.5](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.4...v0.1.5) (2023-04-03)
 
 
