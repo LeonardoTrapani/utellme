@@ -3,7 +3,7 @@ import Head from "next/head";
 
 import { signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs"
 import type { Feedback, Project } from "@prisma/client";
@@ -16,6 +16,7 @@ import useWindowSize from "~/utils/hooks";
 import LoginPage from "./signin";
 import { toast } from "react-hot-toast";
 import QRCode from 'qrcode'
+import Input from "~/components/Input";
 
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -37,12 +38,33 @@ const Home: NextPage = () => {
     }
   });
 
+  const { mutate: editProject } = api.projects.edit.useMutation({
+    onSuccess: () => {
+      void refetchProjects();
+    }
+  })
+
   const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
 
   const [deleteModalInputValue, setDeleteModalInputValue] = useState('');
-  const [modalHasError, setModalHasError] = useState(false);
-  const resetModalState = () => {
-    setModalHasError(false);
+  const [deleteModalHasError, setDeleteModalHasError] = useState(false);
+
+  const [editProjectNameValue, setEditProjectNameValue] = useState('');
+  const [editProjectDescriptionValue, setEditProjectDescriptionValue] = useState('');
+  const [editProjectNameHasError, setEditProjectNameHasError] = useState(false);
+
+  useEffect(() => {
+    setEditProjectNameValue(projects?.[selectedProjectIndex]?.name || '');
+    setEditProjectDescriptionValue(projects?.[selectedProjectIndex]?.description || '');
+  }, [projects, selectedProjectIndex])
+
+  const resetEditModalState = () => {
+    setEditProjectNameHasError(false);
+    setEditProjectNameValue('');
+    setEditProjectDescriptionValue('');
+  }
+  const resetDeleteModalState = () => {
+    setDeleteModalHasError(false);
     setDeleteModalInputValue('');
   }
 
@@ -54,6 +76,19 @@ const Home: NextPage = () => {
       projectId: currentProjectId
     });
     const element = document.getElementById('delete-project-modal') as HTMLInputElement;
+    element.checked = false;
+  }
+
+  const projectEditHandler = () => {
+    if (!projects) return;
+    const currentProjectId = projects[selectedProjectIndex]?.id;
+    if (!currentProjectId) return;
+    void editProject({
+      projectId: currentProjectId,
+      newName: editProjectNameValue,
+      newDescription: editProjectDescriptionValue,
+    });
+    const element = document.getElementById('edit-project-modal') as HTMLInputElement;
     element.checked = false;
   }
 
@@ -71,21 +106,34 @@ const Home: NextPage = () => {
           </div> :
           isSignedIn ? (
             <>
-              <DeleteProjectModal
-                onDelete={projectDeleteHandler}
-                projectTitle={projects?.[selectedProjectIndex]?.name}
-                modalHasError={modalHasError}
-                setModalHasError={setModalHasError}
-                resetModalState={resetModalState}
-                inputValue={deleteModalInputValue}
-                setInputValue={setDeleteModalInputValue}
-              />
               <MainPageContent
                 setSelectedProjectIndex={(i: number) => {
                   setSelectedProjectIndex(i);
-                  resetModalState();
+                  resetDeleteModalState();
+                  resetEditModalState();
                 }}
                 selectedProjectIndex={selectedProjectIndex}
+              />
+              <DeleteProjectModal
+                onDelete={projectDeleteHandler}
+                projectTitle={projects?.[selectedProjectIndex]?.name}
+                modalHasError={deleteModalHasError}
+                setModalHasError={setDeleteModalHasError}
+                resetModalState={resetDeleteModalState}
+                inputValue={deleteModalInputValue}
+                setInputValue={setDeleteModalInputValue}
+              />
+              <EditProjectModal
+                projectName={projects?.[selectedProjectIndex]?.name || 'Project name'}
+                projectDescription={projects?.[selectedProjectIndex]?.description || 'Project description'}
+                resetModalState={resetEditModalState}
+                setDescriptionInputValue={setEditProjectDescriptionValue}
+                setNameInputValue={setEditProjectNameValue}
+                nameInputValue={editProjectNameValue}
+                descriptionInputValue={editProjectDescriptionValue}
+                onEdit={projectEditHandler}
+                editProjectNameHasError={editProjectNameHasError}
+                setNameInputHasError={(value) => { setEditProjectNameHasError(value) }}
               />
             </>
           )
@@ -108,6 +156,7 @@ const DeleteProjectModal: React.FC<{
   inputValue: string;
   setInputValue: (value: string) => void;
 }> = (props) => {
+
   const deleteHandler = (updatedValue?: string) => {
     if (!props.projectTitle) return;
     const value = updatedValue || props.inputValue;
@@ -170,16 +219,84 @@ const DeleteProjectModal: React.FC<{
   )
 }
 
+const EditProjectModal: React.FC<{
+  resetModalState: () => void;
+  projectDescription: string;
+  projectName: string;
+  setDescriptionInputValue: (value: string) => void;
+  setNameInputValue: (value: string) => void;
+  descriptionInputValue: string;
+  nameInputValue: string;
+  onEdit: () => void;
+  editProjectNameHasError: boolean;
+  setNameInputHasError: (hasError: boolean) => void;
+}> = (props) => {
+  const editHandler = () => {
+    if (props.nameInputValue.length < 1) {
+      props.setNameInputHasError(true)
+      return;
+    }
+    props.onEdit();
+  }
+
+  return (
+    <>
+      <input type="checkbox" id="edit-project-modal" className="modal-toggle" />
+      <label htmlFor="edit-project-modal" className="modal cursor-pointer">
+        <label className="modal-box relative" htmlFor="">
+          <div className="form-control gap-4">
+            <Input
+              name="Name"
+              placeholder={props.projectName}
+              onChange={(value) => {
+                props.setNameInputHasError(false)
+                props.setNameInputValue(value);
+              }}
+              value={props.nameInputValue}
+              isError={props.editProjectNameHasError}
+            />
+            <textarea
+              placeholder={props.projectDescription}
+              className={`mt-2 textarea textarea-bordered textarea-md w-full placeholder:text-gray-500`}
+              onChange={(e) => props.setDescriptionInputValue(e.target.value)}
+              rows={6}
+              value={props.descriptionInputValue}
+            />
+          </div>
+          <div className="modal-action">
+            <ModalActionButton
+              modalId="edit-project-modal"
+              onClick={props.resetModalState}
+            >
+              No
+            </ModalActionButton>
+            <ModalActionButton
+              modalId="edit-project-modal"
+              isPrimary
+              onClick={() => editHandler()}
+              disableClose
+            >
+              Confirm
+            </ModalActionButton>
+          </div>
+        </label>
+      </label>
+    </>
+  )
+}
+
 const ModalActionButton: React.FC<{
   modalId: string;
   children: React.ReactNode;
   isRed?: boolean;
   onClick?: () => void;
   disableClose?: boolean;
+  isPrimary?: boolean;
 }> = (props) => {
   return (
     <a onClick={props.onClick}>
-      <label htmlFor={!props.disableClose ? props.modalId : 'you are not closing'} className={`btn ${props.isRed ? 'btn-error' : ''}`}>
+      <label htmlFor={!props.disableClose ? props.modalId : 'you are not closing'}
+        className={`btn ${props.isPrimary ? 'btn-primary' : ''} ${props.isRed ? 'btn-error' : ''}`}>
         {props.children}
       </label>
     </a>
@@ -225,13 +342,42 @@ const MainPageContent: React.FC<{
 const ProjectMainContent: React.FC<{
   selectedProjectIndex: number;
 }> = (props) => {
-  const { data: projectsData } = api.projects.getAll.useQuery();
+  const { data: projectsData, refetch: refetchProjects } = api.projects.getAll.useQuery();
+  const { mutate: editDescription } = api.projects.edit.useMutation({
+    onSuccess: () => {
+      void refetchProjects()
+    }
+  })
+
   const [windowWidth] = useWindowSize()
   if (!projectsData) {
     return <></>
   }
+  const editDescriptionHandler = (newDescription: string) => {
+    editDescription({
+      newDescription,
+      projectId: projectsData[props.selectedProjectIndex]?.id || "-1"
+    });
+  }
+
   if (!projectsData.length) {
-    return <NoProjectsComponent />
+    return (
+      <>
+        {
+
+          (windowWidth || 0) >= 768
+            ?
+            <ActionIconsComponent
+              projectId={projectsData[props.selectedProjectIndex]?.id}
+              areThereProjects={projectsData.length > 0}
+              projectName={projectsData[props.selectedProjectIndex]?.name}
+            />
+            :
+            <></>
+        }
+        <NoProjectsComponent />
+      </>
+    )
   }
 
   return (
@@ -239,7 +385,12 @@ const ProjectMainContent: React.FC<{
       <div className="mb-3 flex">
         <div className="grow">
           <h1 className="text-3xl font-bold">{projectsData[props.selectedProjectIndex]?.name}</h1>
-          <h3 className="italic">{projectsData[props.selectedProjectIndex]?.description}</h3>
+          {
+            <DescriptionOrAddDescriptionComponent
+              projectDescription={projectsData[props.selectedProjectIndex]?.description}
+              editDescription={editDescriptionHandler}
+            />
+          }
         </div>
         {
           (windowWidth || 0) >= 768
@@ -254,19 +405,76 @@ const ProjectMainContent: React.FC<{
         }
       </div>
       {
-        (!!projectsData && projectsData[props.selectedProjectIndex]?.feedbacks.length)
-          ?
-          <FeedbackList feedbacks={projectsData[props.selectedProjectIndex]?.feedbacks} projectId={projectsData[props.selectedProjectIndex]?.id} />
-          :
-          <NoFeedbackComponent
-            projectId={projectsData[props.selectedProjectIndex]?.id || "-1"}
-            projectName={projectsData[props.selectedProjectIndex]?.name}
-          />
+        (
+          (!!projectsData && projectsData[props.selectedProjectIndex]?.feedbacks.length)
+            ?
+            <FeedbackList feedbacks={projectsData[props.selectedProjectIndex]?.feedbacks} projectId={projectsData[props.selectedProjectIndex]?.id} />
+            :
+            <NoFeedbackComponent
+              projectId={projectsData[props.selectedProjectIndex]?.id || "-1"}
+              projectName={projectsData[props.selectedProjectIndex]?.name}
+            />
+        )
       }
     </>
   )
 }
 
+const DescriptionOrAddDescriptionComponent: React.FC<{
+  projectDescription: string | null | undefined;
+  editDescription: (value: string) => void;
+}> = (props) => {
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const [value, setValue] = useState(props.projectDescription || "");
+  useEffect(() => {
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = "0px"
+      // We need to reset the height momentarily to get the correct scrollHeight for the textarea
+      textAreaRef.current.style.height = "0px";
+      const scrollHeight = textAreaRef.current.scrollHeight;
+
+      // We then set the height directly, outside of the render loop
+      // Trying to set this with state or a ref will product an incorrect value.
+      if (scrollHeight < 120) {
+        textAreaRef.current.style.height = `${scrollHeight}` + "px";
+      } else {
+        textAreaRef.current.style.height = "120px";
+      }
+    }
+  }, [textAreaRef, value])
+
+  if (props.projectDescription) {
+    return (
+      <h3 className="italic">{props.projectDescription}</h3>
+    )
+  }
+
+  return (
+    <textarea
+      placeholder="Add a description"
+      className={
+        `
+        input input-ghost w-full p-0 m-0 outline-none 
+        b-0 outline-0 focus:outline-0 h-6 placeholder-gray-500 
+        italic none resize-none
+        `
+      }
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault()
+          setValue('')
+          props.editDescription(e.currentTarget.value)
+          return;
+        }
+      }}
+      onChange={(e) => {
+        setValue(e.currentTarget.value)
+      }}
+      rows={1}
+      ref={textAreaRef}
+    />
+  )
+}
 const NoFeedbackComponent: React.FC<{
   projectId: string;
   projectName: string | undefined;
@@ -478,10 +686,6 @@ const ActionIconsComponent: React.FC<{
   const isMedium = ((windowWidth || 0) < 1024) && ((windowWidth || 0) >= 768);
   const isBig = (windowWidth || 0) >= 1024;
 
-  const onEditProject = () => {
-    console.log('edit project')
-  }
-
   return (
     <div className={
       isSmall ? 'flex flex-row justify-end items-center gap-1' :
@@ -514,10 +718,11 @@ const ActionIconsComponent: React.FC<{
               <BiShareAlt size={26} />
             </SingleActionIcon>
             <SingleActionIcon
-              onPress={onEditProject}
               tooltipName="Edit Project"
             >
-              <BiEdit size={26} />
+              <label htmlFor="edit-project-modal" className="cursor-pointer">
+                <BiEdit size={26} />
+              </label>
             </SingleActionIcon>
             <DeleteProjectActionIcon
               tooltipName="Delete Project"

@@ -2,6 +2,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import Input from "~/components/Input";
 import LoadingIndicator from "~/components/LoadingIndicator";
 import { SelectRatingComponent, } from "~/components/RatingComponent";
 import { TellMeComponent } from "~/components/TellMeComponent";
@@ -144,12 +145,13 @@ const MainGetFeedbackContent: React.FC<{
           <textarea placeholder={textAreaPlaceHolder}
             className={`mt-2 textarea textarea-bordered textarea-md w-full placeholder:text-gray-500 ${props.contentHasError ? "border-red-400 textarea-error" : ""}}`}
             onChange={(e) => props.setFeedbackContent(e.target.value)}
+            rows={4}
           />
           <div className="grid gap-4 md:grid-cols-2">
-            <FeedbackInput name="Title" placeholder={`My opinion about ${props.projectName || "this project"}`}
+            <Input name="Title" placeholder={`My opinion about ${props.projectName || "this project"}`}
               onChange={props.setFeedbackTitle}
             />
-            <FeedbackInput name="Author" placeholder={"My Name"}
+            <Input name="Author" placeholder={"My Name"}
               onChange={props.setFeedbackAuthor}
             />
           </div>
@@ -175,28 +177,6 @@ const GetFeedbackTitle: React.FC<{
     </div>);
 }
 
-
-const FeedbackInput: React.FC<{
-  name: string;
-  placeholder: string;
-  optional?: boolean;
-  onChange: (value: string) => void;
-}> = (props) => {
-  return (
-    <div>
-      <label className="flex justify-end text-end text-sm italic text-gray-500 mr-2 select-none">optional</label>
-      <label className="input-group">
-        <span>{props.name}</span>
-        <input
-          type="text"
-          placeholder={props.placeholder}
-          className="input input-bordered placeholder:text-gray-500 w-full"
-          onChange={(e) => props.onChange(e.target.value)}
-        />
-      </label>
-    </div>
-  )
-}
 
 const FeedbackCompletedPage = () => {
   return (

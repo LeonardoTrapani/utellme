@@ -55,14 +55,14 @@ export const projectsRouter = createTRPCRouter({
   }),
 
   edit: protectedProcedure.input(z.object({
-    newName: z.string().nullish(),
+    newName: z.string().min(1).nullish(),
     newDescription: z.string().nullish(),
     projectId: z.string(),
   })).mutation(async ({ ctx, input }) => {
     return await ctx.prisma.project.updateMany({
       data: {
         name: input.newName || undefined,
-        description: input.newDescription || undefined,
+        description: input.newDescription,
       },
       where: {
         id: input.projectId,
