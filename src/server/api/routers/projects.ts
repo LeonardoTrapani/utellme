@@ -62,7 +62,7 @@ export const projectsRouter = createTRPCRouter({
     return await ctx.prisma.project.updateMany({
       data: {
         name: input.newName || undefined,
-        description: input.newDescription || undefined,
+        description: input.newDescription,
       },
       where: {
         id: input.projectId,
