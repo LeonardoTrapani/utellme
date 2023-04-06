@@ -348,7 +348,23 @@ const ProjectMainContent: React.FC<{
     return <></>
   }
   if (!projectsData.length) {
-    return <NoProjectsComponent />
+    return (
+      <>
+        {
+
+          (windowWidth || 0) >= 768
+            ?
+            <ActionIconsComponent
+              projectId={projectsData[props.selectedProjectIndex]?.id}
+              areThereProjects={projectsData.length > 0}
+              projectName={projectsData[props.selectedProjectIndex]?.name}
+            />
+            :
+            <></>
+        }
+        <NoProjectsComponent />
+      </>
+    )
   }
 
   return (
