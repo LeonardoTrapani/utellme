@@ -373,18 +373,7 @@ const shareOrCopyToClipboard = async ({
   if (isFile) {
     const blob = await (await fetch(text)).blob()
     const file = new File([blob], (fileName || 'projectQr.png'), { type: blob.type })
-    const shareData: ShareData = {
-      files: [
-        file,
-      ],
-      title,
-      text: description
-    };
-    if (navigator.share && navigator.canShare(shareData)) {
-      void navigator.share(shareData)
-    } else {
-      downloadFile(fileName || 'projectQr.png', file)
-    }
+    downloadFile(fileName || 'projectQr.png', file)
     return;
   }
   const shareData: ShareData = {
