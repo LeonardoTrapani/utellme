@@ -616,20 +616,26 @@ const copyFileToClipboard = async (blob: Blob) => {
 }
 */
 
-
 const downloadFile = (fileName: string, blob: Blob) => {
-  const a = document.createElement('a');
-  a.download = fileName;
-  a.style.display = 'none';
-  a.href = URL.createObjectURL(blob);
-  a.addEventListener('click', () => {
-    setTimeout(() => {
-      URL.revokeObjectURL(a.href);
-      a.remove();
-    }, 1000)
-  });
-  document.body.append(a);
-  a.click();
+  const url = window.URL.createObjectURL(
+    new Blob([blob]),
+  );
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute(
+    'download',
+    `${fileName}`,
+  );
+
+  // Append to html link element page
+  document.body.appendChild(link);
+
+  // Start download
+  link.click();
+  toast("File downloaded!")
+
+  // Clean up and remove the link
+  link.parentNode?.removeChild(link);
 }
 
 /*
@@ -697,7 +703,9 @@ const ActionIconsComponent: React.FC<{
         (
           <>
             <SingleActionIcon
-              onPress={() => { void onGenerateQr(props.projectId || "-1", props.projectName || "this project") }}
+              onPress={() => {
+                void onGenerateQr(props.projectId || "-1", props.projectName || "this project");
+              }}
               tooltipName="Generate QR"
             >
               <BiQr size={26} />
