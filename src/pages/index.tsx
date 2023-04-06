@@ -3,7 +3,7 @@ import Head from "next/head";
 
 import { signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs"
 import type { Feedback, Project } from "@prisma/client";
@@ -424,21 +424,54 @@ const DescriptionOrAddDescriptionComponent: React.FC<{
   projectDescription: string | null | undefined;
   editDescription: (value: string) => void;
 }> = (props) => {
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const [value, setValue] = useState(props.projectDescription || "");
+  useEffect(() => {
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = "0px"
+      // We need to reset the height momentarily to get the correct scrollHeight for the textarea
+      textAreaRef.current.style.height = "0px";
+      const scrollHeight = textAreaRef.current.scrollHeight;
+
+      // We then set the height directly, outside of the render loop
+      // Trying to set this with state or a ref will product an incorrect value.
+      if (scrollHeight < 120) {
+        textAreaRef.current.style.height = `${scrollHeight}` + "px";
+      } else {
+        textAreaRef.current.style.height = "120px";
+      }
+    }
+  }, [textAreaRef, value])
+
   if (props.projectDescription) {
     return (
       <h3 className="italic">{props.projectDescription}</h3>
     )
   }
+
   return (
-    <input
-      type="text"
+    <textarea
       placeholder="Add a description"
-      className="input input-ghost w-full p-0 m-0 outline-none b-0 outline-0 focus:outline-0 h-6 placeholder-gray-500"
+      className={
+        `
+        input input-ghost w-full p-0 m-0 outline-none 
+        b-0 outline-0 focus:outline-0 h-6 placeholder-gray-500 
+        italic none resize-none
+        `
+      }
       onKeyDown={(e) => {
         if (e.key === 'Enter') {
+          e.preventDefault()
+          setValue('')
           props.editDescription(e.currentTarget.value)
+          return;
         }
       }}
+      onChange={(e) => {
+        setValue(e.currentTarget.value)
+      }}
+      rows={1}
+      ref={textAreaRef}
     />
   )
 }
