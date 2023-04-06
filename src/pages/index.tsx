@@ -370,30 +370,36 @@ const shareOrCopyToClipboard = async ({
   description: string
   fileName?: string;
 }) => {
-  if (navigator.share) {
-    if (isFile) {
-      const blob = await (await fetch(text)).blob()
-      const file = new File([blob], (fileName || 'projectQr.png'), { type: blob.type })
-      void navigator.share({
-        title,
-        text: description,
-        files: [file],
-      })
+  if (isFile) {
+    const blob = await (await fetch(text)).blob()
+    const file = new File([blob], (fileName || 'projectQr.png'), { type: blob.type })
+    const shareData: ShareData = {
+      files: [
+        file,
+      ],
+      title,
+      text: description
+    };
+    if (navigator.share && navigator.canShare(shareData)) {
+      void navigator.share(shareData)
     } else {
-      void navigator.share({
-        title,
-        url: text,
-        text: description
-      })
+      downloadFile(fileName || 'projectQr.png', file)
     }
+    return;
+  }
+  const shareData: ShareData = {
+    title,
+    url: text,
+    text: description
+  };
+  if (navigator.share && navigator.canShare(shareData)) {
+    void navigator.share({
+      title,
+      url: text,
+      text: description
+    })
   } else {
-    if (isFile) {
-      const blob = await (await fetch(text)).blob()
-      const file = new File([blob], (fileName || 'project Qr.png'), { type: blob.type })
-      void copyFileToClipboard(file);
-    } else {
-      void copyToClipboard(text);
-    }
+    void copyToClipboard(text);
   }
 }
 
@@ -402,6 +408,7 @@ const copyToClipboard = async (text: string) => {
   toast('Copied to the clipboard')
 }
 
+/*
 const copyFileToClipboard = async (blob: Blob) => {
   await navigator.clipboard.write([
     new ClipboardItem({
@@ -410,6 +417,24 @@ const copyFileToClipboard = async (blob: Blob) => {
   ])
   toast('Copied to the clipboard')
 }
+*/
+
+
+const downloadFile = (fileName: string, blob: Blob) => {
+  const a = document.createElement('a');
+  a.download = fileName;
+  a.style.display = 'none';
+  a.href = URL.createObjectURL(blob);
+  a.addEventListener('click', () => {
+    setTimeout(() => {
+      URL.revokeObjectURL(a.href);
+      a.remove();
+    }, 1000)
+  });
+  document.body.append(a);
+  a.click();
+}
+
 /*
 const onShareLink = (projectId: string, projectName: string | undefined) => {
   const projectLink = getProjectLink(projectId);
