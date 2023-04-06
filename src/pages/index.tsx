@@ -38,6 +38,12 @@ const Home: NextPage = () => {
     }
   });
 
+  const { mutate: editProject } = api.projects.edit.useMutation({
+    onSuccess: () => {
+      void refetchProjects();
+    }
+  })
+
   const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
 
   const [deleteModalInputValue, setDeleteModalInputValue] = useState('');
@@ -45,12 +51,15 @@ const Home: NextPage = () => {
 
   const [editProjectNameValue, setEditProjectNameValue] = useState('');
   const [editProjectDescriptionValue, setEditProjectDescriptionValue] = useState('');
+  const [editProjectNameHasError, setEditProjectNameHasError] = useState(false);
+
   useEffect(() => {
     setEditProjectNameValue(projects?.[selectedProjectIndex]?.name || '');
     setEditProjectDescriptionValue(projects?.[selectedProjectIndex]?.description || '');
   }, [projects, selectedProjectIndex])
 
   const resetEditModalState = () => {
+    setEditProjectNameHasError(false);
     setEditProjectNameValue('');
     setEditProjectDescriptionValue('');
   }
@@ -67,6 +76,19 @@ const Home: NextPage = () => {
       projectId: currentProjectId
     });
     const element = document.getElementById('delete-project-modal') as HTMLInputElement;
+    element.checked = false;
+  }
+
+  const projectEditHandler = () => {
+    if (!projects) return;
+    const currentProjectId = projects[selectedProjectIndex]?.id;
+    if (!currentProjectId) return;
+    void editProject({
+      projectId: currentProjectId,
+      newName: editProjectNameValue,
+      newDescription: editProjectDescriptionValue,
+    });
+    const element = document.getElementById('edit-project-modal') as HTMLInputElement;
     element.checked = false;
   }
 
@@ -94,18 +116,22 @@ const Home: NextPage = () => {
                 setInputValue={setDeleteModalInputValue}
               />
               <EditProjectModal
-                projectName={projects?.[selectedProjectIndex]?.name || 'project name'}
-                projectDescription={projects?.[selectedProjectIndex]?.description || 'project description'}
+                projectName={projects?.[selectedProjectIndex]?.name || 'Project name'}
+                projectDescription={projects?.[selectedProjectIndex]?.description || 'Project description'}
                 resetModalState={resetEditModalState}
-                setDescriptionValue={setEditProjectDescriptionValue}
-                setNameValue={setEditProjectNameValue}
-                projectNameValue={editProjectNameValue}
-                projectDescriptionValue={editProjectDescriptionValue}
+                setDescriptionInputValue={setEditProjectDescriptionValue}
+                setNameInputValue={setEditProjectNameValue}
+                nameInputValue={editProjectNameValue}
+                descriptionInputValue={editProjectDescriptionValue}
+                onEdit={projectEditHandler}
+                editProjectNameHasError={editProjectNameHasError}
+                setNameInputHasError={(value) => { setEditProjectNameHasError(value) }}
               />
               <MainPageContent
                 setSelectedProjectIndex={(i: number) => {
                   setSelectedProjectIndex(i);
                   resetDeleteModalState();
+                  resetEditModalState();
                 }}
                 selectedProjectIndex={selectedProjectIndex}
               />
@@ -130,6 +156,7 @@ const DeleteProjectModal: React.FC<{
   inputValue: string;
   setInputValue: (value: string) => void;
 }> = (props) => {
+
   const deleteHandler = (updatedValue?: string) => {
     if (!props.projectTitle) return;
     const value = updatedValue || props.inputValue;
@@ -196,13 +223,20 @@ const EditProjectModal: React.FC<{
   resetModalState: () => void;
   projectDescription: string;
   projectName: string;
-  setDescriptionValue: (value: string) => void;
-  setNameValue: (value: string) => void;
-  projectDescriptionValue: string;
-  projectNameValue: string;
+  setDescriptionInputValue: (value: string) => void;
+  setNameInputValue: (value: string) => void;
+  descriptionInputValue: string;
+  nameInputValue: string;
+  onEdit: () => void;
+  editProjectNameHasError: boolean;
+  setNameInputHasError: (hasError: boolean) => void;
 }> = (props) => {
   const editHandler = () => {
-    console.log("submitting the edit")
+    if (props.nameInputValue.length < 1) {
+      props.setNameInputHasError(true)
+      return;
+    }
+    props.onEdit();
   }
 
   return (
@@ -214,15 +248,19 @@ const EditProjectModal: React.FC<{
             <Input
               name="Name"
               placeholder={props.projectName}
-              onChange={props.setNameValue}
-              value={props.projectNameValue}
+              onChange={(value) => {
+                props.setNameInputHasError(false)
+                props.setNameInputValue(value);
+              }}
+              value={props.nameInputValue}
+              isError={props.editProjectNameHasError}
             />
             <textarea
               placeholder={props.projectDescription}
               className={`mt-2 textarea textarea-bordered textarea-md w-full placeholder:text-gray-500`}
-              onChange={(e) => props.setDescriptionValue(e.target.value)}
+              onChange={(e) => props.setDescriptionInputValue(e.target.value)}
               rows={6}
-              value={props.projectDescriptionValue}
+              value={props.descriptionInputValue}
             />
           </div>
           <div className="modal-action">

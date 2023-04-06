@@ -6,6 +6,8 @@ const Input: React.FC<{
   optional?: boolean;
   onChange: (value: string) => void;
   value?: string;
+  isError?: boolean;
+  isDisabled?: boolean;
 }> = (props) => {
   return (
     <div>
@@ -15,9 +17,10 @@ const Input: React.FC<{
         <input
           type="text"
           placeholder={props.placeholder}
-          className="input input-bordered placeholder:text-gray-500 w-full"
+          className={`input input-bordered placeholder:text-gray-500 w-full ${props.isError ? "input-error" : ""}`}
           onChange={(e) => props.onChange(e.target.value)}
           value={props.value}
+          disabled={props.isDisabled}
         />
       </label>
     </div>

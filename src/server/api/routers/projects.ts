@@ -55,7 +55,7 @@ export const projectsRouter = createTRPCRouter({
   }),
 
   edit: protectedProcedure.input(z.object({
-    newName: z.string().nullish(),
+    newName: z.string().min(1).nullish(),
     newDescription: z.string().nullish(),
     projectId: z.string(),
   })).mutation(async ({ ctx, input }) => {
