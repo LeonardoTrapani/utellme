@@ -3,7 +3,7 @@ import Head from "next/head";
 
 import { signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs"
 import type { Feedback, Project } from "@prisma/client";
@@ -16,6 +16,7 @@ import useWindowSize from "~/utils/hooks";
 import LoginPage from "./signin";
 import { toast } from "react-hot-toast";
 import QRCode from 'qrcode'
+import Input from "~/components/Input";
 
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -40,9 +41,21 @@ const Home: NextPage = () => {
   const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
 
   const [deleteModalInputValue, setDeleteModalInputValue] = useState('');
-  const [modalHasError, setModalHasError] = useState(false);
-  const resetModalState = () => {
-    setModalHasError(false);
+  const [deleteModalHasError, setDeleteModalHasError] = useState(false);
+
+  const [editProjectNameValue, setEditProjectNameValue] = useState('');
+  const [editProjectDescriptionValue, setEditProjectDescriptionValue] = useState('');
+  useEffect(() => {
+    setEditProjectNameValue(projects?.[selectedProjectIndex]?.name || '');
+    setEditProjectDescriptionValue(projects?.[selectedProjectIndex]?.description || '');
+  }, [projects, selectedProjectIndex])
+
+  const resetEditModalState = () => {
+    setEditProjectNameValue('');
+    setEditProjectDescriptionValue('');
+  }
+  const resetDeleteModalState = () => {
+    setDeleteModalHasError(false);
     setDeleteModalInputValue('');
   }
 
@@ -74,16 +87,25 @@ const Home: NextPage = () => {
               <DeleteProjectModal
                 onDelete={projectDeleteHandler}
                 projectTitle={projects?.[selectedProjectIndex]?.name}
-                modalHasError={modalHasError}
-                setModalHasError={setModalHasError}
-                resetModalState={resetModalState}
+                modalHasError={deleteModalHasError}
+                setModalHasError={setDeleteModalHasError}
+                resetModalState={resetDeleteModalState}
                 inputValue={deleteModalInputValue}
                 setInputValue={setDeleteModalInputValue}
+              />
+              <EditProjectModal
+                projectName={projects?.[selectedProjectIndex]?.name || 'project name'}
+                projectDescription={projects?.[selectedProjectIndex]?.description || 'project description'}
+                resetModalState={resetEditModalState}
+                setDescriptionValue={setEditProjectDescriptionValue}
+                setNameValue={setEditProjectNameValue}
+                projectNameValue={editProjectNameValue}
+                projectDescriptionValue={editProjectDescriptionValue}
               />
               <MainPageContent
                 setSelectedProjectIndex={(i: number) => {
                   setSelectedProjectIndex(i);
-                  resetModalState();
+                  resetDeleteModalState();
                 }}
                 selectedProjectIndex={selectedProjectIndex}
               />
@@ -170,16 +192,73 @@ const DeleteProjectModal: React.FC<{
   )
 }
 
+const EditProjectModal: React.FC<{
+  resetModalState: () => void;
+  projectDescription: string;
+  projectName: string;
+  setDescriptionValue: (value: string) => void;
+  setNameValue: (value: string) => void;
+  projectDescriptionValue: string;
+  projectNameValue: string;
+}> = (props) => {
+  const editHandler = () => {
+    console.log("submitting the edit")
+  }
+
+  return (
+    <>
+      <input type="checkbox" id="edit-project-modal" className="modal-toggle" />
+      <label htmlFor="edit-project-modal" className="modal cursor-pointer">
+        <label className="modal-box relative" htmlFor="">
+          <div className="form-control gap-4">
+            <Input
+              name="Name"
+              placeholder={props.projectName}
+              onChange={props.setNameValue}
+              value={props.projectNameValue}
+            />
+            <textarea
+              placeholder={props.projectDescription}
+              className={`mt-2 textarea textarea-bordered textarea-md w-full placeholder:text-gray-500`}
+              onChange={(e) => props.setDescriptionValue(e.target.value)}
+              rows={6}
+              value={props.projectDescriptionValue}
+            />
+          </div>
+          <div className="modal-action">
+            <ModalActionButton
+              modalId="edit-project-modal"
+              onClick={props.resetModalState}
+            >
+              No
+            </ModalActionButton>
+            <ModalActionButton
+              modalId="edit-project-modal"
+              isPrimary
+              onClick={() => editHandler()}
+              disableClose
+            >
+              Confirm
+            </ModalActionButton>
+          </div>
+        </label>
+      </label>
+    </>
+  )
+}
+
 const ModalActionButton: React.FC<{
   modalId: string;
   children: React.ReactNode;
   isRed?: boolean;
   onClick?: () => void;
   disableClose?: boolean;
+  isPrimary?: boolean;
 }> = (props) => {
   return (
     <a onClick={props.onClick}>
-      <label htmlFor={!props.disableClose ? props.modalId : 'you are not closing'} className={`btn ${props.isRed ? 'btn-error' : ''}`}>
+      <label htmlFor={!props.disableClose ? props.modalId : 'you are not closing'}
+        className={`btn ${props.isPrimary ? 'btn-primary' : ''} ${props.isRed ? 'btn-error' : ''}`}>
         {props.children}
       </label>
     </a>
@@ -254,14 +333,16 @@ const ProjectMainContent: React.FC<{
         }
       </div>
       {
-        (!!projectsData && projectsData[props.selectedProjectIndex]?.feedbacks.length)
-          ?
-          <FeedbackList feedbacks={projectsData[props.selectedProjectIndex]?.feedbacks} projectId={projectsData[props.selectedProjectIndex]?.id} />
-          :
-          <NoFeedbackComponent
-            projectId={projectsData[props.selectedProjectIndex]?.id || "-1"}
-            projectName={projectsData[props.selectedProjectIndex]?.name}
-          />
+        (
+          (!!projectsData && projectsData[props.selectedProjectIndex]?.feedbacks.length)
+            ?
+            <FeedbackList feedbacks={projectsData[props.selectedProjectIndex]?.feedbacks} projectId={projectsData[props.selectedProjectIndex]?.id} />
+            :
+            <NoFeedbackComponent
+              projectId={projectsData[props.selectedProjectIndex]?.id || "-1"}
+              projectName={projectsData[props.selectedProjectIndex]?.name}
+            />
+        )
       }
     </>
   )
@@ -478,10 +559,6 @@ const ActionIconsComponent: React.FC<{
   const isMedium = ((windowWidth || 0) < 1024) && ((windowWidth || 0) >= 768);
   const isBig = (windowWidth || 0) >= 1024;
 
-  const onEditProject = () => {
-    console.log('edit project')
-  }
-
   return (
     <div className={
       isSmall ? 'flex flex-row justify-end items-center gap-1' :
@@ -514,10 +591,11 @@ const ActionIconsComponent: React.FC<{
               <BiShareAlt size={26} />
             </SingleActionIcon>
             <SingleActionIcon
-              onPress={onEditProject}
               tooltipName="Edit Project"
             >
-              <BiEdit size={26} />
+              <label htmlFor="edit-project-modal" className="cursor-pointer">
+                <BiEdit size={26} />
+              </label>
             </SingleActionIcon>
             <DeleteProjectActionIcon
               tooltipName="Delete Project"
