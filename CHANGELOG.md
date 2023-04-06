@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.8](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.7...v0.1.8) (2023-04-06)
+
+
+### Features
+
+* add description textarea resizes automatically ([c77c5c5](https://github.com/LeonardoTrapani/tell-me/commit/c77c5c53f931a519c06ce9d47bd4052982eab1de))
+* download qr if cannot share + better canShare checks ([74ebedc](https://github.com/LeonardoTrapani/tell-me/commit/74ebedc74ac48d8d2d64e499361a7a76287ae0e6))
+* edit project modal structure ([88a6ae2](https://github.com/LeonardoTrapani/tell-me/commit/88a6ae267750fe6f6421559c4268a85c6517b8bd))
+* edit project mutation + edit modal functionality ([eebfe4f](https://github.com/LeonardoTrapani/tell-me/commit/eebfe4f1dd26f1536662f505cfc843edfaa0baf0))
+* fixed menu button not showing on medium res ([41bd8c2](https://github.com/LeonardoTrapani/tell-me/commit/41bd8c2c0d3e3146fa48a165d67f84807719ead6))
+* input to add a new description ([7554804](https://github.com/LeonardoTrapani/tell-me/commit/755480466aa77f18b6cdfbbf8090e1a551c267b4))
+* qr code is not shared anymore ([575119a](https://github.com/LeonardoTrapani/tell-me/commit/575119aea1767b22b7f6954ccc2b4857ebf5c0f9))
+
+
+### Bug Fixes
+
+* description edit puts a empty string and not undefined ([70a2d2f](https://github.com/LeonardoTrapani/tell-me/commit/70a2d2f74833e2019b46b7cfc41883e8f75457cf))
+* fixed share filename not ending with .png ([0364435](https://github.com/LeonardoTrapani/tell-me/commit/0364435e0099e9d8bef1156dc3eaf9b8bd14d444))
+* qr fileName had png in the middle of the title ([e17c1a8](https://github.com/LeonardoTrapani/tell-me/commit/e17c1a8e7463d9ad376087a82be0562512a49a54))
+
 ### [0.1.7](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.6...v0.1.7) (2023-04-04)
 
 
