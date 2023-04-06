@@ -106,6 +106,14 @@ const Home: NextPage = () => {
           </div> :
           isSignedIn ? (
             <>
+              <MainPageContent
+                setSelectedProjectIndex={(i: number) => {
+                  setSelectedProjectIndex(i);
+                  resetDeleteModalState();
+                  resetEditModalState();
+                }}
+                selectedProjectIndex={selectedProjectIndex}
+              />
               <DeleteProjectModal
                 onDelete={projectDeleteHandler}
                 projectTitle={projects?.[selectedProjectIndex]?.name}
@@ -126,14 +134,6 @@ const Home: NextPage = () => {
                 onEdit={projectEditHandler}
                 editProjectNameHasError={editProjectNameHasError}
                 setNameInputHasError={(value) => { setEditProjectNameHasError(value) }}
-              />
-              <MainPageContent
-                setSelectedProjectIndex={(i: number) => {
-                  setSelectedProjectIndex(i);
-                  resetDeleteModalState();
-                  resetEditModalState();
-                }}
-                selectedProjectIndex={selectedProjectIndex}
               />
             </>
           )
@@ -342,11 +342,24 @@ const MainPageContent: React.FC<{
 const ProjectMainContent: React.FC<{
   selectedProjectIndex: number;
 }> = (props) => {
-  const { data: projectsData } = api.projects.getAll.useQuery();
+  const { data: projectsData, refetch: refetchProjects } = api.projects.getAll.useQuery();
+  const { mutate: editDescription } = api.projects.edit.useMutation({
+    onSuccess: () => {
+      void refetchProjects()
+    }
+  })
+
   const [windowWidth] = useWindowSize()
   if (!projectsData) {
     return <></>
   }
+  const editDescriptionHandler = (newDescription: string) => {
+    editDescription({
+      newDescription,
+      projectId: projectsData[props.selectedProjectIndex]?.id || "-1"
+    });
+  }
+
   if (!projectsData.length) {
     return (
       <>
@@ -372,7 +385,12 @@ const ProjectMainContent: React.FC<{
       <div className="mb-3 flex">
         <div className="grow">
           <h1 className="text-3xl font-bold">{projectsData[props.selectedProjectIndex]?.name}</h1>
-          <h3 className="italic">{projectsData[props.selectedProjectIndex]?.description}</h3>
+          {
+            <DescriptionOrAddDescriptionComponent
+              projectDescription={projectsData[props.selectedProjectIndex]?.description}
+              editDescription={editDescriptionHandler}
+            />
+          }
         </div>
         {
           (windowWidth || 0) >= 768
@@ -402,6 +420,28 @@ const ProjectMainContent: React.FC<{
   )
 }
 
+const DescriptionOrAddDescriptionComponent: React.FC<{
+  projectDescription: string | null | undefined;
+  editDescription: (value: string) => void;
+}> = (props) => {
+  if (props.projectDescription) {
+    return (
+      <h3 className="italic">{props.projectDescription}</h3>
+    )
+  }
+  return (
+    <input
+      type="text"
+      placeholder="Add a description"
+      className="input input-ghost w-full p-0 m-0 outline-none b-0 outline-0 focus:outline-0 h-6 placeholder-gray-500"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          props.editDescription(e.currentTarget.value)
+        }
+      }}
+    />
+  )
+}
 const NoFeedbackComponent: React.FC<{
   projectId: string;
   projectName: string | undefined;
