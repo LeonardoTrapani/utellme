@@ -345,7 +345,7 @@ const onGenerateQr = async (projectId: string, projectName: string) => {
     await shareOrCopyToClipboard({
       title: `${projectName || "My project"}'s QR-Code`,
       isFile: true,
-      fileName: `${projectName + ".png" || "My project"}'s QR-Code`,
+      fileName: `${projectName || "My project"}'s QR-Code.png`,
       description: `Scan this QR-Code to give feedback about ${projectName || "my project"}!`,
       text: qrImage
     })
