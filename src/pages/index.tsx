@@ -18,6 +18,7 @@ import { toast } from "react-hot-toast";
 import QRCode from 'qrcode'
 import Input from "~/components/Input";
 import { TellMeComponent } from "~/components/TellMeComponent";
+import LandingPage from "~/components/LandingPage";
 
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -138,7 +139,7 @@ const Home: NextPage = () => {
             </>
           )
             :
-            <LoginPage />
+            <LandingPage />
         }
       </main >
     </>
@@ -900,7 +901,9 @@ const TitleAndAvatarComponen = () => {
       <TellMeComponent />
       <Avatar>
         <li>
-          <a onClick={() => void signOut()} className="flex justify-between">
+          <a onClick={() => {
+            void signOut();
+          }} className="flex justify-between">
             <p>
               Sign Out
             </p>
