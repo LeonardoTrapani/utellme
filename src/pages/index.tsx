@@ -12,7 +12,7 @@ import LoadingIndicator from "~/components/LoadingIndicator";
 import Avatar from "~/components/Avatar";
 
 import { BiLogOut } from "react-icons/bi";
-import { useToastError, useWindowSize } from "~/utils/hooks";
+import { useWindowSize } from "~/utils/hooks";
 import LoginPage from "./signin";
 import { toast } from "react-hot-toast";
 import QRCode from 'qrcode'
@@ -44,8 +44,6 @@ const Home: NextPage = () => {
       void refetchProjects();
     }
   })
-
-  useToastError([isGetAllProjectsError, isDeleteProjectError, isEditProjectError]);
 
   const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
 
@@ -257,6 +255,7 @@ const EditProjectModal: React.FC<{
               }}
               value={props.nameInputValue}
               isError={props.editProjectNameHasError}
+              maxLength={75}
             />
             <textarea
               placeholder={props.projectDescription}
@@ -312,8 +311,6 @@ const MainPageContent: React.FC<{
 }> = (props) => {
   const { data: projectsData, isError: isGetAllProjectsError } = api.projects.getAll.useQuery();
 
-  useToastError([isGetAllProjectsError]);
-
   const onProjectPress = (i: number) => {
     props.setSelectedProjectIndex(i);
   }
@@ -353,7 +350,6 @@ const ProjectMainContent: React.FC<{
       void refetchProjects()
     }
   })
-  useToastError([isProjectsError, isEditProjectError])
 
   const [windowWidth] = useWindowSize()
   if (!projectsData) {
@@ -441,17 +437,17 @@ const DescriptionOrAddDescriptionComponent: React.FC<{
 
       // We then set the height directly, outside of the render loop
       // Trying to set this with state or a ref will product an incorrect value.
-      if (scrollHeight < 120) {
+      if (scrollHeight < 112) {
         textAreaRef.current.style.height = `${scrollHeight}` + "px";
       } else {
-        textAreaRef.current.style.height = "120px";
+        textAreaRef.current.style.height = "112px";
       }
     }
   }, [textAreaRef, value])
 
   if (props.projectDescription) {
     return (
-      <h3 className="italic">{props.projectDescription}</h3>
+      <h3 className="italic overflow-x-hidden overflow-y-auto max-h-28">{props.projectDescription}</h3>
     )
   }
 
@@ -800,18 +796,18 @@ const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined; projectId: str
     projectId: props.projectId || "-1"
   });
 
-  useToastError([isGetAllFeedbacksError]);
-
   return (
-    <ul className="gap-2 grid md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4">
-      {
-        isFeedbackDataLoading ? props.feedbacks?.map((feedback) => {
-          return <FeedbackComponent key={feedback.id} feedback={feedback} />
-        }) : feedbacksData?.map((feedback) => {
-          return <FeedbackComponent key={feedback.id} feedback={feedback} />
-        })
-      }
-    </ul>
+    <div className="overflow-y-auto">
+      <ul className="gap-2 grid md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4">
+        {
+          isFeedbackDataLoading ? props.feedbacks?.map((feedback) => {
+            return <FeedbackComponent key={feedback.id} feedback={feedback} />
+          }) : feedbacksData?.map((feedback) => {
+            return <FeedbackComponent key={feedback.id} feedback={feedback} />
+          })
+        }
+      </ul>
+    </div>
   )
 }
 
@@ -827,8 +823,6 @@ const ProjectDrawerContainer: React.FC<{
 }> = (props) => {
   const { mutate: createProject, isError: isCreateProjectError } = api.projects.create.useMutation()
   const { refetch: refetchProjects, isError: isGetAllProjectsError } = api.projects.getAll.useQuery();
-
-  useToastError([isGetAllProjectsError, isCreateProjectError]);
 
   //const [showLoading, setShowLoading] = useState(false); //this is used to show the loading animation between fetch and mutatin
   const [newProjectInputHasError, setNewProjectInputHasError] = useState(false);
@@ -851,6 +845,9 @@ const ProjectDrawerContainer: React.FC<{
     });
   }
 
+  const [currentLength, setCurrentLength] = useState(0);
+  const maxTitleLength = 75;
+
   return (
     <div className="drawer drawer-mobile p-2">
       <input id="drawer" type="checkbox" className="drawer-toggle" />
@@ -866,7 +863,11 @@ const ProjectDrawerContainer: React.FC<{
             type="text"
             id="new-project-input"
             placeholder="New Project"
-            className={`input input-bordered w-full max-w-xs ${newProjectInputHasError ? 'input-error' : ''}`}
+            className={`input input-bordered w-full max-w-xs ${currentLength >= maxTitleLength ? "input-warning" : ""} ${newProjectInputHasError ? 'input-error' : ''}`}
+            maxLength={maxTitleLength}
+            onChange={(e) => {
+              setCurrentLength(e.currentTarget.value.length)
+            }}
             onKeyDown={(e) => {
               if (newProjectInputHasError) {
                 setNewProjectInputHasError(false)
@@ -942,7 +943,7 @@ const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
               :
               <></>
           }
-          <p>
+          <p className="max-h-40 overflow-y-auto">
             {props.feedback.content}
           </p>
         </div>

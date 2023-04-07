@@ -42,8 +42,8 @@ export const projectsRouter = createTRPCRouter({
   }),
 
   create: protectedProcedure.input(z.object({
-    name: z.string().min(1),
-    description: z.string().nullish(),
+    name: z.string().min(1).max(75),
+    description: z.string().min(1).nullish(),
   })).mutation(async ({ ctx, input }) => {
     return await ctx.prisma.project.create({
       data: {
@@ -55,7 +55,7 @@ export const projectsRouter = createTRPCRouter({
   }),
 
   edit: protectedProcedure.input(z.object({
-    newName: z.string().min(1).nullish(),
+    newName: z.string().min(1).max(75).nullish(),
     newDescription: z.string().nullish(),
     projectId: z.string(),
   })).mutation(async ({ ctx, input }) => {
