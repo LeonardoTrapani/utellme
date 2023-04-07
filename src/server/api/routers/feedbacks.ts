@@ -24,10 +24,10 @@ export const feedbacksRouter = createTRPCRouter({
   }),
 
   create: publicProcedure.input(z.object({
-    title: z.string().nullish(),
+    title: z.string().min(1).max(50).nullish(),
     content: z.string().min(1),
     projectId: z.string().min(1),
-    author: z.string().nullish(),
+    author: z.string().min(1).max(35).nullish(),
     rating: z.number().min(1).max(5),
   })).mutation(async ({ ctx, input }) => {
     return await ctx.prisma.feedback.create({

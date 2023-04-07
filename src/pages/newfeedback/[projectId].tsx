@@ -148,11 +148,19 @@ const MainGetFeedbackContent: React.FC<{
             rows={4}
           />
           <div className="grid gap-4 md:grid-cols-2">
-            <Input name="Title" placeholder={`My opinion about ${props.projectName || "this project"}`}
+            <Input 
+              name="Title" 
+              placeholder={`My opinion about ${props.projectName || "this project"}`}
               onChange={props.setFeedbackTitle}
+              optional
+              maxLength={50}
             />
-            <Input name="Author" placeholder={"My Name"}
+            <Input 
+              name="Author" 
+              placeholder={"My Name"}
               onChange={props.setFeedbackAuthor}
+              optional
+              maxLength={35}
             />
           </div>
         </div>
