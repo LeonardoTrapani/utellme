@@ -1,6 +1,7 @@
-import { useState, useLayoutEffect } from "react";
+import { useState, useLayoutEffect, useEffect } from "react";
+import toast from "react-hot-toast";
 
-const useWindowSize = () => {
+export const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
   useLayoutEffect(() => {
     function updateSize() {
@@ -13,4 +14,12 @@ const useWindowSize = () => {
   return size;
 }
 
-export default useWindowSize;
+export const useToastError = (isErrorList: boolean[]) => {
+  useEffect(() => {
+    isErrorList.forEach((isError) => {
+      if (isError) {
+        return toast.error("An error has occurred. Please try again later.");
+      }
+    });
+  }, [isErrorList]);
+}

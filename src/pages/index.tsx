@@ -12,7 +12,7 @@ import LoadingIndicator from "~/components/LoadingIndicator";
 import Avatar from "~/components/Avatar";
 
 import { BiLogOut } from "react-icons/bi";
-import useWindowSize from "~/utils/hooks";
+import { useToastError, useWindowSize } from "~/utils/hooks";
 import LoginPage from "./signin";
 import { toast } from "react-hot-toast";
 import QRCode from 'qrcode'
@@ -25,24 +25,27 @@ const Home: NextPage = () => {
   const {
     isLoading: isProjectsLoading,
     refetch: refetchProjects,
-    data: projects
+    data: projects,
+    isError: isGetAllProjectsError
   } =
     api.projects.getAll.useQuery(undefined, {
       enabled: isSignedIn
     });
 
-  const { mutate: deleteProject } = api.projects.delete.useMutation({
+  const { mutate: deleteProject, isError: isDeleteProjectError } = api.projects.delete.useMutation({
     onSuccess: () => {
       void refetchProjects();
       setSelectedProjectIndex(0);
     }
   });
 
-  const { mutate: editProject } = api.projects.edit.useMutation({
+  const { mutate: editProject, isError: isEditProjectError } = api.projects.edit.useMutation({
     onSuccess: () => {
       void refetchProjects();
     }
   })
+
+  useToastError([isGetAllProjectsError, isDeleteProjectError, isEditProjectError]);
 
   const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
 
@@ -307,7 +310,9 @@ const MainPageContent: React.FC<{
   selectedProjectIndex: number;
   setSelectedProjectIndex: (i: number) => void;
 }> = (props) => {
-  const { data: projectsData } = api.projects.getAll.useQuery();
+  const { data: projectsData, isError: isGetAllProjectsError } = api.projects.getAll.useQuery();
+
+  useToastError([isGetAllProjectsError]);
 
   const onProjectPress = (i: number) => {
     props.setSelectedProjectIndex(i);
@@ -342,12 +347,13 @@ const MainPageContent: React.FC<{
 const ProjectMainContent: React.FC<{
   selectedProjectIndex: number;
 }> = (props) => {
-  const { data: projectsData, refetch: refetchProjects } = api.projects.getAll.useQuery();
-  const { mutate: editDescription } = api.projects.edit.useMutation({
+  const { data: projectsData, refetch: refetchProjects, isError: isProjectsError } = api.projects.getAll.useQuery();
+  const { mutate: editDescription, isError: isEditProjectError } = api.projects.edit.useMutation({
     onSuccess: () => {
       void refetchProjects()
     }
   })
+  useToastError([isProjectsError, isEditProjectError])
 
   const [windowWidth] = useWindowSize()
   if (!projectsData) {
@@ -788,10 +794,13 @@ const DeleteProjectActionIcon: React.FC<{
 const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined; projectId: string | undefined; }> = (props) => {
   const {
     data: feedbacksData,
-    isLoading: isFeedbackDataLoading
+    isLoading: isFeedbackDataLoading,
+    isError: isGetAllFeedbacksError,
   } = api.feedbacks.getAll.useQuery({
     projectId: props.projectId || "-1"
   });
+
+  useToastError([isGetAllFeedbacksError]);
 
   return (
     <ul className="gap-2 grid md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4">
@@ -816,8 +825,10 @@ const ProjectDrawerContainer: React.FC<{
   onProjectPress: (i: number) => void;
   children: React.ReactNode;
 }> = (props) => {
-  const createMutation = api.projects.create.useMutation()
-  const { refetch: refetchProjects } = api.projects.getAll.useQuery();
+  const { mutate: createProject, isError: isCreateProjectError } = api.projects.create.useMutation()
+  const { refetch: refetchProjects, isError: isGetAllProjectsError } = api.projects.getAll.useQuery();
+
+  useToastError([isGetAllProjectsError, isCreateProjectError]);
 
   //const [showLoading, setShowLoading] = useState(false); //this is used to show the loading animation between fetch and mutatin
   const [newProjectInputHasError, setNewProjectInputHasError] = useState(false);
@@ -828,7 +839,7 @@ const ProjectDrawerContainer: React.FC<{
       return;
     }
     // setShowLoading(true)
-    createMutation.mutate({ name: projectTitle }, {
+    createProject({ name: projectTitle }, {
       onSuccess: () => {
         void refetchProjects()
         //setShowLoading(false);

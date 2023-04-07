@@ -13,7 +13,12 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <Toaster />
+      <Toaster toastOptions={{
+        style: {
+          background: "#252932",
+          color: "#A7ADBA",
+        }
+      }}/>
       <Component {...pageProps} />
     </SessionProvider>
   );

@@ -7,6 +7,7 @@ import LoadingIndicator from "~/components/LoadingIndicator";
 import { SelectRatingComponent, } from "~/components/RatingComponent";
 import { TellMeComponent } from "~/components/TellMeComponent";
 import { api } from "~/utils/api";
+import { useToastError } from "~/utils/hooks";
 
 const NewFeedbackPage: NextPage = () => {
   const [hasGivenFeedback, setHasGivenFeedback] = React.useState(false);
@@ -22,18 +23,20 @@ const NewFeedbackPage: NextPage = () => {
   const router = useRouter();
   const projectId = Array.isArray(router.query.projectId) ? router.query.projectId[0] : router.query.projectId;
 
-  const { data: project, isLoading: isProjectLoading } =
+  const { data: project, isLoading: isProjectLoading, isError: isProjectInfoError } =
     api.projects.getInfo.useQuery({
       projectId: projectId || "-1"
     }, {
       enabled: !!projectId,
     });
 
-  const { mutate: createFeedbackMutation, isLoading: isCreateFeedbackLoading } = api.feedbacks.create.useMutation({
+  const { mutate: createFeedbackMutation, isLoading: isCreateFeedbackLoading, isError: isFeedbacksError } = api.feedbacks.create.useMutation({
     onSuccess: () => {
       setHasGivenFeedback(true);
     },
   })
+
+  useToastError([isFeedbacksError, isProjectInfoError]);
 
   const submitFeedbackHandler = () => {
     if (!project) return;
