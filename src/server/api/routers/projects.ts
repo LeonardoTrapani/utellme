@@ -21,7 +21,7 @@ export const projectsRouter = createTRPCRouter({
         }
       },
       orderBy: {
-        createdAt: "desc"
+        lastChildUpdatedAt: "desc",
       }
     }))
   }),

@@ -23,13 +23,14 @@ model User {
 }
 
 model Project {
-  id          String     @id @default(cuid())
-  name        String     @db.VarChar(75)
-  description String?
-  userId      String
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  feedbacks   Feedback[]
-  createdAt   DateTime   @default(now())
+  id                 String     @id @default(cuid())
+  name               String     @db.VarChar(75)
+  description        String?
+  userId             String
+  user               User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  feedbacks          Feedback[]
+  createdAt          DateTime   @default(now())
+  lastChildUpdatedAt DateTime   @default(now())
 }
 
 model Feedback {

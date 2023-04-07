@@ -30,14 +30,24 @@ export const feedbacksRouter = createTRPCRouter({
     author: z.string().min(1).max(35).nullish(),
     rating: z.number().min(1).max(5),
   })).mutation(async ({ ctx, input }) => {
-    return await ctx.prisma.feedback.create({
-      data: {
-        title: input.title,
-        content: input.content,
-        projectId: input.projectId,
-        author: input.author,
-        rating: input.rating,
-      },
+    return ctx.prisma.$transaction(async (trx) => {
+      await trx.feedback.create({
+        data: {
+          title: input.title,
+          content: input.content,
+          projectId: input.projectId,
+          author: input.author,
+          rating: input.rating,
+        },
+      })
+      await trx.project.update({
+        where: {
+          id: input.projectId
+        },
+        data: {
+          lastChildUpdatedAt: new Date()
+        }
+      })
     })
   }),
 
