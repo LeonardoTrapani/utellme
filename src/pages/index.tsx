@@ -12,7 +12,7 @@ import LoadingIndicator from "~/components/LoadingIndicator";
 import Avatar from "~/components/Avatar";
 
 import { BiLogOut } from "react-icons/bi";
-import { useToastError, useWindowSize } from "~/utils/hooks";
+import { useWindowSize } from "~/utils/hooks";
 import LoginPage from "./signin";
 import { toast } from "react-hot-toast";
 import QRCode from 'qrcode'
@@ -44,8 +44,6 @@ const Home: NextPage = () => {
       void refetchProjects();
     }
   })
-
-  useToastError([isGetAllProjectsError, isDeleteProjectError, isEditProjectError]);
 
   const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
 
@@ -312,8 +310,6 @@ const MainPageContent: React.FC<{
 }> = (props) => {
   const { data: projectsData, isError: isGetAllProjectsError } = api.projects.getAll.useQuery();
 
-  useToastError([isGetAllProjectsError]);
-
   const onProjectPress = (i: number) => {
     props.setSelectedProjectIndex(i);
   }
@@ -353,7 +349,6 @@ const ProjectMainContent: React.FC<{
       void refetchProjects()
     }
   })
-  useToastError([isProjectsError, isEditProjectError])
 
   const [windowWidth] = useWindowSize()
   if (!projectsData) {
@@ -800,8 +795,6 @@ const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined; projectId: str
     projectId: props.projectId || "-1"
   });
 
-  useToastError([isGetAllFeedbacksError]);
-
   return (
     <ul className="gap-2 grid md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4">
       {
@@ -827,8 +820,6 @@ const ProjectDrawerContainer: React.FC<{
 }> = (props) => {
   const { mutate: createProject, isError: isCreateProjectError } = api.projects.create.useMutation()
   const { refetch: refetchProjects, isError: isGetAllProjectsError } = api.projects.getAll.useQuery();
-
-  useToastError([isGetAllProjectsError, isCreateProjectError]);
 
   //const [showLoading, setShowLoading] = useState(false); //this is used to show the loading animation between fetch and mutatin
   const [newProjectInputHasError, setNewProjectInputHasError] = useState(false);

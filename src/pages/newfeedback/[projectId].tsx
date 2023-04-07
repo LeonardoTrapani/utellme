@@ -7,7 +7,6 @@ import LoadingIndicator from "~/components/LoadingIndicator";
 import { SelectRatingComponent, } from "~/components/RatingComponent";
 import { TellMeComponent } from "~/components/TellMeComponent";
 import { api } from "~/utils/api";
-import { useToastError } from "~/utils/hooks";
 
 const NewFeedbackPage: NextPage = () => {
   const [hasGivenFeedback, setHasGivenFeedback] = React.useState(false);
@@ -35,8 +34,6 @@ const NewFeedbackPage: NextPage = () => {
       setHasGivenFeedback(true);
     },
   })
-
-  useToastError([isFeedbacksError, isProjectInfoError]);
 
   const submitFeedbackHandler = () => {
     if (!project) return;
