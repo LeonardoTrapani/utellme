@@ -1,11 +1,11 @@
 import React from "react";
-import {AiFillStar} from "react-icons/ai";
+import { AiFillStar } from "react-icons/ai";
 
 export const StaticRatingComponent: React.FC<{
   rating: number;
 }> = (props) => {
   return (
-    <ul>
+    <ul className="flex">
       <SingleRatingComponent
         rating={props.rating}
         i={1}
@@ -30,64 +30,46 @@ export const StaticRatingComponent: React.FC<{
   )
 }
 
-const SingleRatingComponent: React.FC<{
-  rating: number;
-  i: number;
-  onClick?: (i: number) => void;
-}> = (props) => {
-  const active = props.rating >= props.i;
-  return (
-    <a
-      className={`${active ? 'text-primary' : 'text-current'} select-none`}
-      onClick={() => {
-        if (props.onClick) props.onClick(props.i);
-      }}
-    >
-      &#9733;
-    </a >
-  )
-}
-
 export const SelectRatingComponent: React.FC<{
   rating: number | undefined;
   onRatingChange: (rating: number) => void;
 }> = (props) => {
   return (
     <div className="mb-4 flex gap-0 items-center">
-      <SingleSelectRatingComponent i={1} rating={props.rating} onRatingChange={(i: number) => {
+      <SingleRatingComponent i={1} isBig rating={props.rating} onRatingChange={(i: number) => {
         props.onRatingChange(i);
       }} />
-      <SingleSelectRatingComponent i={2} rating={props.rating} onRatingChange={(i: number) => {
+      <SingleRatingComponent i={2} isBig rating={props.rating} onRatingChange={(i: number) => {
         props.onRatingChange(i);
       }} />
-      <SingleSelectRatingComponent i={3} rating={props.rating} onRatingChange={(i: number) => {
+      <SingleRatingComponent i={3} isBig rating={props.rating} onRatingChange={(i: number) => {
         props.onRatingChange(i);
       }} />
-      <SingleSelectRatingComponent i={4} rating={props.rating} onRatingChange={(i: number) => {
+      <SingleRatingComponent i={4} isBig rating={props.rating} onRatingChange={(i: number) => {
         props.onRatingChange(i);
       }} />
-      <SingleSelectRatingComponent i={5} rating={props.rating} onRatingChange={(i: number) => {
+      <SingleRatingComponent i={5} isBig rating={props.rating} onRatingChange={(i: number) => {
         props.onRatingChange(i);
       }} />
     </div>)
 }
 
-const SingleSelectRatingComponent: React.FC<{
+const SingleRatingComponent: React.FC<{
   rating: number | undefined;
   i: number;
-  onRatingChange: (rating: number) => void;
+  onRatingChange?: (rating: number) => void;
+  isBig?: boolean;
 }> = (props) => {
   const active = (props.rating || 0) >= props.i;
   return (
     <a
       className={`
-        ${active ? 'text-primary' : 'text-gray-500'} 
-        select-none cursor-pointer text-4xl hover:border-red-600 
-        self-center
+        ${`${active ? 'text-primary' : 'text-gray-400 dark:text-current '} select-none`} 
+        cursor-pointer ${props.isBig ? 'text-4xl' : ''} self-center
         `
       }
       onClick={() => {
-        props.onRatingChange(props.i);
+        if (props.onRatingChange) props.onRatingChange(props.i);
       }}
     >
       <AiFillStar />

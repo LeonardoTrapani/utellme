@@ -17,6 +17,7 @@ import LoginPage from "./signin";
 import { toast } from "react-hot-toast";
 import QRCode from 'qrcode'
 import Input from "~/components/Input";
+import { TellMeComponent } from "~/components/TellMeComponent";
 
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -602,7 +603,7 @@ const shareOrCopyToClipboard = async ({
 
 const copyToClipboard = async (text: string) => {
   await navigator.clipboard.writeText(text)
-  toast('Copied to the clipboard')
+  toast('Copied to the clipboard!')
 }
 
 /*
@@ -632,7 +633,7 @@ const downloadFile = (fileName: string, blob: Blob) => {
 
   // Start download
   link.click();
-  toast("File downloaded!")
+  toast("Downloaded!")
 
   // Clean up and remove the link
   link.parentNode?.removeChild(link);
@@ -896,7 +897,7 @@ const ProjectDrawerContainer: React.FC<{
 const TitleAndAvatarComponen = () => {
   return (
     <div className="flex justify-between items-center">
-      <p className="font-bold text-xl select-none">TELL <span className="text-primary">ME!</span></p>
+      <TellMeComponent />
       <Avatar>
         <li>
           <a onClick={() => void signOut()} className="flex justify-between">
