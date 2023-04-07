@@ -61,8 +61,6 @@ const Home: NextPage = () => {
 
   const resetEditModalState = () => {
     setEditProjectNameHasError(false);
-    setEditProjectNameValue('');
-    setEditProjectDescriptionValue('');
   }
   const resetDeleteModalState = () => {
     setDeleteModalHasError(false);
