@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 
-import { signOut, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useEffect, useRef, useState } from "react";
 import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt } from "react-icons/bi"
@@ -148,8 +148,7 @@ const Home: NextPage = () => {
 };
 
 const RedirectToLogin = () => {
-  const router = useRouter()
-  void router.push('/signin');
+  void signIn()
   return (
     <div></div>
   )

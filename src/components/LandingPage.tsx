@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { signIn } from "next-auth/react";
 import React from "react";
 import { BiDollar, BiHappyBeaming, BiTimer } from "react-icons/bi";
 
@@ -26,11 +26,11 @@ const LandingPage: React.FC = () => {
         </ul>
         <h1 className="text-2xl text-center font-semibold">feedback</h1>
       </div>
-      <Link href={{
-        pathname: '/signin',
-      }} className="btn">
+      <a className="btn" onClick={() => {
+        void signIn()
+      }}>
         Signin
-      </Link>
+      </a>
     </div>
   );
 }
