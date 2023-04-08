@@ -30,21 +30,17 @@ const GeneralProvider: React.FC<{
   className?: string;
 }> = (props) => {
   return (
-    <div
+    <button
       key={props.provider.name}
-      className={`p-2 border border-current h-12 flex items-center justify-center  ${props.className ?? ""}`}
-    >
-      <button
-        className="flex gap-2"
-        onClick={() => {
-          void signIn(props.provider.id)
-        }}>
-        {props.children}
-        <p>
-          Continue with {props.provider.name}
-        </p>
-      </button>
-    </div>
+      className={`p-2 border border-current h-12 flex gap-2 items-center justify-center  ${props.className ?? ""}`}
+      onClick={() => {
+        void signIn(props.provider.id)
+      }}>
+      {props.children}
+      <p>
+        Continue with {props.provider.name}
+      </p>
+    </button>
   )
 }
 const GoogleProvider: React.FC<{
