@@ -766,11 +766,21 @@ const ActionIconsComponent: React.FC<{
       }
       {
         !isBig && <label htmlFor="drawer" className="cursor-pointer">
-          <BiMenu size={26} className="text-primary" />
+          <OpenMenuButton />
         </label>
       }
     </div >
   )
+}
+
+const OpenMenuButton = () => {
+  return (
+    <div className="flex bg-base-300 rounded-full items-center justify-center pl-2 pr-1 text-center py-1">
+      <p className="align-middle font-bold">MENU</p>
+      <BiMenu className="text-primary" size={24}/>
+    </div>
+  )
+
 }
 
 const SingleActionIcon: React.FC<{
@@ -884,6 +894,7 @@ const ProjectDrawerContainer: React.FC<{
             id="new-project-input"
             placeholder="New Project"
             className={`input input-bordered w-full max-w-xs ${currentLength >= maxTitleLength ? "input-warning" : ""} ${newProjectInputHasError ? 'input-error' : ''}`}
+            autoFocus={props.projectsData?.length === 0}
             maxLength={maxTitleLength}
             onChange={(e) => {
               setCurrentLength(e.currentTarget.value.length)
