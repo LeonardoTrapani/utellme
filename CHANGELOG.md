@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.9](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.8...v0.1.9) (2023-04-08)
+
+
+### Features
+
+* added github provider + use default nextauth page for signin ([677fca0](https://github.com/LeonardoTrapani/tell-me/commit/677fca0be5463152dfce06e715cb57702054bb68))
+* added loading indicator when creating new project ([0367773](https://github.com/LeonardoTrapani/tell-me/commit/0367773b4335c80374ee37c53af8152695924c05))
+* added tick button to confirm new projet ([432a3f9](https://github.com/LeonardoTrapani/tell-me/commit/432a3f9c51356363dacda199c3f678bc1edd7409))
+* better file download ([0bdf1be](https://github.com/LeonardoTrapani/tell-me/commit/0bdf1be726711d9d1b8f6d600feb9476304e3e94))
+* change input component + customized login page + removed landing page ([2595fa4](https://github.com/LeonardoTrapani/tell-me/commit/2595fa4ce2d6c83667828f9bd5469a710c22b989))
+* changed menu button so it is more visible ([67ecfce](https://github.com/LeonardoTrapani/tell-me/commit/67ecfcee20350cef5e7ea8b5acaae84b5254c110))
+* drawer closes when project is changed ([6d8191f](https://github.com/LeonardoTrapani/tell-me/commit/6d8191f413c25007c034c33ec0266c8cbd886391))
+* error handling ([6a83883](https://github.com/LeonardoTrapani/tell-me/commit/6a8388358baa90df2f68f67496a80fec43f38938))
+* feedback author and title max length on frontend and backend ([5bdd056](https://github.com/LeonardoTrapani/tell-me/commit/5bdd0565f91637eca7fd54930cd28ed0fd98c557))
+* fixed project edit modal state resetting forms when it shouldn't ([3eeb8ce](https://github.com/LeonardoTrapani/tell-me/commit/3eeb8ce60cefa750a522156379fa0880ae2a7198))
+* initial landing page ([3daef8a](https://github.com/LeonardoTrapani/tell-me/commit/3daef8ae1bca99619f3b8c3460702e1b3c596e15))
+* project max name length + layout changes for super long description ([53c9b92](https://github.com/LeonardoTrapani/tell-me/commit/53c9b927e1161204c3b8d782ed6e1efca34c27cd))
+* projects are sorted by last updated feedback ([fe73730](https://github.com/LeonardoTrapani/tell-me/commit/fe73730b06f67ba5fd8fb6fdaa77bf054c72b226))
+
+
+### Bug Fixes
+
+* added github images url to next accepted urls ([2a9e4c7](https://github.com/LeonardoTrapani/tell-me/commit/2a9e4c7a77fd6f0284968f8e69ac66e4fd4d748a))
+* committed removed files ([91c83ad](https://github.com/LeonardoTrapani/tell-me/commit/91c83ad9b01d77c53ac430988c0b027315367e50))
+* removed error handling (sending infinite messages) ([28ce8d1](https://github.com/LeonardoTrapani/tell-me/commit/28ce8d127dfbb5c190de0483b5a05ef82588be7d))
+
 ### [0.1.8](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.7...v0.1.8) (2023-04-06)
 
 
