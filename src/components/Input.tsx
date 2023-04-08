@@ -9,6 +9,8 @@ const Input: React.FC<{
   isError?: boolean;
   isDisabled?: boolean;
   maxLength?: number;
+  labelDisabled?: boolean;
+  type?: React.HTMLInputTypeAttribute;
 }> = (props) => {
   const [currentLength, setCurrentLength] = React.useState(0);
   return (
@@ -25,10 +27,12 @@ const Input: React.FC<{
         }
         {props.optional && <label className="text-end text-sm italic text-gray-500 mr-2 select-none">optional</label>}
       </div>
-      <label className="input-group">
-        <span>{props.name}</span>
+      <label className={!props.labelDisabled ? "input-group" : ""}>
+        {
+          !props.labelDisabled && <span>{props.name}</span>
+        }
         <input
-          type="text"
+          type={props.type || "text"}
           placeholder={props.placeholder}
           className={`
             input input-bordered placeholder:text-gray-500 w-full 
