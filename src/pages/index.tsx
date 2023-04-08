@@ -47,7 +47,12 @@ const Home: NextPage = () => {
     }
   })
 
-  const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
+  const setSelectedProjectIndex = (i: number) => {
+    setSelectedProjectIndexState(i);
+    closeDrawer()
+  }
+
+  const [selectedProjectIndex, setSelectedProjectIndexState] = useState(0);
 
   const [deleteModalInputValue, setDeleteModalInputValue] = useState('');
   const [deleteModalHasError, setDeleteModalHasError] = useState(false);
@@ -146,6 +151,13 @@ const Home: NextPage = () => {
     </>
   );
 };
+
+const closeDrawer = () => {
+  const drawer = document.getElementById('drawer') as HTMLInputElement || undefined;
+  if (drawer) {
+    drawer.checked = false;
+  }
+}
 
 const RedirectToLogin = () => {
   void signIn()
