@@ -852,9 +852,9 @@ const ProjectDrawerContainer: React.FC<{
   children: React.ReactNode;
 }> = (props) => {
   const { mutate: createProject, isError: isCreateProjectError } = api.projects.create.useMutation()
-  const { refetch: refetchProjects, isError: isGetAllProjectsError } = api.projects.getAll.useQuery();
+  const { refetch: refetchProjects, isError: isGetAllProjectsError, isFetching: isProjectsFetching } = api.projects.getAll.useQuery();
 
-  //const [showLoading, setShowLoading] = useState(false); //this is used to show the loading animation between fetch and mutatin
+  const [showLoading, setShowLoading] = useState(false); //this is used to show the loading animation between fetch and mutatin
   const [newProjectInputHasError, setNewProjectInputHasError] = useState(false);
 
   const projectSubmitHandler = (projectTitle: string) => {
@@ -862,15 +862,15 @@ const ProjectDrawerContainer: React.FC<{
       setNewProjectInputHasError(true);
       return;
     }
-    // setShowLoading(true)
+    setShowLoading(true)
     createProject({ name: projectTitle }, {
       onSuccess: () => {
         void refetchProjects()
-        //setShowLoading(false);
+        setShowLoading(false);
         props.onProjectPress(0)
       },
       onError: () => {
-        //setShowLoading(false)
+        setShowLoading(false)
       },
     });
   }
@@ -917,14 +917,19 @@ const ProjectDrawerContainer: React.FC<{
           </form>
           <div className="divider mt-2 mb-2" />
           {
-            props.projectsData?.map((project, i) => {
-              return <ProjectComponent
-                key={i}
-                project={project}
-                isActive={props.selectedProjectIndex === i}
-                onPress={props.onProjectPress}
-                index={i} />
-            })
+            (isProjectsFetching || showLoading) ?
+              <div className="flex justify-center">
+                <LoadingIndicator />
+              </div>
+              :
+              props.projectsData?.map((project, i) => {
+                return <ProjectComponent
+                  key={i}
+                  project={project}
+                  isActive={props.selectedProjectIndex === i}
+                  onPress={props.onProjectPress}
+                  index={i} />
+              })
           }
         </ul>
       </div>
