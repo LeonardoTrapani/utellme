@@ -26,20 +26,19 @@ const Home: NextPage = () => {
     isLoading: isProjectsLoading,
     refetch: refetchProjects,
     data: projects,
-    isError: isGetAllProjectsError
   } =
     api.projects.getAll.useQuery(undefined, {
       enabled: isSignedIn
     });
 
-  const { mutate: deleteProject, isError: isDeleteProjectError } = api.projects.delete.useMutation({
+  const { mutate: deleteProject } = api.projects.delete.useMutation({
     onSuccess: () => {
       void refetchProjects();
       setSelectedProjectIndex(0);
     }
   });
 
-  const { mutate: editProject, isError: isEditProjectError } = api.projects.edit.useMutation({
+  const { mutate: editProject } = api.projects.edit.useMutation({
     onSuccess: () => {
       void refetchProjects();
     }
@@ -327,7 +326,7 @@ const MainPageContent: React.FC<{
   selectedProjectIndex: number;
   setSelectedProjectIndex: (i: number) => void;
 }> = (props) => {
-  const { data: projectsData, isError: isGetAllProjectsError } = api.projects.getAll.useQuery();
+  const { data: projectsData } = api.projects.getAll.useQuery();
 
   const onProjectPress = (i: number) => {
     props.setSelectedProjectIndex(i);
@@ -362,8 +361,8 @@ const MainPageContent: React.FC<{
 const ProjectMainContent: React.FC<{
   selectedProjectIndex: number;
 }> = (props) => {
-  const { data: projectsData, refetch: refetchProjects, isError: isProjectsError } = api.projects.getAll.useQuery();
-  const { mutate: editDescription, isError: isEditProjectError } = api.projects.edit.useMutation({
+  const { data: projectsData, refetch: refetchProjects } = api.projects.getAll.useQuery();
+  const { mutate: editDescription } = api.projects.edit.useMutation({
     onSuccess: () => {
       void refetchProjects()
     }
@@ -821,9 +820,8 @@ const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined; projectId: str
   const {
     data: feedbacksData,
     isLoading: isFeedbackDataLoading,
-    isError: isGetAllFeedbacksError,
   } = api.feedbacks.getAll.useQuery({
-    projectId: props.projectId || "-1"
+    projectId: "-1"
   });
 
   return (
@@ -851,14 +849,11 @@ const ProjectDrawerContainer: React.FC<{
   onProjectPress: (i: number) => void;
   children: React.ReactNode;
 }> = (props) => {
-  const { mutate: createProject, isError: isCreateProjectError, isLoading: isNewProjectsLoading } = api.projects.create.useMutation()
-  const { refetch: refetchProjects, isError: isGetAllProjectsError, isFetching: isProjectsFetching } = api.projects.getAll.useQuery();
-
-  const [newProjectInputHasError, setNewProjectInputHasError] = useState(false);
+  const { mutate: createProject, isLoading: isNewProjectsLoading } = api.projects.create.useMutation()
+  const { refetch: refetchProjects, isFetching: isProjectsFetching } = api.projects.getAll.useQuery();
 
   const projectSubmitHandler = (projectTitle: string) => {
     if (!projectTitle.length) {
-      setNewProjectInputHasError(true);
       return;
     }
     createProject({ name: projectTitle }, {
@@ -887,7 +882,7 @@ const ProjectDrawerContainer: React.FC<{
             <Input
               name="New Project"
               id="new-project-input"
-              className="flex-grow"
+              className={`flex-grow`}
               type="text"
               autoFocus={props.projectsData?.length === 0}
               onChange={(value) => {
