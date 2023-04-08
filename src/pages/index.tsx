@@ -17,8 +17,6 @@ import { toast } from "react-hot-toast";
 import QRCode from 'qrcode'
 import Input from "~/components/Input";
 import { TellMeComponentButton } from "~/components/TellMeComponent";
-import LandingPage from "~/components/LandingPage";
-import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -851,10 +849,9 @@ const ProjectDrawerContainer: React.FC<{
   onProjectPress: (i: number) => void;
   children: React.ReactNode;
 }> = (props) => {
-  const { mutate: createProject, isError: isCreateProjectError } = api.projects.create.useMutation()
-  const { refetch: refetchProjects, isError: isGetAllProjectsError, isFetching: isProjectsFetching } = api.projects.getAll.useQuery();
+  const { mutate: createProject, isError: isCreateProjectError, isLoading: isNewProjectsLoading} = api.projects.create.useMutation()
+  const { refetch: refetchProjects, isError: isGetAllProjectsError, isFetching: isProjectsFetching} = api.projects.getAll.useQuery();
 
-  const [showLoading, setShowLoading] = useState(false); //this is used to show the loading animation between fetch and mutatin
   const [newProjectInputHasError, setNewProjectInputHasError] = useState(false);
 
   const projectSubmitHandler = (projectTitle: string) => {
@@ -862,15 +859,10 @@ const ProjectDrawerContainer: React.FC<{
       setNewProjectInputHasError(true);
       return;
     }
-    setShowLoading(true)
     createProject({ name: projectTitle }, {
       onSuccess: () => {
-        void refetchProjects()
-        setShowLoading(false);
-        props.onProjectPress(0)
-      },
-      onError: () => {
-        setShowLoading(false)
+        void refetchProjects();
+        props.onProjectPress(0);
       },
     });
   }
@@ -917,7 +909,7 @@ const ProjectDrawerContainer: React.FC<{
           </form>
           <div className="divider mt-2 mb-2" />
           {
-            (isProjectsFetching || showLoading) ?
+            (isNewProjectsLoading || isProjectsFetching) ?
               <div className="flex justify-center">
                 <LoadingIndicator />
               </div>
