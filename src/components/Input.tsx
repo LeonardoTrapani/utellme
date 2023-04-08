@@ -11,10 +11,13 @@ const Input: React.FC<{
   maxLength?: number;
   labelDisabled?: boolean;
   type?: React.HTMLInputTypeAttribute;
+  autoFocus?: boolean;
+  onSubmit?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  className?: string;
 }> = (props) => {
   const [currentLength, setCurrentLength] = React.useState(0);
   return (
-    <div>
+    <div className={props.className}>
       <div className="flex items-center justify-between">
         {
           ((props.maxLength) && (props.maxLength - currentLength < 15))
@@ -34,6 +37,13 @@ const Input: React.FC<{
         <input
           type={props.type || "text"}
           placeholder={props.placeholder}
+          autoFocus={props.autoFocus}
+          onSubmit={props.onSubmit}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && props.onSubmit) {
+              props.onSubmit(e);
+            }
+          }}
           className={`
             input input-bordered placeholder:text-gray-500 w-full 
             ${props.isError ? "input-error" : ""} 

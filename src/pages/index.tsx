@@ -4,7 +4,7 @@ import Head from "next/head";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useEffect, useRef, useState } from "react";
-import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt } from "react-icons/bi"
+import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs"
 import type { Feedback, Project } from "@prisma/client";
 import { StaticRatingComponent } from "~/components/RatingComponent";
@@ -777,7 +777,7 @@ const OpenMenuButton = () => {
   return (
     <div className="flex bg-base-300 rounded-full items-center justify-center pl-2 pr-1 text-center py-1">
       <p className="align-middle font-bold">MENU</p>
-      <BiMenu className="text-primary" size={24}/>
+      <BiMenu className="text-primary" size={24} />
     </div>
   )
 
@@ -875,7 +875,7 @@ const ProjectDrawerContainer: React.FC<{
     });
   }
 
-  const [currentLength, setCurrentLength] = useState(0);
+  const [newProjectInputValue, setNewProjectInputValue] = useState("");
   const maxTitleLength = 75;
 
   return (
@@ -889,26 +889,32 @@ const ProjectDrawerContainer: React.FC<{
         <ul className="menu p-4 w-80 bg-base-200 text-base-content rounded-xl">
           <TitleAndAvatarComponen />
           <div className="divider mt-2 mb-2" />
-          <input
-            type="text"
-            id="new-project-input"
-            placeholder="New Project"
-            className={`input input-bordered w-full max-w-xs ${currentLength >= maxTitleLength ? "input-warning" : ""} ${newProjectInputHasError ? 'input-error' : ''}`}
-            autoFocus={props.projectsData?.length === 0}
-            maxLength={maxTitleLength}
-            onChange={(e) => {
-              setCurrentLength(e.currentTarget.value.length)
-            }}
-            onKeyDown={(e) => {
-              if (newProjectInputHasError) {
-                setNewProjectInputHasError(false)
-              }
-              if (e.key === "Enter") {
-                projectSubmitHandler(e.currentTarget.value);
-                e.currentTarget.value = "";
-              }
-            }}
-          />
+          <form className="flex gap-1">
+            <Input
+              name="New Project"
+              className="flex-grow"
+              type="text"
+              autoFocus={props.projectsData?.length === 0}
+              onChange={(value) => {
+                setNewProjectInputValue(value)
+              }}
+              maxLength={maxTitleLength}
+              labelDisabled
+              placeholder="New Project"
+              value={newProjectInputValue}
+              onSubmit={() => {
+                projectSubmitHandler(newProjectInputValue);
+                setNewProjectInputValue("")
+              }}
+            />
+            <button type="submit" onClick={(e) => {
+              e.preventDefault();
+              projectSubmitHandler(newProjectInputValue);
+              setNewProjectInputValue("")
+            }}>
+              <BiCheck size={32} className={newProjectInputValue.length > 0 ? "text-success" : ""} />
+            </button>
+          </form>
           <div className="divider mt-2 mb-2" />
           {
             props.projectsData?.map((project, i) => {
@@ -925,6 +931,35 @@ const ProjectDrawerContainer: React.FC<{
     </div>
   )
 }
+/*
+const NewProjectInput: React.FC<{
+  currentLength: number;
+  maxTitleLength?: number;
+}> = (props) => {
+  return (
+    <input
+      type="text"
+      id="new-project-input"
+      placeholder="New Project"
+      className={`input input-bordered w-full max-w-xs ${currentLength >= maxTitleLength ? "input-warning" : ""} ${newProjectInputHasError ? 'input-error' : ''}`}
+      autoFocus={props.projectsData?.length === 0}
+      maxLength={maxTitleLength}
+      onChange={(e) => {
+        setCurrentLength(e.currentTarget.value.length)
+      }}
+      onKeyDown={(e) => {
+        if (newProjectInputHasError) {
+          setNewProjectInputHasError(false)
+        }
+        if (e.key === "Enter") {
+          projectSubmitHandler(e.currentTarget.value);
+          e.currentTarget.value = "";
+        }
+      }}
+    />
+  )
+}
+*/
 
 const TitleAndAvatarComponen = () => {
   return (
