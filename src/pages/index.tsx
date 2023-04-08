@@ -686,8 +686,10 @@ const NoProjectsComponent: React.FC = () => {
       <a
         onClick={() => {
           setTimeout(() => {
-            const newProjectInput = document.getElementById('new-project-input') as HTMLInputElement;
-            newProjectInput.focus();
+            const newProjectInput = document.getElementById('new-project-input') as HTMLInputElement | null;
+            if (newProjectInput) {
+              newProjectInput.focus();
+            }
           }, 100)
         }}
       >
@@ -849,8 +851,8 @@ const ProjectDrawerContainer: React.FC<{
   onProjectPress: (i: number) => void;
   children: React.ReactNode;
 }> = (props) => {
-  const { mutate: createProject, isError: isCreateProjectError, isLoading: isNewProjectsLoading} = api.projects.create.useMutation()
-  const { refetch: refetchProjects, isError: isGetAllProjectsError, isFetching: isProjectsFetching} = api.projects.getAll.useQuery();
+  const { mutate: createProject, isError: isCreateProjectError, isLoading: isNewProjectsLoading } = api.projects.create.useMutation()
+  const { refetch: refetchProjects, isError: isGetAllProjectsError, isFetching: isProjectsFetching } = api.projects.getAll.useQuery();
 
   const [newProjectInputHasError, setNewProjectInputHasError] = useState(false);
 
@@ -884,6 +886,7 @@ const ProjectDrawerContainer: React.FC<{
           <form className="flex gap-1">
             <Input
               name="New Project"
+              id="new-project-input"
               className="flex-grow"
               type="text"
               autoFocus={props.projectsData?.length === 0}

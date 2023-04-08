@@ -14,6 +14,7 @@ const Input: React.FC<{
   autoFocus?: boolean;
   onSubmit?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   className?: string;
+  id?: string;
 }> = (props) => {
   const [currentLength, setCurrentLength] = React.useState(0);
   return (
@@ -35,6 +36,7 @@ const Input: React.FC<{
           !props.labelDisabled && <span>{props.name}</span>
         }
         <input
+          id={props.id}
           type={props.type || "text"}
           placeholder={props.placeholder}
           autoFocus={props.autoFocus}
@@ -44,11 +46,7 @@ const Input: React.FC<{
               props.onSubmit(e);
             }
           }}
-          className={`
-            input input-bordered placeholder:text-gray-500 w-full 
-            ${props.isError ? "input-error" : ""} 
-            ${props.maxLength && (props.maxLength <= currentLength) ? "input-warning" : ""}
-          `}
+          className={`input input-bordered placeholder:text-gray-500 w-full ${props.isError ? "input-error" : ""} ${props.maxLength && (props.maxLength <= currentLength) ? "input-warning" : ""}`}
           onChange={(e) => {
             props.onChange(e.target.value);
             setCurrentLength(e.target.value.length);
