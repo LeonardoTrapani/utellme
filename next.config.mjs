@@ -25,11 +25,14 @@ const config = {
         hostname: "cdn.discordapp.com",
         pathname: "/avatars/**",
       },
-
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
-      }
+      },
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+      },
     ]
   }
 };
