@@ -13,12 +13,12 @@ import Avatar from "~/components/Avatar";
 
 import { BiLogOut } from "react-icons/bi";
 import { useWindowSize } from "~/utils/hooks";
-import LoginPage from "./signin";
 import { toast } from "react-hot-toast";
 import QRCode from 'qrcode'
 import Input from "~/components/Input";
-import { TellMeComponent } from "~/components/TellMeComponent";
+import { TellMeComponentButton } from "~/components/TellMeComponent";
 import LandingPage from "~/components/LandingPage";
+import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -139,12 +139,21 @@ const Home: NextPage = () => {
             </>
           )
             :
-            <LandingPage />
+            <RedirectToLogin />
+          //<LandingPage />
         }
       </main >
     </>
   );
 };
+
+const RedirectToLogin = () => {
+  const router = useRouter()
+  void router.push('/signin');
+  return (
+    <div></div>
+  )
+}
 
 export default Home;
 
@@ -898,7 +907,7 @@ const ProjectDrawerContainer: React.FC<{
 const TitleAndAvatarComponen = () => {
   return (
     <div className="flex justify-between items-center">
-      <TellMeComponent />
+      <TellMeComponentButton />
       <Avatar>
         <li>
           <a onClick={() => {

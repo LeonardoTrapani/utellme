@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import Input from "~/components/Input";
 import LoadingIndicator from "~/components/LoadingIndicator";
 import { SelectRatingComponent, } from "~/components/RatingComponent";
-import { TellMeComponent } from "~/components/TellMeComponent";
+import { TellMeComponentButton } from "~/components/TellMeComponent";
 import { api } from "~/utils/api";
 
 const NewFeedbackPage: NextPage = () => {
@@ -192,7 +192,7 @@ const FeedbackCompletedPage = () => {
       <h1 className="text-2xl"><span className="text-primary font-semibold">Thank you </span>for the feedback!</h1>
       <div className="text-center">
         <h3>powered by</h3>
-        <TellMeComponent />
+        <TellMeComponentButton />
       </div>
     </div>
   )
