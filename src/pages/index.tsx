@@ -28,7 +28,15 @@ const Home: NextPage = () => {
     data: projects,
   } =
     api.projects.getAll.useQuery(undefined, {
-      enabled: isSignedIn
+      enabled: isSignedIn,
+      onError: (e) => {
+        const errorMessage = e.data?.zodError?.fieldErrors.name;
+        if (errorMessage && errorMessage[0]) {
+          toast.error(errorMessage[0]);
+        } else {
+          toast.error("Something went wrong fetching the projects.");
+        }
+      }
     });
 
   const { mutate: deleteProject } = api.projects.delete.useMutation({
