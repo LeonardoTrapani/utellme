@@ -4,7 +4,7 @@ import Head from "next/head";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useEffect, useRef, useState } from "react";
-import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck } from "react-icons/bi"
+import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs"
 import type { Feedback, Project } from "@prisma/client";
 import { StaticRatingComponent } from "~/components/RatingComponent";
@@ -147,27 +147,32 @@ const Home: NextPage = () => {
                 projectsData={projects}
                 onRefetchProjects={() => void refetchProjects()}
               />
-              <DeleteProjectModal
-                onDelete={projectDeleteHandler}
-                projectTitle={projects?.[selectedProjectIndex]?.name}
-                modalHasError={deleteModalHasError}
-                setModalHasError={setDeleteModalHasError}
-                resetModalState={resetDeleteModalState}
-                inputValue={deleteModalInputValue}
-                setInputValue={setDeleteModalInputValue}
-              />
-              <EditProjectModal
-                projectName={projects?.[selectedProjectIndex]?.name || 'Project name'}
-                projectDescription={projects?.[selectedProjectIndex]?.description || 'Project description'}
-                resetModalState={resetEditModalState}
-                setDescriptionInputValue={setEditProjectDescriptionValue}
-                setNameInputValue={setEditProjectNameValue}
-                nameInputValue={editProjectNameValue}
-                descriptionInputValue={editProjectDescriptionValue}
-                onEdit={projectEditHandler}
-                editProjectNameHasError={editProjectNameHasError}
-                setNameInputHasError={(value) => { setEditProjectNameHasError(value) }}
-              />
+              {
+                <>
+                  <DeleteProjectModal
+                    onDelete={projectDeleteHandler}
+                    projectTitle={projects?.[selectedProjectIndex]?.name}
+                    modalHasError={deleteModalHasError}
+                    setModalHasError={setDeleteModalHasError}
+                    resetModalState={resetDeleteModalState}
+                    inputValue={deleteModalInputValue}
+                    setInputValue={setDeleteModalInputValue}
+                  />
+                  <EditProjectModal
+                    projectName={projects?.[selectedProjectIndex]?.name || 'Project name'}
+                    projectDescription={projects?.[selectedProjectIndex]?.description || 'Project description'}
+                    resetModalState={resetEditModalState}
+                    setDescriptionInputValue={setEditProjectDescriptionValue}
+                    setNameInputValue={setEditProjectNameValue}
+                    nameInputValue={editProjectNameValue}
+                    descriptionInputValue={editProjectDescriptionValue}
+                    onEdit={projectEditHandler}
+                    editProjectNameHasError={editProjectNameHasError}
+                    setNameInputHasError={(value) => { setEditProjectNameHasError(value) }}
+                  />
+                  <InfoProjectModal projectId={projects?.[selectedProjectIndex]?.id} />
+                </>
+              }
             </>
           )
             :
@@ -334,6 +339,20 @@ const EditProjectModal: React.FC<{
   )
 }
 
+const InfoProjectModal: React.FC<{
+  projectId: string | undefined;
+}> = (props) => {
+  return (
+    <>
+      <input type="checkbox" id="info-project-modal" className="modal-toggle" />
+      <label htmlFor="info-project-modal" className="modal cursor-pointer">
+        <label className="modal-box relative" htmlFor="info-project-modal">
+        </label>
+      </label>
+    </>
+  )
+}
+
 const ModalActionButton: React.FC<{
   modalId: string;
   children: React.ReactNode;
@@ -426,25 +445,21 @@ const ProjectMainContent: React.FC<{
   }
 
   if (!projectsData.length) {
-    return (
-      <>
-        {
-
-          (windowWidth || 0) >= 768
-            ?
-            <ActionIconsComponent
-              projectId={projectsData[props.selectedProjectIndex]?.id}
-              areThereProjects={projectsData.length > 0}
-              projectName={projectsData[props.selectedProjectIndex]?.name}
-            />
-            :
-            <></>
-        }
-        <NoProjectsComponent />
-      </>
-    )
+    return (<>
+      {
+        (windowWidth || 0) >= 768
+          ?
+          <ActionIconsComponent
+            projectId={projectsData[props.selectedProjectIndex]?.id}
+            areThereProjects={projectsData.length > 0}
+            projectName={projectsData[props.selectedProjectIndex]?.name}
+          />
+          :
+          <></>
+      }
+      <NoProjectsComponent />
+    </>)
   }
-
   return (
     <>
       <div className="mb-3 flex">
@@ -769,6 +784,11 @@ const ActionIconsComponent: React.FC<{
         props.areThereProjects &&
         (
           <>
+            <SingleActionIcon tooltipName="project info">
+              <label htmlFor="info-project-modal" className="cursor-pointer">
+                <BiInfoCircle size={26} />
+              </label>
+            </SingleActionIcon>
             <SingleActionIcon
               onPress={() => {
                 void onGenerateQr(props.projectId || "-1", props.projectName || "this project");
@@ -992,35 +1012,6 @@ const ProjectDrawerContainer: React.FC<{
     </div>
   )
 }
-/*
-const NewProjectInput: React.FC<{
-  currentLength: number;
-  maxTitleLength?: number;
-}> = (props) => {
-  return (
-    <input
-      type="text"
-      id="new-project-input"
-      placeholder="New Project"
-      className={`input input-bordered w-full max-w-xs ${currentLength >= maxTitleLength ? "input-warning" : ""} ${newProjectInputHasError ? 'input-error' : ''}`}
-      autoFocus={props.projectsData?.length === 0}
-      maxLength={maxTitleLength}
-      onChange={(e) => {
-        setCurrentLength(e.currentTarget.value.length)
-      }}
-      onKeyDown={(e) => {
-        if (newProjectInputHasError) {
-          setNewProjectInputHasError(false)
-        }
-        if (e.key === "Enter") {
-          projectSubmitHandler(e.currentTarget.value);
-          e.currentTarget.value = "";
-        }
-      }}
-    />
-  )
-}
-*/
 
 const TitleAndAvatarComponen = () => {
   return (
