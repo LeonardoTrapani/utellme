@@ -821,7 +821,7 @@ const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined; projectId: str
     data: feedbacksData,
     isLoading: isFeedbackDataLoading,
   } = api.feedbacks.getAll.useQuery({
-    projectId: "-1"
+    projectId: props.projectId || "-1"
   });
 
   return (
