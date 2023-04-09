@@ -26,7 +26,7 @@ export const projectsRouter = createTRPCRouter({
     }))
   }),
 
-  getInfo: publicProcedure.input(z.object({
+  getPublicInfo: publicProcedure.input(z.object({
     projectId: z.string()
   })).query(async ({ ctx, input }) => {
     return await ctx.prisma.project.findFirst({
@@ -78,5 +78,24 @@ export const projectsRouter = createTRPCRouter({
         userId: ctx.session.user.id
       }
     })
+  }),
+
+  getInfo: protectedProcedure.input(z.object({
+    projectId: z.string()
+  })).query(async ({ ctx, input }) => {
+    return await ctx.prisma.project.findFirst({
+      where: {
+        id: input.projectId,
+        userId: ctx.session.user.id
+      },
+      select: {
+        _count: true,
+        id: true,
+        name: true,
+        description: true,
+        createdAt: true,
+        averageRating: true,
+      }
+    });
   })
 });

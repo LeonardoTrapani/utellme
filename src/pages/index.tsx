@@ -342,11 +342,40 @@ const EditProjectModal: React.FC<{
 const InfoProjectModal: React.FC<{
   projectId: string | undefined;
 }> = (props) => {
+  const { data: projectInfo, isLoading: isProjectInfoLoading } = api.projects.getInfo.useQuery({ projectId: props.projectId || "" }, {
+    enabled: !!props.projectId
+  });
+
   return (
     <>
       <input type="checkbox" id="info-project-modal" className="modal-toggle" />
       <label htmlFor="info-project-modal" className="modal cursor-pointer">
         <label className="modal-box relative" htmlFor="info-project-modal">
+          {isProjectInfoLoading || !projectInfo ? (
+            <LoadingIndicator />
+          ) : (
+            <div>
+              <h2 className="text-xl font-bold">{projectInfo.name}</h2>
+              <p className="italic">{projectInfo.description}</p>
+              <div className="divider" />
+              <div className="flex justify-between items-center">
+                <p>Average Rating:</p>
+                <p className="font-bold">{projectInfo.averageRating.toFixed(1)}</p>
+              </div>
+              <div className="flex justify-between items-center">
+                <p>Created At:</p>
+                <p className="font-bold">{projectInfo.createdAt.toDateString()}</p>
+              </div>
+              <div className="flex justify-between items-center">
+                <p>Feedback number:</p>
+                <p className="font-bold">{projectInfo._count.feedbacks}</p>
+              </div>
+              <div className="flex justify-between items-center">
+                <p>ID:</p>
+                <p className="font-bold">{projectInfo.id}</p>
+              </div>
+            </div>
+          )}
         </label>
       </label>
     </>

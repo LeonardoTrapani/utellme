@@ -26,7 +26,7 @@ const NewFeedbackPage: NextPage = () => {
   const projectId = Array.isArray(router.query.projectId) ? router.query.projectId[0] : router.query.projectId;
 
   const { data: project, isLoading: isProjectLoading } =
-    api.projects.getInfo.useQuery({
+    api.projects.getPublicInfo.useQuery({
       projectId: projectId || "-1"
     }, {
       enabled: !!projectId,
