@@ -17,6 +17,7 @@ import { toast } from "react-hot-toast";
 import QRCode from 'qrcode'
 import Input from "~/components/Input";
 import { TellMeComponentButton } from "~/components/TellMeComponent";
+import { toastTrpcError } from "~/utils/functions";
 
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -29,13 +30,12 @@ const Home: NextPage = () => {
   } =
     api.projects.getAll.useQuery(undefined, {
       enabled: isSignedIn,
-      onError: (e) => {
-        const errorMessage = e.data?.zodError?.fieldErrors.name;
-        if (errorMessage && errorMessage[0]) {
-          toast.error(errorMessage[0]);
-        } else {
-          toast.error("Something went wrong fetching the projects.");
-        }
+      onError: () => {
+        toastTrpcError(
+          "Something went wrong fetching the projects.",
+          undefined,
+          []
+        )
       }
     });
 
@@ -43,12 +43,32 @@ const Home: NextPage = () => {
     onSuccess: () => {
       void refetchProjects();
       setSelectedProjectIndex(0);
+    },
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong deleting the project.",
+        e.data?.zodError?.fieldErrors,
+        [
+          { propertyName: "projectId", propertyMessage: "Project ID" },
+        ]
+      )
     }
   });
 
   const { mutate: editProject } = api.projects.edit.useMutation({
     onSuccess: () => {
       void refetchProjects();
+    },
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong editing the project.",
+        e.data?.zodError?.fieldErrors,
+        [
+          { propertyName: "newName", propertyMessage: "New Name" },
+          { propertyName: "newDescription", propertyMessage: "New Description" },
+          { propertyName: "projectId", propertyMessage: "Project ID" }
+        ]
+      )
     }
   })
 
@@ -373,7 +393,18 @@ const ProjectMainContent: React.FC<{
   const { mutate: editDescription } = api.projects.edit.useMutation({
     onSuccess: () => {
       void refetchProjects()
+    },
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong editing the project.",
+        e.data?.zodError?.fieldErrors,
+        [
+          { propertyName: "newDescription", propertyMessage: "New Description" },
+          { propertyName: "projectId", propertyMessage: "Project ID" },
+        ]
+      )
     }
+
   })
 
   const [windowWidth] = useWindowSize()
@@ -382,7 +413,7 @@ const ProjectMainContent: React.FC<{
   }
   const editDescriptionHandler = (newDescription: string) => {
     editDescription({
-      newDescription,
+      newDescription: newDescription,
       projectId: projectsData[props.selectedProjectIndex]?.id || "-1"
     });
   }
@@ -861,7 +892,7 @@ const ProjectDrawerContainer: React.FC<{
     onError: (e) => {
       const errorMessage = e.data?.zodError?.fieldErrors.name;
       if (errorMessage && errorMessage[0]) {
-        toast.error(errorMessage[0]);
+        toast.error("Project name: " + errorMessage[0]);
       } else {
         toast.error("Something went wrong creating the project.");
       }
