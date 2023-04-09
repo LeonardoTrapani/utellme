@@ -20,11 +20,10 @@ import { TellMeComponentButton } from "~/components/TellMeComponent";
 import { toastTrpcError } from "~/utils/functions";
 
 const Home: NextPage = () => {
-  const { data: sessionData, status: sessionStatus } = useSession();
+  const { status: sessionStatus } = useSession();
   const isSignedIn = sessionStatus === 'authenticated';
 
   const {
-    isLoading: isProjectsLoading,
     refetch: refetchProjects,
     data: projects,
   } =
@@ -130,11 +129,10 @@ const Home: NextPage = () => {
         <meta name="description" content="a web app to get feedback" />
       </Head>
       <main>
-        {(sessionStatus === 'loading') || (isProjectsLoading && sessionData?.user)
+        {(sessionStatus === 'loading')
           ?
-          <div className="flex items-center justify-center h-screen">
-            <LoadingIndicator />
-          </div> :
+          <></>
+          :
           isSignedIn ? (
             <>
               <MainPageContent
