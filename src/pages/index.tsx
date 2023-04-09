@@ -17,6 +17,7 @@ import { toast } from "react-hot-toast";
 import QRCode from 'qrcode'
 import Input from "~/components/Input";
 import { TellMeComponentButton } from "~/components/TellMeComponent";
+import { toastTrpcError } from "~/utils/functions";
 
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -28,19 +29,46 @@ const Home: NextPage = () => {
     data: projects,
   } =
     api.projects.getAll.useQuery(undefined, {
-      enabled: isSignedIn
+      enabled: isSignedIn,
+      onError: () => {
+        toastTrpcError(
+          "Something went wrong fetching the projects.",
+          undefined,
+          []
+        )
+      }
     });
 
   const { mutate: deleteProject } = api.projects.delete.useMutation({
     onSuccess: () => {
       void refetchProjects();
       setSelectedProjectIndex(0);
+    },
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong deleting the project.",
+        e.data?.zodError?.fieldErrors,
+        [
+          { propertyName: "projectId", propertyMessage: "Project ID" },
+        ]
+      )
     }
   });
 
   const { mutate: editProject } = api.projects.edit.useMutation({
     onSuccess: () => {
       void refetchProjects();
+    },
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong editing the project.",
+        e.data?.zodError?.fieldErrors,
+        [
+          { propertyName: "newName", propertyMessage: "New Name" },
+          { propertyName: "newDescription", propertyMessage: "New Description" },
+          { propertyName: "projectId", propertyMessage: "Project ID" }
+        ]
+      )
     }
   })
 
@@ -116,6 +144,8 @@ const Home: NextPage = () => {
                   resetEditModalState();
                 }}
                 selectedProjectIndex={selectedProjectIndex}
+                projectsData={projects}
+                onRefetchProjects={() => void refetchProjects()}
               />
               <DeleteProjectModal
                 onDelete={projectDeleteHandler}
@@ -325,22 +355,24 @@ const ModalActionButton: React.FC<{
 const MainPageContent: React.FC<{
   selectedProjectIndex: number;
   setSelectedProjectIndex: (i: number) => void;
+  projectsData: (Project & {
+    feedbacks: Feedback[];
+  })[] | undefined;
+  onRefetchProjects: () => void;
 }> = (props) => {
-  const { data: projectsData } = api.projects.getAll.useQuery();
-
   const onProjectPress = (i: number) => {
     props.setSelectedProjectIndex(i);
   }
 
   const [windowWidth] = useWindowSize()
 
-  if (!projectsData) {
+  if (!props.projectsData) {
     return <></>
   }
 
   return (
     <ProjectDrawerContainer
-      projectsData={projectsData}
+      projectsData={props.projectsData}
       selectedProjectIndex={props.selectedProjectIndex}
       onProjectPress={onProjectPress}
     >
@@ -348,23 +380,37 @@ const MainPageContent: React.FC<{
         (windowWidth || 0) < 768 //if we are in mobile we need the icons above the main page content 
         &&
         <ActionIconsComponent
-          projectId={projectsData[props.selectedProjectIndex]?.id}
-          projectName={projectsData[props.selectedProjectIndex]?.name}
-          areThereProjects={projectsData.length > 0}
+          projectId={props.projectsData[props.selectedProjectIndex]?.id}
+          projectName={props.projectsData[props.selectedProjectIndex]?.name}
+          areThereProjects={props.projectsData.length > 0}
         />
       }
-      <ProjectMainContent selectedProjectIndex={props.selectedProjectIndex} />
+      <ProjectMainContent selectedProjectIndex={props.selectedProjectIndex} projectsData={props.projectsData} onRefetchProjects={props.onRefetchProjects} />
     </ProjectDrawerContainer>
   )
 }
 
 const ProjectMainContent: React.FC<{
   selectedProjectIndex: number;
+  projectsData: (Project & {
+    feedbacks: Feedback[];
+  })[] | undefined;
+  onRefetchProjects: () => void;
 }> = (props) => {
-  const { data: projectsData, refetch: refetchProjects } = api.projects.getAll.useQuery();
+  const projectsData = props.projectsData;
   const { mutate: editDescription } = api.projects.edit.useMutation({
     onSuccess: () => {
-      void refetchProjects()
+      props.onRefetchProjects()
+    },
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong editing the project.",
+        e.data?.zodError?.fieldErrors,
+        [
+          { propertyName: "newDescription", propertyMessage: "New Description" },
+          { propertyName: "projectId", propertyMessage: "Project ID" },
+        ]
+      )
     }
   })
 
@@ -374,7 +420,7 @@ const ProjectMainContent: React.FC<{
   }
   const editDescriptionHandler = (newDescription: string) => {
     editDescription({
-      newDescription,
+      newDescription: newDescription,
       projectId: projectsData[props.selectedProjectIndex]?.id || "-1"
     });
   }
@@ -822,6 +868,16 @@ const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined; projectId: str
     isLoading: isFeedbackDataLoading,
   } = api.feedbacks.getAll.useQuery({
     projectId: props.projectId || "-1"
+  }, {
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong fetching the feedback.",
+        e.data?.zodError?.fieldErrors,
+        [
+          { propertyName: "projectId", propertyMessage: "Project ID" },
+        ]
+      )
+    }
   });
 
   return (
@@ -849,7 +905,17 @@ const ProjectDrawerContainer: React.FC<{
   onProjectPress: (i: number) => void;
   children: React.ReactNode;
 }> = (props) => {
-  const { mutate: createProject, isLoading: isNewProjectsLoading } = api.projects.create.useMutation()
+  const { mutate: createProject, isLoading: isNewProjectsLoading } = api.projects.create.useMutation({
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong creating the project.",
+        e.data?.zodError?.fieldErrors,
+        [
+          { propertyName: "name", propertyMessage: "Project name" },
+        ]
+      )
+    }
+  })
   const { refetch: refetchProjects, isFetching: isProjectsFetching } = api.projects.getAll.useQuery();
 
   const projectSubmitHandler = (projectTitle: string) => {

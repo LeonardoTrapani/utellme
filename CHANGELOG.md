@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.10](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.9...v0.1.10) (2023-04-09)
+
+
+### Features
+
+* 404 page ([e40e73c](https://github.com/LeonardoTrapani/tell-me/commit/e40e73c8a1ea4cb899470a5fe949672a6b50478c))
+* 404 page ([a63f512](https://github.com/LeonardoTrapani/tell-me/commit/a63f5126887cdcf78c0700252eca3c148dc4093d))
+* 404 route ([10710d9](https://github.com/LeonardoTrapani/tell-me/commit/10710d998493c389dfec4c7c37855daa8d26d4a0))
+* better project loading ([785a32c](https://github.com/LeonardoTrapani/tell-me/commit/785a32c77c521873a551be025a08fa5b5057b14a))
+* createProjectError ([02f7774](https://github.com/LeonardoTrapani/tell-me/commit/02f7774bf6a941ea67704458b5c723d004e81599))
+* fixed google not giving refresh token ([8df740b](https://github.com/LeonardoTrapani/tell-me/commit/8df740b4ed224c9d9645be68b77d263c8ea163e0))
+* project.getAll error handlingg ([4c5e512](https://github.com/LeonardoTrapani/tell-me/commit/4c5e512b4877f5d609b62fa98c913db013ca6c19))
+* removed google refresh token ([ddd74d1](https://github.com/LeonardoTrapani/tell-me/commit/ddd74d1f751ec7fef6eba79b5495508591f024e5))
+
+
+### Bug Fixes
+
+* fixed all feedback not getting fetched (id: -1) ([daa744e](https://github.com/LeonardoTrapani/tell-me/commit/daa744e83c91366993e306f1bd6564c79cf09ac3))
+
 ### [0.1.9](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.8...v0.1.9) (2023-04-08)
 
 

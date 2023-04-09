@@ -6,7 +6,7 @@ export const TellMeComponentButton: React.FC<{
 }> = (props) => {
   return (
     <Link
-      className={`font-bold text-xl select-none cursor-pointer ${props.isBig ? 'text-4xl' : ''}`}
+      className={`font-bold select-none cursor-pointer ${props.isBig ? 'text-2xl' : 'text-xl'}`}
       href={{
         pathname: '/'
       }}
