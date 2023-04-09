@@ -144,6 +144,8 @@ const Home: NextPage = () => {
                   resetEditModalState();
                 }}
                 selectedProjectIndex={selectedProjectIndex}
+                projectsData={projects}
+                onRefetchProjects={() => void refetchProjects()}
               />
               <DeleteProjectModal
                 onDelete={projectDeleteHandler}
@@ -353,22 +355,24 @@ const ModalActionButton: React.FC<{
 const MainPageContent: React.FC<{
   selectedProjectIndex: number;
   setSelectedProjectIndex: (i: number) => void;
+  projectsData: (Project & {
+    feedbacks: Feedback[];
+  })[] | undefined;
+  onRefetchProjects: () => void;
 }> = (props) => {
-  const { data: projectsData } = api.projects.getAll.useQuery();
-
   const onProjectPress = (i: number) => {
     props.setSelectedProjectIndex(i);
   }
 
   const [windowWidth] = useWindowSize()
 
-  if (!projectsData) {
+  if (!props.projectsData) {
     return <></>
   }
 
   return (
     <ProjectDrawerContainer
-      projectsData={projectsData}
+      projectsData={props.projectsData}
       selectedProjectIndex={props.selectedProjectIndex}
       onProjectPress={onProjectPress}
     >
@@ -376,23 +380,27 @@ const MainPageContent: React.FC<{
         (windowWidth || 0) < 768 //if we are in mobile we need the icons above the main page content 
         &&
         <ActionIconsComponent
-          projectId={projectsData[props.selectedProjectIndex]?.id}
-          projectName={projectsData[props.selectedProjectIndex]?.name}
-          areThereProjects={projectsData.length > 0}
+          projectId={props.projectsData[props.selectedProjectIndex]?.id}
+          projectName={props.projectsData[props.selectedProjectIndex]?.name}
+          areThereProjects={props.projectsData.length > 0}
         />
       }
-      <ProjectMainContent selectedProjectIndex={props.selectedProjectIndex} />
+      <ProjectMainContent selectedProjectIndex={props.selectedProjectIndex} projectsData={props.projectsData} onRefetchProjects={props.onRefetchProjects} />
     </ProjectDrawerContainer>
   )
 }
 
 const ProjectMainContent: React.FC<{
   selectedProjectIndex: number;
+  projectsData: (Project & {
+    feedbacks: Feedback[];
+  })[] | undefined;
+  onRefetchProjects: () => void;
 }> = (props) => {
-  const { data: projectsData, refetch: refetchProjects } = api.projects.getAll.useQuery();
+  const projectsData = props.projectsData;
   const { mutate: editDescription } = api.projects.edit.useMutation({
     onSuccess: () => {
-      void refetchProjects()
+      props.onRefetchProjects()
     },
     onError: (e) => {
       toastTrpcError(
@@ -861,6 +869,16 @@ const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined; projectId: str
     isLoading: isFeedbackDataLoading,
   } = api.feedbacks.getAll.useQuery({
     projectId: props.projectId || "-1"
+  }, {
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong fetching the feedback.",
+        e.data?.zodError?.fieldErrors,
+        [
+          { propertyName: "projectId", propertyMessage: "Project ID" },
+        ]
+      )
+    }
   });
 
   return (
@@ -890,12 +908,13 @@ const ProjectDrawerContainer: React.FC<{
 }> = (props) => {
   const { mutate: createProject, isLoading: isNewProjectsLoading } = api.projects.create.useMutation({
     onError: (e) => {
-      const errorMessage = e.data?.zodError?.fieldErrors.name;
-      if (errorMessage && errorMessage[0]) {
-        toast.error("Project name: " + errorMessage[0]);
-      } else {
-        toast.error("Something went wrong creating the project.");
-      }
+      toastTrpcError(
+        "Something went wrong creating the project.",
+        e.data?.zodError?.fieldErrors,
+        [
+          { propertyName: "name", propertyMessage: "Project name" },
+        ]
+      )
     }
   })
   const { refetch: refetchProjects, isFetching: isProjectsFetching } = api.projects.getAll.useQuery();
