@@ -7,6 +7,7 @@ import LoadingIndicator from "~/components/LoadingIndicator";
 import { SelectRatingComponent, } from "~/components/RatingComponent";
 import { TellMeComponentButton } from "~/components/TellMeComponent";
 import { api } from "~/utils/api";
+import { toastTrpcError } from "~/utils/functions";
 
 const NewFeedbackPage: NextPage = () => {
   const [hasGivenFeedback, setHasGivenFeedback] = React.useState(false);
@@ -22,17 +23,40 @@ const NewFeedbackPage: NextPage = () => {
   const router = useRouter();
   const projectId = Array.isArray(router.query.projectId) ? router.query.projectId[0] : router.query.projectId;
 
-  const { data: project, isLoading: isProjectLoading, isError: isProjectInfoError } =
+  const { data: project, isLoading: isProjectLoading } =
     api.projects.getInfo.useQuery({
       projectId: projectId || "-1"
     }, {
       enabled: !!projectId,
+      onError: (e) => {
+        toastTrpcError(
+          "Something went wrong fetching the project.",
+          e.data?.zodError?.fieldErrors,
+          [
+            { propertyName: "projectId", propertyMessage: "Project ID" },
+          ]
+        )
+      }
+
     });
 
-  const { mutate: createFeedbackMutation, isLoading: isCreateFeedbackLoading, isError: isFeedbacksError } = api.feedbacks.create.useMutation({
+  const { mutate: createFeedback, isLoading: isCreateFeedbackLoading } = api.feedbacks.create.useMutation({
     onSuccess: () => {
       setHasGivenFeedback(true);
     },
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong sending the feedback.",
+        e.data?.zodError?.fieldErrors,
+        [
+          { propertyName: "title", propertyMessage: "Feedback's Title" },
+          { propertyName: "content", propertyMessage: "Feedback's Content" },
+          { propertyName: "rating", propertyMessage: "Feedback's Rating" },
+          { propertyName: "author", propertyMessage: "Feedback's Author" },
+          { propertyName: "projectId", propertyMessage: "Project's ID" },
+        ]
+      )
+    }
   })
 
   const submitFeedbackHandler = () => {
@@ -45,7 +69,7 @@ const NewFeedbackPage: NextPage = () => {
     }
     if (!feedbackContent || !rating) return;
 
-    createFeedbackMutation({
+    createFeedback({
       title: feedbackTitle,
       content: feedbackContent,
       rating: rating,
@@ -148,15 +172,15 @@ const MainGetFeedbackContent: React.FC<{
             rows={4}
           />
           <div className="grid gap-4 md:grid-cols-2">
-            <Input 
-              name="Title" 
+            <Input
+              name="Title"
               placeholder={`My opinion about ${props.projectName || "this project"}`}
               onChange={props.setFeedbackTitle}
               optional
               maxLength={50}
             />
-            <Input 
-              name="Author" 
+            <Input
+              name="Author"
               placeholder={"My Name"}
               onChange={props.setFeedbackAuthor}
               optional

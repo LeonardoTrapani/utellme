@@ -412,7 +412,6 @@ const ProjectMainContent: React.FC<{
         ]
       )
     }
-
   })
 
   const [windowWidth] = useWindowSize()
