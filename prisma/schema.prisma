@@ -32,7 +32,7 @@ model Project {
   orderBy            OrderBy    @default(createdAtDesc)
   filterBy           FilterBy[] @default([])
   customFilterDate   DateTime?
-  averageRating      Float      @default(5) @db.DoublePrecision
+  averageRating      Float?
   createdAt          DateTime   @default(now())
   lastChildUpdatedAt DateTime   @default(now())
 }

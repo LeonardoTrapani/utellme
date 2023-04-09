@@ -83,7 +83,7 @@ export const projectsRouter = createTRPCRouter({
   getInfo: protectedProcedure.input(z.object({
     projectId: z.string()
   })).query(async ({ ctx, input }) => {
-    return await ctx.prisma.project.findFirst({
+    const getInfoResult = await ctx.prisma.project.findFirst({
       where: {
         id: input.projectId,
         userId: ctx.session.user.id
@@ -97,5 +97,6 @@ export const projectsRouter = createTRPCRouter({
         averageRating: true,
       }
     });
+    return getInfoResult;
   })
 });

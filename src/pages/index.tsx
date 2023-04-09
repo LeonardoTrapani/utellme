@@ -224,7 +224,7 @@ const DeleteProjectModal: React.FC<{
     <>
       <input type="checkbox" id="delete-project-modal" className="modal-toggle" />
       <label htmlFor="delete-project-modal" className="modal cursor-pointer">
-        <label className="modal-box relative" htmlFor="">
+        <label className="modal-box relative">
           <h3 className="text-lg font-bold">Are you sure you want to delete this project?</h3>
           <p className="py-4">This action cannot be undone. You will lose all <span>{props.projectTitle || "your project"}</span>&apos;s feedback forever</p>
           <div className="divider mt-0 mb-0" />
@@ -294,7 +294,7 @@ const EditProjectModal: React.FC<{
     <>
       <input type="checkbox" id="edit-project-modal" className="modal-toggle" />
       <label htmlFor="edit-project-modal" className="modal cursor-pointer">
-        <label className="modal-box relative" htmlFor="">
+        <label className="modal-box relative">
           <div className="form-control gap-4">
             <Input
               name="Name"
@@ -348,7 +348,7 @@ const InfoProjectModal: React.FC<{
     <>
       <input type="checkbox" id="info-project-modal" className="modal-toggle" />
       <label htmlFor="info-project-modal" className="modal cursor-pointer">
-        <label className="modal-box relative" htmlFor="info-project-modal">
+        <label className="modal-box relative">
           {isProjectInfoLoading || !projectInfo ? (
             <LoadingIndicator />
           ) : (
@@ -358,7 +358,7 @@ const InfoProjectModal: React.FC<{
               <div className="divider" />
               <div className="flex justify-between items-center">
                 <p>Average Rating:</p>
-                <p className="font-bold">{projectInfo.averageRating.toFixed(1)}</p>
+                <p className="font-bold">{projectInfo.averageRating ? projectInfo.averageRating.toFixed(1) : "N/A"}</p>
               </div>
               <div className="flex justify-between items-center">
                 <p>Created At:</p>
