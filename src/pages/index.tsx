@@ -849,7 +849,16 @@ const ProjectDrawerContainer: React.FC<{
   onProjectPress: (i: number) => void;
   children: React.ReactNode;
 }> = (props) => {
-  const { mutate: createProject, isLoading: isNewProjectsLoading } = api.projects.create.useMutation()
+  const { mutate: createProject, isLoading: isNewProjectsLoading } = api.projects.create.useMutation({
+    onError: (e) => {
+      const errorMessage = e.data?.zodError?.fieldErrors.name;
+      if (errorMessage && errorMessage[0]) {
+        toast.error(errorMessage[0]);
+      } else {
+        toast.error("Something went wrong creating the project.");
+      }
+    }
+  })
   const { refetch: refetchProjects, isFetching: isProjectsFetching } = api.projects.getAll.useQuery();
 
   const projectSubmitHandler = (projectTitle: string) => {
