@@ -24,7 +24,7 @@ export const toastTrpcError = (
     properties.forEach((property) => {
       const errorMessagesLocal = errorMessages[property.propertyName]
       if (errorMessagesLocal && errorMessagesLocal[0]) {
-        errorMessage = property.propertyMessage + ": " + errorMessagesLocal[0].toLowerCase();
+        errorMessage = "An error has occurred with the " + property.propertyMessage.toLowerCase() + ": " + errorMessagesLocal[0].toLowerCase();
       }
     });
   }

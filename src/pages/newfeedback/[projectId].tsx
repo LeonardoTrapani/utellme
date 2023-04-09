@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import Input from "~/components/Input";
 import LoadingIndicator from "~/components/LoadingIndicator";
+import NotFoundPage from "~/components/NotFoundPage";
 import { SelectRatingComponent, } from "~/components/RatingComponent";
 import { TellMeComponentButton } from "~/components/TellMeComponent";
 import { api } from "~/utils/api";
@@ -90,29 +91,30 @@ const NewFeedbackPage: NextPage = () => {
             <div className="flex items-center justify-center h-screen">
               <LoadingIndicator />
             </div> :
-            (
-              !hasGivenFeedback ?
-                <MainGetFeedbackContent
-                  projectName={project?.name}
-                  currentRating={rating}
-                  setRating={(rating) => {
-                    setRating(rating);
-                    setRatingHasError(false);
-                  }}
-                  onSubmitFeedback={submitFeedbackHandler}
-                  setFeedbackTitle={(title) => setFeedbackTitle(title)}
-                  setFeedbackAuthor={(author) => setFeedbackAuthor(author)}
-                  setFeedbackContent={(content) => {
-                    setFeedbackContent(content);
-                    setContentHasError(false);
-                  }}
-                  contentHasError={contentHasError}
-                  ratingHasError={ratingHasError}
-                /> :
-                <FeedbackCompletedPage />
-            )
+            (!isProjectLoading && !project) ? <NotFoundPage /> :
+              (
+                !hasGivenFeedback ?
+                  <MainGetFeedbackContent
+                    projectName={project?.name}
+                    currentRating={rating}
+                    setRating={(rating) => {
+                      setRating(rating);
+                      setRatingHasError(false);
+                    }}
+                    onSubmitFeedback={submitFeedbackHandler}
+                    setFeedbackTitle={(title) => setFeedbackTitle(title)}
+                    setFeedbackAuthor={(author) => setFeedbackAuthor(author)}
+                    setFeedbackContent={(content) => {
+                      setFeedbackContent(content);
+                      setContentHasError(false);
+                    }}
+                    contentHasError={contentHasError}
+                    ratingHasError={ratingHasError}
+                  /> :
+                  <FeedbackCompletedPage />
+              )
         }
-      </main>
+      </main >
     </>
   )
 }
