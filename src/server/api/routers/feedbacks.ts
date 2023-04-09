@@ -4,6 +4,7 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { z } from "zod"
+import type { Prisma, PrismaClient } from "@prisma/client";
 
 export const feedbacksRouter = createTRPCRouter({
 
@@ -40,12 +41,14 @@ export const feedbacksRouter = createTRPCRouter({
           rating: input.rating,
         },
       })
+      const averageRating = await calculateAverageRating(trx, input.projectId);
       await trx.project.update({
         where: {
           id: input.projectId
         },
         data: {
-          lastChildUpdatedAt: new Date()
+          lastChildUpdatedAt: new Date(),
+          averageRating
         }
       })
     })
@@ -53,15 +56,45 @@ export const feedbacksRouter = createTRPCRouter({
 
   delete: protectedProcedure.input(z.object({
     id: z.string(),
+    projectId: z.string()
   })).mutation(async ({ ctx, input }) => {
-    return await ctx.prisma.feedback.deleteMany({
-      where: {
-        id: input.id,
-        project: {
-          userId: ctx.session.user.id
+    return await ctx.prisma.$transaction(async (trx) => {
+      await trx.feedback.deleteMany({
+        where: {
+          id: input.id,
+          project: {
+            userId: ctx.session.user.id
+          },
+        },
+      })
+      const averageRating = await calculateAverageRating(trx, input.projectId);
+      await trx.project.update({
+        where: {
+          id: input.projectId,
+        },
+        data: {
+          lastChildUpdatedAt: new Date(),
+          averageRating
         }
-      },
-    })
+      })
+    });
   })
 
 });
+
+const calculateAverageRating = async (
+  trx: Omit<PrismaClient<Prisma.PrismaClientOptions, never, Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">,
+  projectId: string) => {
+  const avgRating = await trx.feedback.aggregate({
+    where: {
+      projectId: projectId,
+    },
+    _avg: {
+      rating: true
+    },
+  });
+  if (!avgRating._avg.rating) {
+    throw new Error("Could not calculate average rating")
+  }
+  return avgRating._avg.rating
+}

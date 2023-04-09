@@ -32,7 +32,7 @@ model Project {
   orderBy            OrderBy    @default(createdAtDesc)
   filterBy           FilterBy[] @default([])
   customFilterDate   DateTime?
-  averageRating      Float      @default(5)
+  averageRating      Float      @default(5) @db.DoublePrecision
   createdAt          DateTime   @default(now())
   lastChildUpdatedAt DateTime   @default(now())
 }
@@ -60,7 +60,7 @@ model Feedback {
   content   String   @db.Text
   projectId String
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  rating    Float
+  rating    Int      @db.SmallInt
   author    String?  @db.VarChar(35)
   createdAt DateTime @default(now())
 }
