@@ -4,7 +4,7 @@ import Head from "next/head";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useEffect, useRef, useState } from "react";
-import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle } from "react-icons/bi"
+import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiFilter } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs"
 import type { Feedback, Project } from "@prisma/client";
 import { StaticRatingComponent } from "~/components/RatingComponent";
@@ -811,6 +811,16 @@ const ActionIconsComponent: React.FC<{
         props.areThereProjects &&
         (
           <>
+            <SingleActionIcon>
+              <div className="dropdown dropdown-hover dropdown-end">
+                <label tabIndex={0}>
+                  <BiFilter size={26} />
+                </label>
+                <div tabIndex={0} className="dropdown-content cursor-auto">
+                  <FilterContent />
+                </div>
+              </div>
+            </SingleActionIcon>
             <SingleActionIcon tooltipName="project info">
               <label htmlFor="info-project-modal" className="cursor-pointer">
                 <BiInfoCircle size={26} />
@@ -864,6 +874,14 @@ const ActionIconsComponent: React.FC<{
     </div >
   )
 }
+
+const FilterContent: React.FC = () => {
+  return (
+    <div className="bg-base-300 p-2">
+      <p>DROPDOWN CONTENT</p>
+    </div>
+  )
+};
 
 const OpenMenuButton = () => {
   return (
