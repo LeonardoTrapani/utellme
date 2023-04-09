@@ -2,6 +2,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import Input from "~/components/Input";
 import LoadingIndicator from "~/components/LoadingIndicator";
 import NotFoundPage from "~/components/NotFoundPage";
@@ -79,6 +80,13 @@ const NewFeedbackPage: NextPage = () => {
     })
   }
 
+  const projectDoesNotExist = !isProjectLoading && !project;
+  useEffect(() => {
+    if (projectDoesNotExist) {
+      toast.error('Project not found... is the link wrong?')
+    }
+  }, [projectDoesNotExist])
+
   return (
     <>
       <Head>
@@ -91,7 +99,7 @@ const NewFeedbackPage: NextPage = () => {
             <div className="flex items-center justify-center h-screen">
               <LoadingIndicator />
             </div> :
-            (!isProjectLoading && !project) ? <NotFoundPage /> :
+            (projectDoesNotExist) ? <NotFoundPage /> :
               (
                 !hasGivenFeedback ?
                   <MainGetFeedbackContent
