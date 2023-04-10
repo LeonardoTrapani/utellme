@@ -186,9 +186,7 @@ const Home: NextPage = () => {
 const MainPageContent: React.FC<{
   selectedProjectIndex: number;
   setSelectedProjectIndex: (i: number) => void;
-  projectsData: (Project & {
-    feedbacks: Feedback[];
-  })[] | undefined;
+  projectsData: Project[] | undefined;
   onRefetchProjects: () => void;
 }> = (props) => {
   const onProjectPress = (i: number) => {
@@ -563,9 +561,7 @@ const ModalActionButton: React.FC<{
 
 const ProjectMainContent: React.FC<{
   selectedProjectIndex: number;
-  projectsData: (Project & {
-    feedbacks: Feedback[];
-  })[] | undefined;
+  projectsData: Project[] | undefined;
   onRefetchProjects: () => void;
 }> = (props) => {
   const projectsData = props.projectsData;
@@ -596,6 +592,25 @@ const ProjectMainContent: React.FC<{
     });
   }
 
+  const {
+    data: feedbacksData,
+    isLoading: isFeedbackDataLoading,
+  } = api.feedbacks.getAll.useQuery({
+    projectId: projectsData[props.selectedProjectIndex]?.id || "-1"
+  }, {
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong fetching the feedback.",
+        e.data?.zodError?.fieldErrors,
+        [
+          { propertyName: "projectId", propertyMessage: "Project ID" },
+        ]
+      )
+    },
+    enabled: !!projectsData[props.selectedProjectIndex]?.id
+  });
+
+
   if (!projectsData.length) {
     return (<>
       {
@@ -613,6 +628,7 @@ const ProjectMainContent: React.FC<{
       <NoProjectsComponent />
     </>)
   }
+
   return (
     <>
       <div className="mb-3 flex">
@@ -640,17 +656,24 @@ const ProjectMainContent: React.FC<{
       </div>
       {
         (
-          (!!projectsData && projectsData[props.selectedProjectIndex]?.feedbacks.length)
-            ?
-            <FeedbackList
-              feedbacks={projectsData[props.selectedProjectIndex]?.feedbacks}
-              projectId={projectsData[props.selectedProjectIndex]?.id}
-            />
-            :
-            <NoFeedbackComponent
-              projectId={projectsData[props.selectedProjectIndex]?.id || "-1"}
-              projectName={projectsData[props.selectedProjectIndex]?.name}
-            />
+          (
+            isFeedbackDataLoading ?
+              <div className="h-full w-full flex justify-center items-center">
+                <LoadingIndicator />
+              </div>
+              :
+              (
+
+                projectsData[props.selectedProjectIndex] && feedbacksData?.length
+                  ?
+                  <FeedbackList feedbacksData={feedbacksData} />
+                  :
+                  <NoFeedbackComponent
+                    projectId={projectsData[props.selectedProjectIndex]?.id || "-1"}
+                    projectName={projectsData[props.selectedProjectIndex]?.name}
+                  />
+              )
+          )
         )
       }
     </>
@@ -1065,33 +1088,13 @@ const DeleteProjectActionIcon: React.FC<{
 }
 
 const FeedbackList: React.FC<{
-  feedbacks: Feedback[] | undefined;
-  projectId: string | undefined;
+  feedbacksData: Feedback[] | undefined
 }> = (props) => {
-  const {
-    data: feedbacksData,
-    isLoading: isFeedbackDataLoading,
-  } = api.feedbacks.getAll.useQuery({
-    projectId: props.projectId || "-1"
-  }, {
-    onError: (e) => {
-      toastTrpcError(
-        "Something went wrong fetching the feedback.",
-        e.data?.zodError?.fieldErrors,
-        [
-          { propertyName: "projectId", propertyMessage: "Project ID" },
-        ]
-      )
-    }
-  });
-
   return (
     <div className="overflow-y-auto">
       <ul className="gap-2 grid md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4">
         {
-          isFeedbackDataLoading ? props.feedbacks?.map((feedback) => {
-            return <FeedbackComponent key={feedback.id} feedback={feedback} />
-          }) : feedbacksData?.map((feedback) => {
+          props.feedbacksData?.map((feedback) => {
             return <FeedbackComponent key={feedback.id} feedback={feedback} />
           })
         }
@@ -1100,12 +1103,8 @@ const FeedbackList: React.FC<{
   )
 }
 
-type ProjectsDataType = (Project & {
-  feedbacks: Feedback[];
-})[] | undefined
-
 const ProjectDrawerContainer: React.FC<{
-  projectsData: ProjectsDataType;
+  projectsData: Project[] | undefined;
   selectedProjectIndex: number;
   onProjectPress: (i: number) => void;
   children: React.ReactNode;
