@@ -1023,10 +1023,8 @@ const DropdownSort: React.FC<{
   currentSort: OrderBy | undefined;
   projectId: string | undefined;
 }> = (props) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
   return (
-    <div className="dropdown dropdown-end">
+    <div className="dropdown dropdown-end flex">
       <label tabIndex={0} className="cursor-pointer">
         <BiSortAlt2 size={26} />
       </label>
@@ -1067,7 +1065,7 @@ const SingleActionIcon: React.FC<{
 }> = (props) => {
   return (
     <div
-      className={`${!!props.tooltipName ? ' tooltip tooltip-left' : ''} cursor-pointer`}
+      className={`${!!props.tooltipName ? ' md:tooltip md:tooltip-left' : ''} cursor-pointer`}
       data-tip={props.tooltipName?.toLowerCase()}
     >
       <a className="cursor-pointer" onClick={props.onPress}>
