@@ -169,6 +169,7 @@ const Home: NextPage = () => {
                     setNameInputHasError={(value) => { setEditProjectNameHasError(value) }}
                   />
                   <InfoProjectModal projectId={projects?.[selectedProjectIndex]?.id} />
+                  <FilterModal />
                 </>
               }
             </>
@@ -374,6 +375,24 @@ const InfoProjectModal: React.FC<{
               </div>
             </div>
           )}
+        </label>
+      </label>
+    </>
+  )
+}
+
+const FilterModal: React.FC = () => {
+  return (
+    <>
+      <input type="checkbox" id="filter-project-modal" className="modal-toggle" />
+      <label htmlFor="filter-project-modal" className="modal cursor-pointer">
+        <label className="modal-box relative">
+          <div>
+            <p>FILTER</p>
+          </div>
+          <div>
+            <p>SORT</p>
+          </div>
         </label>
       </label>
     </>
@@ -812,13 +831,10 @@ const ActionIconsComponent: React.FC<{
         (
           <>
             <SingleActionIcon>
-              <div className="dropdown dropdown-hover dropdown-end">
-                <label tabIndex={0}>
+              <div className="dropdown dropdown-end dropdow-hover">
+                <label htmlFor="filter-project-modal" className="cursor-pointer">
                   <BiFilter size={26} />
                 </label>
-                <div tabIndex={0} className="dropdown-content cursor-auto">
-                  <FilterContent />
-                </div>
               </div>
             </SingleActionIcon>
             <SingleActionIcon tooltipName="project info">
@@ -874,14 +890,6 @@ const ActionIconsComponent: React.FC<{
     </div >
   )
 }
-
-const FilterContent: React.FC = () => {
-  return (
-    <div className="bg-base-300 p-2">
-      <p>DROPDOWN CONTENT</p>
-    </div>
-  )
-};
 
 const OpenMenuButton = () => {
   return (
