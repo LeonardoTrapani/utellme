@@ -4,7 +4,7 @@ import Head from "next/head";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useEffect, useRef, useState } from "react";
-import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiFilter } from "react-icons/bi"
+import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiFilter, BiSortUp, BiSortDown } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs"
 import type { Feedback, Project } from "@prisma/client";
 import { StaticRatingComponent } from "~/components/RatingComponent";
@@ -18,6 +18,7 @@ import QRCode from 'qrcode'
 import Input from "~/components/Input";
 import { TellMeComponentButton } from "~/components/TellMeComponent";
 import { toastTrpcError } from "~/utils/functions";
+import SwitchComponent from "~/components/SwitchComponent";
 
 const Home: NextPage = () => {
   const { status: sessionStatus } = useSession();
@@ -169,7 +170,6 @@ const Home: NextPage = () => {
                     setNameInputHasError={(value) => { setEditProjectNameHasError(value) }}
                   />
                   <InfoProjectModal projectId={projects?.[selectedProjectIndex]?.id} />
-                  <FilterModal />
                 </>
               }
             </>
@@ -381,21 +381,23 @@ const InfoProjectModal: React.FC<{
   )
 }
 
-const FilterModal: React.FC = () => {
+const SortContent = () => {
+  const [isAscending, setIsAscending] = useState(true);
+
   return (
-    <>
-      <input type="checkbox" id="filter-project-modal" className="modal-toggle" />
-      <label htmlFor="filter-project-modal" className="modal cursor-pointer">
-        <label className="modal-box relative">
-          <div>
-            <p>FILTER</p>
-          </div>
-          <div>
-            <p>SORT</p>
-          </div>
-        </label>
-      </label>
-    </>
+    <div className="flex gap-4">
+      <select className="select select-bordered grow outline-none focus:outline-none">
+        <option disabled selected>Sort By</option>
+        <option>Created Time</option>
+        <option>Rating</option>
+      </select>
+      <SwitchComponent
+        activeFirst={isAscending}
+        first={<BiSortUp size={30} />}
+        second={<BiSortDown size={30} />}
+        onSwitch={() => setIsAscending((prevState) => !prevState)}
+      />
+    </div>
   )
 }
 
@@ -831,11 +833,7 @@ const ActionIconsComponent: React.FC<{
         (
           <>
             <SingleActionIcon>
-              <div className="dropdown dropdown-end dropdow-hover">
-                <label htmlFor="filter-project-modal" className="cursor-pointer">
-                  <BiFilter size={26} />
-                </label>
-              </div>
+              <DropdownSort />
             </SingleActionIcon>
             <SingleActionIcon tooltipName="project info">
               <label htmlFor="info-project-modal" className="cursor-pointer">
@@ -891,6 +889,18 @@ const ActionIconsComponent: React.FC<{
   )
 }
 
+const DropdownSort = () => {
+  return (
+    <div className="dropdown dropdown-end dropdown-hover">
+      <label tabIndex={0} className="">
+        <BiFilter size={26} />
+      </label>
+      <ul tabIndex={0} className="dropdown-content bg-base-300 menu p-2 shadow rounded-box w-52">
+        <SortContent />
+      </ul>
+    </div>
+  )
+}
 const OpenMenuButton = () => {
   return (
     <div className="flex bg-base-300 rounded-full items-center justify-center pl-2 pr-1 text-center py-1">
