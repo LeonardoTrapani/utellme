@@ -616,10 +616,9 @@ const onGenerateQr = async (projectId: string, projectName: string) => {
       { type: 'image/png' },
     )
     await shareOrCopyToClipboard({
-      title: `${projectName || "My project"}'s QR-Code`,
+      title: `${projectName}'s QR-Code`,
       isFile: true,
-      fileName: `${projectName || "My project"}'s QR-Code.png`,
-      description: `Scan this QR-Code to give feedback about ${projectName || "my project"}!`,
+      fileName: `${projectName}'s QR-Code.png`,
       text: qrImage
     })
   } catch (err) {
@@ -635,12 +634,10 @@ const shareOrCopyToClipboard = async ({
   title,
   isFile,
   fileName,
-  description
 }: {
   text: string,
   title?: string,
   isFile?: boolean
-  description: string
   fileName?: string;
 }) => {
   if (isFile) {
@@ -652,13 +649,11 @@ const shareOrCopyToClipboard = async ({
   const shareData: ShareData = {
     title,
     url: text,
-    text: description
   };
   if (navigator.share && navigator.canShare(shareData)) {
     void navigator.share({
       title,
       url: text,
-      text: description
     })
   } else {
     void copyToClipboard(text);
@@ -781,7 +776,6 @@ const ActionIconsComponent: React.FC<{
               onPress={() => {
                 void shareOrCopyToClipboard(
                   {
-                    description: `open this link to give feedback to ${props.projectName || "this project"}`,
                     isFile: false,
                     text: getProjectUrl(props.projectId || "-1"),
                     title: `What do you think about ${props.projectName || "this project"}?`
