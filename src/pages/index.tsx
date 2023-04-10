@@ -4,9 +4,9 @@ import Head from "next/head";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useEffect, useRef, useState } from "react";
-import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiFilter, BiSortUp, BiSortDown } from "react-icons/bi"
+import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiSortUp, BiSortDown, BiSortAlt2 } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs"
-import type { Feedback, Project } from "@prisma/client";
+import type { Feedback, OrderBy, Project } from "@prisma/client";
 import { StaticRatingComponent } from "~/components/RatingComponent";
 import LoadingIndicator from "~/components/LoadingIndicator";
 import Avatar from "~/components/Avatar";
@@ -381,20 +381,46 @@ const InfoProjectModal: React.FC<{
   )
 }
 
-const SortContent = () => {
-  const [isAscending, setIsAscending] = useState(true);
+const SortContent: React.FC<{
+  currentSort: OrderBy | undefined;
+}> = (props) => {
+  const [isAscending, setIsAscending] = useState(
+    props.currentSort === "ratingAsc" || props.currentSort === "createdAtAsc"
+  );
+  const [isSortingByRating, setIsSortingByRating] = useState(
+    props.currentSort === 'ratingAsc' || props.currentSort === 'ratingDesc'
+  );
+
+  useEffect(() => {
+    if (props.currentSort === 'ratingAsc' || props.currentSort === 'ratingDesc') {
+      setIsSortingByRating(true);
+    } else {
+      setIsSortingByRating(false);
+    }
+    if (props.currentSort === 'ratingAsc' || props.currentSort === 'createdAtAsc') {
+      setIsAscending(true);
+    } else {
+      setIsAscending(false);
+    }
+  }, [props.currentSort])
 
   return (
     <div className="flex gap-4">
-      <select className="select select-bordered grow outline-none focus:outline-none">
-        <option disabled selected>Sort By</option>
+      <select
+        className="select select-bordered grow outline-none focus:outline-none"
+        onChange={(e) => {
+          e.currentTarget.value === 'Rating' ? setIsSortingByRating(true) : setIsSortingByRating(false);
+        }}
+        value={isSortingByRating ? 'Rating' : 'Created Time'}
+      >
+        <option disabled>Sort By</option>
         <option>Created Time</option>
         <option>Rating</option>
       </select>
       <SwitchComponent
         activeFirst={isAscending}
-        first={<BiSortUp size={30} />}
-        second={<BiSortDown size={30} />}
+        first={<BiSortUp size={28} />}
+        second={<BiSortDown size={28} />}
         onSwitch={() => setIsAscending((prevState) => !prevState)}
       />
     </div>
@@ -449,6 +475,7 @@ const MainPageContent: React.FC<{
         <ActionIconsComponent
           projectId={props.projectsData[props.selectedProjectIndex]?.id}
           projectName={props.projectsData[props.selectedProjectIndex]?.name}
+          currentSort={props.projectsData[props.selectedProjectIndex]?.orderBy}
           areThereProjects={props.projectsData.length > 0}
         />
       }
@@ -498,6 +525,7 @@ const ProjectMainContent: React.FC<{
         (windowWidth || 0) >= 768
           ?
           <ActionIconsComponent
+            currentSort={projectsData[props.selectedProjectIndex]?.orderBy}
             projectId={projectsData[props.selectedProjectIndex]?.id}
             areThereProjects={projectsData.length > 0}
             projectName={projectsData[props.selectedProjectIndex]?.name}
@@ -524,6 +552,7 @@ const ProjectMainContent: React.FC<{
           (windowWidth || 0) >= 768
             ?
             <ActionIconsComponent
+              currentSort={projectsData[props.selectedProjectIndex]?.orderBy}
               projectId={projectsData[props.selectedProjectIndex]?.id}
               areThereProjects={projectsData.length > 0}
               projectName={projectsData[props.selectedProjectIndex]?.name}
@@ -816,6 +845,7 @@ const ActionIconsComponent: React.FC<{
   projectId: string | undefined;
   areThereProjects: boolean;
   projectName: string | undefined;
+  currentSort: OrderBy | undefined;
 }> = (props) => {
   const [windowWidth] = useWindowSize()
   const isSmall = (windowWidth || 0) < 768;
@@ -833,7 +863,7 @@ const ActionIconsComponent: React.FC<{
         (
           <>
             <SingleActionIcon>
-              <DropdownSort />
+              <DropdownSort currentSort={props.currentSort} />
             </SingleActionIcon>
             <SingleActionIcon tooltipName="project info">
               <label htmlFor="info-project-modal" className="cursor-pointer">
@@ -889,15 +919,17 @@ const ActionIconsComponent: React.FC<{
   )
 }
 
-const DropdownSort = () => {
+const DropdownSort: React.FC<{
+  currentSort: OrderBy | undefined;
+}> = (props) => {
   return (
     <div className="dropdown dropdown-end dropdown-hover">
       <label tabIndex={0} className="">
-        <BiFilter size={26} />
+        <BiSortAlt2 size={26} />
       </label>
-      <ul tabIndex={0} className="dropdown-content bg-base-300 menu p-2 shadow rounded-box w-52">
-        <SortContent />
-      </ul>
+      <div tabIndex={0} className="dropdown-content bg-base-300 menu p-2 shadow rounded-box w-52">
+        <SortContent currentSort={props.currentSort} />
+      </div>
     </div>
   )
 }
