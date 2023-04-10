@@ -6,22 +6,53 @@ import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
 import { Toaster } from "react-hot-toast";
+import Script from "next/script";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
   return (
-    <SessionProvider session={session}>
+    <>
+      <SessionProvider session={session}>
+        <Component {...pageProps} />
+      </SessionProvider>
+
+      {
+        <>
+          <GoogleAnalytics googleAnalyticsId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || ""} />
+        </>
+      }
       <Toaster toastOptions={{
         style: {
           background: "#252932",
           color: "#A7ADBA",
         }
-      }}/>
-      <Component {...pageProps} />
-    </SessionProvider>
+      }} />
+    </>
   );
 };
+
+const GoogleAnalytics: React.FC<{
+  googleAnalyticsId: string;
+}> = (props) => {
+  return (
+    <>
+      <Script
+        strategy="afterInteractive"
+        src={`https://www.googletagmanager.com/gtag/js?id=${props.googleAnalyticsId}`}
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', '${props.googleAnalyticsId}');
+              `}
+      </Script>
+    </>
+  )
+}
 
 export default api.withTRPC(MyApp);
