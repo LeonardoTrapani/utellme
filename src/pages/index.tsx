@@ -4,9 +4,9 @@ import Head from "next/head";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useEffect, useRef, useState } from "react";
-import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck } from "react-icons/bi"
+import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiSortUp, BiSortDown, BiSortAlt2 } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs"
-import type { Feedback, Project } from "@prisma/client";
+import type { Feedback, OrderBy, Project } from "@prisma/client";
 import { StaticRatingComponent } from "~/components/RatingComponent";
 import LoadingIndicator from "~/components/LoadingIndicator";
 import Avatar from "~/components/Avatar";
@@ -18,13 +18,13 @@ import QRCode from 'qrcode'
 import Input from "~/components/Input";
 import { TellMeComponentButton } from "~/components/TellMeComponent";
 import { toastTrpcError } from "~/utils/functions";
+import { SwitchComponent } from "~/components/SwitchComponent";
 
 const Home: NextPage = () => {
-  const { data: sessionData, status: sessionStatus } = useSession();
+  const { status: sessionStatus } = useSession();
   const isSignedIn = sessionStatus === 'authenticated';
 
   const {
-    isLoading: isProjectsLoading,
     refetch: refetchProjects,
     data: projects,
   } =
@@ -130,11 +130,10 @@ const Home: NextPage = () => {
         <meta name="description" content="get free quick and easy feedback" />
       </Head>
       <main>
-        {(sessionStatus === 'loading') || (isProjectsLoading && sessionData?.user)
+        {(sessionStatus === 'loading')
           ?
-          <div className="flex items-center justify-center h-screen">
-            <LoadingIndicator />
-          </div> :
+          <></>
+          :
           isSignedIn ? (
             <>
               <MainPageContent
@@ -147,27 +146,32 @@ const Home: NextPage = () => {
                 projectsData={projects}
                 onRefetchProjects={() => void refetchProjects()}
               />
-              <DeleteProjectModal
-                onDelete={projectDeleteHandler}
-                projectTitle={projects?.[selectedProjectIndex]?.name}
-                modalHasError={deleteModalHasError}
-                setModalHasError={setDeleteModalHasError}
-                resetModalState={resetDeleteModalState}
-                inputValue={deleteModalInputValue}
-                setInputValue={setDeleteModalInputValue}
-              />
-              <EditProjectModal
-                projectName={projects?.[selectedProjectIndex]?.name || 'Project name'}
-                projectDescription={projects?.[selectedProjectIndex]?.description || 'Project description'}
-                resetModalState={resetEditModalState}
-                setDescriptionInputValue={setEditProjectDescriptionValue}
-                setNameInputValue={setEditProjectNameValue}
-                nameInputValue={editProjectNameValue}
-                descriptionInputValue={editProjectDescriptionValue}
-                onEdit={projectEditHandler}
-                editProjectNameHasError={editProjectNameHasError}
-                setNameInputHasError={(value) => { setEditProjectNameHasError(value) }}
-              />
+              {
+                <>
+                  <DeleteProjectModal
+                    onDelete={projectDeleteHandler}
+                    projectTitle={projects?.[selectedProjectIndex]?.name}
+                    modalHasError={deleteModalHasError}
+                    setModalHasError={setDeleteModalHasError}
+                    resetModalState={resetDeleteModalState}
+                    inputValue={deleteModalInputValue}
+                    setInputValue={setDeleteModalInputValue}
+                  />
+                  <EditProjectModal
+                    projectName={projects?.[selectedProjectIndex]?.name || 'Project name'}
+                    projectDescription={projects?.[selectedProjectIndex]?.description || 'Project description'}
+                    resetModalState={resetEditModalState}
+                    setDescriptionInputValue={setEditProjectDescriptionValue}
+                    setNameInputValue={setEditProjectNameValue}
+                    nameInputValue={editProjectNameValue}
+                    descriptionInputValue={editProjectDescriptionValue}
+                    onEdit={projectEditHandler}
+                    editProjectNameHasError={editProjectNameHasError}
+                    setNameInputHasError={(value) => { setEditProjectNameHasError(value) }}
+                  />
+                  <InfoProjectModal projectId={projects?.[selectedProjectIndex]?.id} />
+                </>
+              }
             </>
           )
             :
@@ -178,6 +182,47 @@ const Home: NextPage = () => {
     </>
   );
 };
+
+const MainPageContent: React.FC<{
+  selectedProjectIndex: number;
+  setSelectedProjectIndex: (i: number) => void;
+  projectsData: Project[] | undefined;
+  onRefetchProjects: () => void;
+}> = (props) => {
+  const onProjectPress = (i: number) => {
+    props.setSelectedProjectIndex(i);
+  }
+
+  const [windowWidth] = useWindowSize()
+
+  if (!props.projectsData) {
+    return <></>
+  }
+
+  return (
+    <ProjectDrawerContainer
+      projectsData={props.projectsData}
+      selectedProjectIndex={props.selectedProjectIndex}
+      onProjectPress={onProjectPress}
+    >
+      {
+        (windowWidth || 0) < 768 //if we are in mobile we need the icons above the main page content 
+        &&
+        <ActionIconsComponent
+          projectId={props.projectsData[props.selectedProjectIndex]?.id}
+          projectName={props.projectsData[props.selectedProjectIndex]?.name}
+          currentSort={props.projectsData[props.selectedProjectIndex]?.orderBy}
+          areThereProjects={props.projectsData.length > 0}
+        />
+      }
+      <ProjectMainContent
+        selectedProjectIndex={props.selectedProjectIndex}
+        projectsData={props.projectsData}
+        onRefetchProjects={props.onRefetchProjects}
+      />
+    </ProjectDrawerContainer>
+  )
+}
 
 const closeDrawer = () => {
   const drawer = document.getElementById('drawer') as HTMLInputElement || undefined;
@@ -221,7 +266,7 @@ const DeleteProjectModal: React.FC<{
     <>
       <input type="checkbox" id="delete-project-modal" className="modal-toggle" />
       <label htmlFor="delete-project-modal" className="modal cursor-pointer">
-        <label className="modal-box relative" htmlFor="">
+        <label className="modal-box relative">
           <h3 className="text-lg font-bold">Are you sure you want to delete this project?</h3>
           <p className="py-4">This action cannot be undone. You will lose all <span>{props.projectTitle || "your project"}</span>&apos;s feedback forever</p>
           <div className="divider mt-0 mb-0" />
@@ -291,7 +336,7 @@ const EditProjectModal: React.FC<{
     <>
       <input type="checkbox" id="edit-project-modal" className="modal-toggle" />
       <label htmlFor="edit-project-modal" className="modal cursor-pointer">
-        <label className="modal-box relative" htmlFor="">
+        <label className="modal-box relative">
           <div className="form-control gap-4">
             <Input
               name="Name"
@@ -334,6 +379,168 @@ const EditProjectModal: React.FC<{
   )
 }
 
+const InfoProjectModal: React.FC<{
+  projectId: string | undefined;
+}> = (props) => {
+  const { data: projectInfo, isLoading: isProjectInfoLoading } = api.projects.getInfo.useQuery({ projectId: props.projectId || "" }, {
+    enabled: !!props.projectId
+  });
+
+  return (
+    <>
+      <input type="checkbox" id="info-project-modal" className="modal-toggle" />
+      <label htmlFor="info-project-modal" className="modal cursor-pointer">
+        <label className="modal-box relative">
+          {isProjectInfoLoading || !projectInfo ? (
+            <LoadingIndicator />
+          ) : (
+            <div>
+              <h2 className="text-xl font-bold">{projectInfo.name}</h2>
+              <p className="italic">{projectInfo.description}</p>
+              <div className="divider" />
+              <div className="flex justify-between items-center">
+                <p>Average Rating:</p>
+                <p className="font-bold">{projectInfo.averageRating ? projectInfo.averageRating.toFixed(1) : "N/A"}</p>
+              </div>
+              <div className="flex justify-between items-center">
+                <p>Created At:</p>
+                <p className="font-bold">{projectInfo.createdAt.toDateString()}</p>
+              </div>
+              <div className="flex justify-between items-center">
+                <p>Feedback received:</p>
+                <p className="font-bold">{projectInfo._count.feedbacks}</p>
+              </div>
+              <div className="flex justify-between items-center">
+                <p>ID:</p>
+                <p className="font-bold">{projectInfo.id}</p>
+              </div>
+            </div>
+          )}
+        </label>
+      </label>
+    </>
+  )
+}
+
+const SortContent: React.FC<{
+  currentSort: OrderBy | undefined;
+  projectId: string | undefined;
+}> = (props) => {
+  const [isAscending, setIsAscending] = useState(
+    props.currentSort === "ratingAsc" || props.currentSort === "createdAtAsc"
+  );
+  const [isSortingByRating, setIsSortingByRating] = useState(
+    props.currentSort === 'ratingAsc' || props.currentSort === 'ratingDesc'
+  );
+
+  useEffect(() => {
+    if (props.currentSort === 'ratingAsc' || props.currentSort === 'ratingDesc') {
+      setIsSortingByRating(true);
+    } else {
+      setIsSortingByRating(false);
+    }
+    if (props.currentSort === 'ratingAsc' || props.currentSort === 'createdAtAsc') {
+      setIsAscending(true);
+    } else {
+      setIsAscending(false);
+    }
+  }, [props.currentSort])
+
+  const {
+    refetch: refetchFeedback
+  } = api.feedbacks.getAll.useQuery({
+    projectId: props.projectId || "-1"
+  }, {
+    enabled: !!props.projectId,
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong fetching the feedback.",
+        e.data?.zodError?.fieldErrors,
+        [
+          { propertyName: "projectId", propertyMessage: "Project ID" },
+        ]
+      )
+    }
+  });
+
+  const {
+    refetch: refetchProjects
+  } = api.projects.getAll.useQuery(undefined, {
+    enabled: !!props.projectId,
+    onError: () => {
+      toastTrpcError(
+        "Something went wrong fetching the feedback.",
+        undefined,
+        []
+      )
+    }
+  });
+
+  const { mutate: editProject } = api.projects.edit.useMutation({
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong changing the sort.",
+        e.data?.zodError?.fieldErrors,
+        [
+          { propertyName: "projectId", propertyMessage: "Project ID" },
+          { propertyName: "newOrderBy", propertyMessage: "New Sort" },
+        ]
+      )
+    },
+    onSuccess: async () => {
+      await refetchProjects();
+      void refetchFeedback();
+    }
+  });
+
+  const onChangeSort = (isSortingByRatingLocal: boolean, isAscendingLocal: boolean) => {
+    let currentSort: OrderBy;
+    if (isSortingByRatingLocal) {
+      if (isAscendingLocal) {
+        currentSort = 'ratingAsc';
+      } else {
+        currentSort = 'ratingDesc';
+      }
+    } else {
+      if (isAscendingLocal) {
+        currentSort = 'createdAtAsc';
+      } else {
+        currentSort = 'createdAtDesc';
+      }
+    }
+    editProject({
+      projectId: props.projectId || '-1',
+      newOrderBy: currentSort
+    })
+  }
+
+  return (
+    <div className="flex gap-4">
+      <select
+        className="select select-bordered grow outline-none focus:outline-none"
+        onChange={(e) => {
+          onChangeSort(e.currentTarget.value === 'Rating', isAscending);
+          e.currentTarget.value === 'Rating' ? setIsSortingByRating(true) : setIsSortingByRating(false);
+        }}
+        value={isSortingByRating ? 'Rating' : 'Created Time'}
+      >
+        <option disabled>Sort By</option>
+        <option>Created Time</option>
+        <option>Rating</option>
+      </select>
+      <SwitchComponent
+        activeFirst={isAscending}
+        first={<BiSortUp size={28} />}
+        second={<BiSortDown size={28} />}
+        onSwitch={() => {
+          onChangeSort(isSortingByRating, !isAscending)
+          setIsAscending((prevState) => !prevState)
+        }}
+      />
+    </div>
+  )
+}
+
 const ModalActionButton: React.FC<{
   modalId: string;
   children: React.ReactNode;
@@ -352,49 +559,9 @@ const ModalActionButton: React.FC<{
   )
 }
 
-const MainPageContent: React.FC<{
-  selectedProjectIndex: number;
-  setSelectedProjectIndex: (i: number) => void;
-  projectsData: (Project & {
-    feedbacks: Feedback[];
-  })[] | undefined;
-  onRefetchProjects: () => void;
-}> = (props) => {
-  const onProjectPress = (i: number) => {
-    props.setSelectedProjectIndex(i);
-  }
-
-  const [windowWidth] = useWindowSize()
-
-  if (!props.projectsData) {
-    return <></>
-  }
-
-  return (
-    <ProjectDrawerContainer
-      projectsData={props.projectsData}
-      selectedProjectIndex={props.selectedProjectIndex}
-      onProjectPress={onProjectPress}
-    >
-      {
-        (windowWidth || 0) < 768 //if we are in mobile we need the icons above the main page content 
-        &&
-        <ActionIconsComponent
-          projectId={props.projectsData[props.selectedProjectIndex]?.id}
-          projectName={props.projectsData[props.selectedProjectIndex]?.name}
-          areThereProjects={props.projectsData.length > 0}
-        />
-      }
-      <ProjectMainContent selectedProjectIndex={props.selectedProjectIndex} projectsData={props.projectsData} onRefetchProjects={props.onRefetchProjects} />
-    </ProjectDrawerContainer>
-  )
-}
-
 const ProjectMainContent: React.FC<{
   selectedProjectIndex: number;
-  projectsData: (Project & {
-    feedbacks: Feedback[];
-  })[] | undefined;
+  projectsData: Project[] | undefined;
   onRefetchProjects: () => void;
 }> = (props) => {
   const projectsData = props.projectsData;
@@ -425,24 +592,41 @@ const ProjectMainContent: React.FC<{
     });
   }
 
-  if (!projectsData.length) {
-    return (
-      <>
-        {
+  const {
+    data: feedbacksData,
+    isLoading: isFeedbackDataLoading,
+  } = api.feedbacks.getAll.useQuery({
+    projectId: projectsData[props.selectedProjectIndex]?.id || "-1"
+  }, {
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong fetching the feedback.",
+        e.data?.zodError?.fieldErrors,
+        [
+          { propertyName: "projectId", propertyMessage: "Project ID" },
+        ]
+      )
+    },
+    enabled: !!projectsData[props.selectedProjectIndex]?.id
+  });
 
-          (windowWidth || 0) >= 768
-            ?
-            <ActionIconsComponent
-              projectId={projectsData[props.selectedProjectIndex]?.id}
-              areThereProjects={projectsData.length > 0}
-              projectName={projectsData[props.selectedProjectIndex]?.name}
-            />
-            :
-            <></>
-        }
-        <NoProjectsComponent />
-      </>
-    )
+
+  if (!projectsData.length) {
+    return (<>
+      {
+        (windowWidth || 0) >= 768
+          ?
+          <ActionIconsComponent
+            currentSort={projectsData[props.selectedProjectIndex]?.orderBy}
+            projectId={projectsData[props.selectedProjectIndex]?.id}
+            areThereProjects={projectsData.length > 0}
+            projectName={projectsData[props.selectedProjectIndex]?.name}
+          />
+          :
+          <></>
+      }
+      <NoProjectsComponent />
+    </>)
   }
 
   return (
@@ -461,6 +645,7 @@ const ProjectMainContent: React.FC<{
           (windowWidth || 0) >= 768
             ?
             <ActionIconsComponent
+              currentSort={projectsData[props.selectedProjectIndex]?.orderBy}
               projectId={projectsData[props.selectedProjectIndex]?.id}
               areThereProjects={projectsData.length > 0}
               projectName={projectsData[props.selectedProjectIndex]?.name}
@@ -471,14 +656,24 @@ const ProjectMainContent: React.FC<{
       </div>
       {
         (
-          (!!projectsData && projectsData[props.selectedProjectIndex]?.feedbacks.length)
-            ?
-            <FeedbackList feedbacks={projectsData[props.selectedProjectIndex]?.feedbacks} projectId={projectsData[props.selectedProjectIndex]?.id} />
-            :
-            <NoFeedbackComponent
-              projectId={projectsData[props.selectedProjectIndex]?.id || "-1"}
-              projectName={projectsData[props.selectedProjectIndex]?.name}
-            />
+          (
+            isFeedbackDataLoading ?
+              <div className="h-full w-full flex justify-center items-center">
+                <LoadingIndicator />
+              </div>
+              :
+              (
+
+                projectsData[props.selectedProjectIndex] && feedbacksData?.length
+                  ?
+                  <FeedbackList feedbacksData={feedbacksData} />
+                  :
+                  <NoFeedbackComponent
+                    projectId={projectsData[props.selectedProjectIndex]?.id || "-1"}
+                    projectName={projectsData[props.selectedProjectIndex]?.name}
+                  />
+              )
+          )
         )
       }
     </>
@@ -753,6 +948,7 @@ const ActionIconsComponent: React.FC<{
   projectId: string | undefined;
   areThereProjects: boolean;
   projectName: string | undefined;
+  currentSort: OrderBy | undefined;
 }> = (props) => {
   const [windowWidth] = useWindowSize()
   const isSmall = (windowWidth || 0) < 768;
@@ -769,6 +965,17 @@ const ActionIconsComponent: React.FC<{
         props.areThereProjects &&
         (
           <>
+            <SingleActionIcon>
+              <DropdownSort
+                currentSort={props.currentSort}
+                projectId={props.projectId}
+              />
+            </SingleActionIcon>
+            <SingleActionIcon tooltipName="project info">
+              <label htmlFor="info-project-modal" className="cursor-pointer">
+                <BiInfoCircle size={26} />
+              </label>
+            </SingleActionIcon>
             <SingleActionIcon
               onPress={() => {
                 void onGenerateQr(props.projectId || "-1", props.projectName || "this project");
@@ -818,6 +1025,24 @@ const ActionIconsComponent: React.FC<{
   )
 }
 
+const DropdownSort: React.FC<{
+  currentSort: OrderBy | undefined;
+  projectId: string | undefined;
+}> = (props) => {
+  return (
+    <div className="dropdown dropdown-end dropdown-hover">
+      <label tabIndex={0} className="">
+        <BiSortAlt2 size={26} />
+      </label>
+      <div tabIndex={0} className="dropdown-content bg-base-300 menu p-2 shadow rounded-box w-52">
+        <SortContent
+          currentSort={props.currentSort}
+          projectId={props.projectId}
+        />
+      </div>
+    </div>
+  )
+}
 const OpenMenuButton = () => {
   return (
     <div className="flex bg-base-300 rounded-full items-center justify-center pl-2 pr-1 text-center py-1">
@@ -862,31 +1087,14 @@ const DeleteProjectActionIcon: React.FC<{
   )
 }
 
-const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined; projectId: string | undefined; }> = (props) => {
-  const {
-    data: feedbacksData,
-    isLoading: isFeedbackDataLoading,
-  } = api.feedbacks.getAll.useQuery({
-    projectId: props.projectId || "-1"
-  }, {
-    onError: (e) => {
-      toastTrpcError(
-        "Something went wrong fetching the feedback.",
-        e.data?.zodError?.fieldErrors,
-        [
-          { propertyName: "projectId", propertyMessage: "Project ID" },
-        ]
-      )
-    }
-  });
-
+const FeedbackList: React.FC<{
+  feedbacksData: Feedback[] | undefined
+}> = (props) => {
   return (
     <div className="overflow-y-auto">
       <ul className="gap-2 grid md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4">
         {
-          isFeedbackDataLoading ? props.feedbacks?.map((feedback) => {
-            return <FeedbackComponent key={feedback.id} feedback={feedback} />
-          }) : feedbacksData?.map((feedback) => {
+          props.feedbacksData?.map((feedback) => {
             return <FeedbackComponent key={feedback.id} feedback={feedback} />
           })
         }
@@ -895,12 +1103,8 @@ const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined; projectId: str
   )
 }
 
-type ProjectsDataType = (Project & {
-  feedbacks: Feedback[];
-})[] | undefined
-
 const ProjectDrawerContainer: React.FC<{
-  projectsData: ProjectsDataType;
+  projectsData: Project[] | undefined;
   selectedProjectIndex: number;
   onProjectPress: (i: number) => void;
   children: React.ReactNode;
@@ -916,7 +1120,7 @@ const ProjectDrawerContainer: React.FC<{
       )
     }
   })
-  const { refetch: refetchProjects, isFetching: isProjectsFetching } = api.projects.getAll.useQuery();
+  const { refetch: refetchProjects } = api.projects.getAll.useQuery();
 
   const projectSubmitHandler = (projectTitle: string) => {
     if (!projectTitle.length) {
@@ -973,7 +1177,7 @@ const ProjectDrawerContainer: React.FC<{
           </form>
           <div className="divider mt-2 mb-2" />
           {
-            (isNewProjectsLoading || isProjectsFetching) ?
+            (isNewProjectsLoading) ?
               <div className="flex justify-center">
                 <LoadingIndicator />
               </div>
@@ -992,35 +1196,6 @@ const ProjectDrawerContainer: React.FC<{
     </div>
   )
 }
-/*
-const NewProjectInput: React.FC<{
-  currentLength: number;
-  maxTitleLength?: number;
-}> = (props) => {
-  return (
-    <input
-      type="text"
-      id="new-project-input"
-      placeholder="New Project"
-      className={`input input-bordered w-full max-w-xs ${currentLength >= maxTitleLength ? "input-warning" : ""} ${newProjectInputHasError ? 'input-error' : ''}`}
-      autoFocus={props.projectsData?.length === 0}
-      maxLength={maxTitleLength}
-      onChange={(e) => {
-        setCurrentLength(e.currentTarget.value.length)
-      }}
-      onKeyDown={(e) => {
-        if (newProjectInputHasError) {
-          setNewProjectInputHasError(false)
-        }
-        if (e.key === "Enter") {
-          projectSubmitHandler(e.currentTarget.value);
-          e.currentTarget.value = "";
-        }
-      }}
-    />
-  )
-}
-*/
 
 const TitleAndAvatarComponen = () => {
   return (
