@@ -494,6 +494,7 @@ const SortContent: React.FC<{
   });
 
   const onChangeSort = (isSortingByRatingLocal: boolean, isAscendingLocal: boolean) => {
+    closeDropdown();
     let currentSort: OrderBy;
     if (isSortingByRatingLocal) {
       if (isAscendingLocal) {
@@ -769,7 +770,6 @@ const ProjectInstructions: React.FC<{
         onPress={() => {
           void shareOrCopyToClipboard(
             {
-              description: `Scan this QR-Code to give feedback to ${props.projectName || "thisProject"}!`,
               isFile: false,
               text: getProjectUrl(props.projectId || "-1"),
               title: `What do you think about ${props.projectName || "this project"}?`
@@ -1023,12 +1023,17 @@ const DropdownSort: React.FC<{
   currentSort: OrderBy | undefined;
   projectId: string | undefined;
 }> = (props) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   return (
-    <div className="dropdown dropdown-end dropdown-hover">
-      <label tabIndex={0} className="">
+    <div className="dropdown dropdown-end">
+      <label tabIndex={0} className="cursor-pointer">
         <BiSortAlt2 size={26} />
       </label>
-      <div tabIndex={0} className="dropdown-content bg-base-300 menu p-2 shadow rounded-box w-52">
+      <div
+        id='sort-dropdown'
+        tabIndex={0}
+        className="dropdown-content bg-base-300 menu p-2 shadow rounded-box w-52">
         <SortContent
           currentSort={props.currentSort}
           projectId={props.projectId}
@@ -1037,6 +1042,13 @@ const DropdownSort: React.FC<{
     </div>
   )
 }
+const closeDropdown = () => {
+  const dropdown = document.activeElement as HTMLDivElement | undefined;
+  if (dropdown) {
+    dropdown.blur();
+  }
+}
+
 const OpenMenuButton = () => {
   return (
     <div className="flex bg-base-300 rounded-full items-center justify-center pl-2 pr-1 text-center py-1">
@@ -1055,7 +1067,7 @@ const SingleActionIcon: React.FC<{
 }> = (props) => {
   return (
     <div
-      className={`${!!props.tooltipName ? ' tooltip tooltip-left' : ''}`}
+      className={`${!!props.tooltipName ? ' tooltip tooltip-left' : ''} cursor-pointer`}
       data-tip={props.tooltipName?.toLowerCase()}
     >
       <a className="cursor-pointer" onClick={props.onPress}>
