@@ -126,8 +126,8 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Tell Me!</title>
-        <meta name="description" content="a web app to get feedback" />
+        <title>uTellMe</title>
+        <meta name="description" content="get free quick and easy feedback" />
       </Head>
       <main>
         {(sessionStatus === 'loading')
@@ -253,7 +253,7 @@ const DeleteProjectModal: React.FC<{
   const deleteHandler = (updatedValue?: string) => {
     if (!props.projectTitle) return;
     const value = updatedValue || props.inputValue;
-    if (value === props.projectTitle) {
+    if (value.trim() === props.projectTitle.trim()) {
       props.resetModalState()
       props.onDelete();
     } else {

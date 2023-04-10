@@ -9,7 +9,7 @@ import type { Prisma, PrismaClient } from "@prisma/client";
 export const feedbacksRouter = createTRPCRouter({
 
   getAll: protectedProcedure.input(z.object({
-    projectId: z.string().min(1),
+    projectId: z.string().trim().min(1),
   })).query(async ({ ctx, input }) => {
     const orderBy = await getFeedbackOrderBy(ctx.prisma, input.projectId)
     return await ctx.prisma.feedback.findMany(({
@@ -24,10 +24,10 @@ export const feedbacksRouter = createTRPCRouter({
   }),
 
   create: publicProcedure.input(z.object({
-    title: z.string().min(1).max(50).nullish(),
-    content: z.string().min(1),
-    projectId: z.string().min(1),
-    author: z.string().min(1).max(35).nullish(),
+    title: z.string().trim().min(1).max(50).nullish(),
+    content: z.string().trim().min(1),
+    projectId: z.string().trim().min(1),
+    author: z.string().trim().min(1).max(35).nullish(),
     rating: z.number().min(1).max(5),
   })).mutation(async ({ ctx, input }) => {
     return ctx.prisma.$transaction(async (trx) => {
@@ -54,7 +54,7 @@ export const feedbacksRouter = createTRPCRouter({
   }),
 
   delete: protectedProcedure.input(z.object({
-    id: z.string(),
+    id: z.string().trim(),
     projectId: z.string()
   })).mutation(async ({ ctx, input }) => {
     return await ctx.prisma.$transaction(async (trx) => {
