@@ -3,7 +3,7 @@ import Head from "next/head";
 
 import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiSortUp, BiSortDown, BiSortAlt2 } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs"
 import type { Feedback, OrderBy, Project } from "@prisma/client";
@@ -677,7 +677,11 @@ const ProjectMainContent: React.FC<{
 
                 projectsData[props.selectedProjectIndex] && feedbacksData?.length
                   ?
-                  <FeedbackList feedbacksData={feedbacksData} />
+                  <FeedbackList
+                    feedbacksData={feedbacksData}
+                    sortingMethod={projectsData[props.selectedProjectIndex]?.orderBy}
+                    shouldSort={isFeedbacksFetching && !!feedbacksData}
+                  />
                   :
                   <NoFeedbackComponent
                     projectId={projectsData[props.selectedProjectIndex]?.id || "-1"}
@@ -690,6 +694,25 @@ const ProjectMainContent: React.FC<{
     </>
   )
 }
+
+const FeedbackList: React.FC<{
+  feedbacksData: Feedback[] | undefined;
+  sortingMethod: OrderBy | undefined;
+  shouldSort: boolean;
+}> = (props) => {
+  return (
+    <div className="overflow-y-auto">
+      <ul className="gap-2 grid md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4">
+        {
+          props.feedbacksData?.map((feedback) => {
+            return <FeedbackComponent key={feedback.id} feedback={feedback} />
+          })
+        }
+      </ul>
+    </div>
+  )
+}
+
 
 const DescriptionOrAddDescriptionComponent: React.FC<{
   projectDescription: string | null | undefined;
@@ -1033,10 +1056,14 @@ const DropdownSort: React.FC<{
   currentSort: OrderBy | undefined;
   projectId: string | undefined;
 }> = (props) => {
+  const [isLoading, setIsLoading] = useState(false);
   return (
     <div className="dropdown dropdown-end flex">
       <label tabIndex={0} className="cursor-pointer">
-        <BiSortAlt2 size={26} />
+        {
+          isLoading ? <LoadingIndicator isSmall/> :
+            <BiSortAlt2 size={26} />
+        }
       </label>
       <div
         id='sort-dropdown'
@@ -1044,6 +1071,9 @@ const DropdownSort: React.FC<{
         className="dropdown-content bg-base-300 menu p-2 shadow rounded-box w-52">
         <SortContent
           currentSort={props.currentSort}
+          onLoadingChange={(value) => {
+            setIsLoading(value)
+          }}
           projectId={props.projectId}
         />
       </div>
@@ -1097,22 +1127,6 @@ const DeleteProjectActionIcon: React.FC<{
       data-tip={props.tooltipName?.toLowerCase()}
     >
       {props.children}
-    </div>
-  )
-}
-
-const FeedbackList: React.FC<{
-  feedbacksData: Feedback[] | undefined
-}> = (props) => {
-  return (
-    <div className="overflow-y-auto">
-      <ul className="gap-2 grid md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4">
-        {
-          props.feedbacksData?.map((feedback) => {
-            return <FeedbackComponent key={feedback.id} feedback={feedback} />
-          })
-        }
-      </ul>
     </div>
   )
 }
@@ -1261,7 +1275,7 @@ const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
               :
               <></>
           }
-          <p className={`overflow-y-auto ${props.feedback.title ? 'max-h-52'  : 'max-h-60'}`}>
+          <p className={`overflow-y-auto ${props.feedback.title ? 'max-h-52' : 'max-h-60'}`}>
             {props.feedback.content}
           </p>
         </div>
