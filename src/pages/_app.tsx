@@ -14,15 +14,14 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <>
-      <SessionProvider session={session}>
-        <Component {...pageProps} />
-      </SessionProvider>
-
       {
         <>
           <GoogleAnalytics googleAnalyticsId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || ""} />
         </>
       }
+      <SessionProvider session={session}>
+        <Component {...pageProps} />
+      </SessionProvider>
       <Toaster toastOptions={{
         style: {
           background: "#252932",
@@ -38,19 +37,21 @@ const GoogleAnalytics: React.FC<{
 }> = (props) => {
   return (
     <>
+      <Script strategy="afterInteractive" src={`https://www.googletagmanager.com/gtag/js?id=${props.googleAnalyticsId}`} />
       <Script
+        id='google-analytics'
         strategy="afterInteractive"
-        src={`https://www.googletagmanager.com/gtag/js?id=${props.googleAnalyticsId}`}
+        dangerouslySetInnerHTML={{
+          __html: `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${props.googleAnalyticsId}', {
+            page_path: window.location.pathname,
+          });
+        `,
+        }}
       />
-      <Script id="google-analytics" strategy="afterInteractive">
-        {`
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', '${props.googleAnalyticsId}');
-              `}
-      </Script>
     </>
   )
 }

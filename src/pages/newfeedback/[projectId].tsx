@@ -90,7 +90,7 @@ const NewFeedbackPage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>{project?.name || "Tell Me!"}</title>
+        <title>{project?.name || "uTellMe"}</title>
         <meta name="description" content={`Give feedback to ${project?.name || "my prject"}`} />
       </Head>
       <main>

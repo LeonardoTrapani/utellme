@@ -126,8 +126,8 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Tell Me!</title>
-        <meta name="description" content="a web app to get feedback" />
+        <title>uTellMe</title>
+        <meta name="description" content="get free quick and easy feedback" />
       </Head>
       <main>
         {(sessionStatus === 'loading') || (isProjectsLoading && sessionData?.user)
