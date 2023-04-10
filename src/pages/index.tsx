@@ -425,6 +425,7 @@ const InfoProjectModal: React.FC<{
 const SortContent: React.FC<{
   currentSort: OrderBy | undefined;
   projectId: string | undefined;
+  onLoadingChange: (value: boolean) => void;
 }> = (props) => {
   const [isAscending, setIsAscending] = useState(
     props.currentSort === "ratingAsc" || props.currentSort === "createdAtAsc"
@@ -476,7 +477,10 @@ const SortContent: React.FC<{
     }
   });
 
-  const { mutate: editProject } = api.projects.edit.useMutation({
+  const {
+    mutate: editProject,
+    isLoading: isEditProjectLoading
+  } = api.projects.edit.useMutation({
     onError: (e) => {
       toastTrpcError(
         "Something went wrong changing the sort.",
@@ -492,6 +496,11 @@ const SortContent: React.FC<{
       void refetchFeedback();
     }
   });
+
+  useEffect(() => {
+    props.onLoadingChange(isEditProjectLoading)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditProjectLoading])
 
   const onChangeSort = (isSortingByRatingLocal: boolean, isAscendingLocal: boolean) => {
     closeDropdown();
@@ -596,6 +605,7 @@ const ProjectMainContent: React.FC<{
   const {
     data: feedbacksData,
     isLoading: isFeedbackDataLoading,
+    isFetched: isFeedbacksFetching,
   } = api.feedbacks.getAll.useQuery({
     projectId: projectsData[props.selectedProjectIndex]?.id || "-1"
   }, {
@@ -667,7 +677,11 @@ const ProjectMainContent: React.FC<{
 
                 projectsData[props.selectedProjectIndex] && feedbacksData?.length
                   ?
-                  <FeedbackList feedbacksData={feedbacksData} />
+                  <FeedbackList
+                    feedbacksData={feedbacksData}
+                    sortingMethod={projectsData[props.selectedProjectIndex]?.orderBy}
+                    shouldSort={isFeedbacksFetching && !!feedbacksData}
+                  />
                   :
                   <NoFeedbackComponent
                     projectId={projectsData[props.selectedProjectIndex]?.id || "-1"}
@@ -680,6 +694,25 @@ const ProjectMainContent: React.FC<{
     </>
   )
 }
+
+const FeedbackList: React.FC<{
+  feedbacksData: Feedback[] | undefined;
+  sortingMethod: OrderBy | undefined;
+  shouldSort: boolean;
+}> = (props) => {
+  return (
+    <div className="overflow-y-auto">
+      <ul className="gap-2 grid md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4">
+        {
+          props.feedbacksData?.map((feedback) => {
+            return <FeedbackComponent key={feedback.id} feedback={feedback} />
+          })
+        }
+      </ul>
+    </div>
+  )
+}
+
 
 const DescriptionOrAddDescriptionComponent: React.FC<{
   projectDescription: string | null | undefined;
@@ -1023,10 +1056,14 @@ const DropdownSort: React.FC<{
   currentSort: OrderBy | undefined;
   projectId: string | undefined;
 }> = (props) => {
+  const [isLoading, setIsLoading] = useState(false);
   return (
     <div className="dropdown dropdown-end flex">
       <label tabIndex={0} className="cursor-pointer">
-        <BiSortAlt2 size={26} />
+        {
+          isLoading ? <LoadingIndicator isSmall/> :
+            <BiSortAlt2 size={26} />
+        }
       </label>
       <div
         id='sort-dropdown'
@@ -1034,6 +1071,9 @@ const DropdownSort: React.FC<{
         className="dropdown-content bg-base-300 menu p-2 shadow rounded-box w-52">
         <SortContent
           currentSort={props.currentSort}
+          onLoadingChange={(value) => {
+            setIsLoading(value)
+          }}
           projectId={props.projectId}
         />
       </div>
@@ -1087,22 +1127,6 @@ const DeleteProjectActionIcon: React.FC<{
       data-tip={props.tooltipName?.toLowerCase()}
     >
       {props.children}
-    </div>
-  )
-}
-
-const FeedbackList: React.FC<{
-  feedbacksData: Feedback[] | undefined
-}> = (props) => {
-  return (
-    <div className="overflow-y-auto">
-      <ul className="gap-2 grid md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4">
-        {
-          props.feedbacksData?.map((feedback) => {
-            return <FeedbackComponent key={feedback.id} feedback={feedback} />
-          })
-        }
-      </ul>
     </div>
   )
 }
@@ -1251,7 +1275,7 @@ const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
               :
               <></>
           }
-          <p className={`overflow-y-auto ${props.feedback.title ? 'max-h-52'  : 'max-h-60'}`}>
+          <p className={`overflow-y-auto ${props.feedback.title ? 'max-h-52' : 'max-h-60'}`}>
             {props.feedback.content}
           </p>
         </div>
