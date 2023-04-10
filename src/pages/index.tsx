@@ -18,7 +18,7 @@ import QRCode from 'qrcode'
 import Input from "~/components/Input";
 import { TellMeComponentButton } from "~/components/TellMeComponent";
 import { toastTrpcError } from "~/utils/functions";
-import SwitchComponent from "~/components/SwitchComponent";
+import { SwitchComponent } from "~/components/SwitchComponent";
 
 const Home: NextPage = () => {
   const { status: sessionStatus } = useSession();
