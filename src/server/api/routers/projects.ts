@@ -23,7 +23,7 @@ export const projectsRouter = createTRPCRouter({
       orderBy: {
         lastChildUpdatedAt: "desc",
       }
-    }))
+    }));
   }),
 
   getPublicInfo: publicProcedure.input(z.object({
