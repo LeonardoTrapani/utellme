@@ -215,9 +215,6 @@ const MainPageContent: React.FC<{
           projectName={props.projectsData[props.selectedProjectIndex]?.name}
           currentSort={props.projectsData[props.selectedProjectIndex]?.orderBy}
           areThereProjects={props.projectsData.length > 0}
-          onRefetchProjectsAndFeedback={() => {
-            props.onRefetchProjects();
-          }}
         />
       }
       <ProjectMainContent
