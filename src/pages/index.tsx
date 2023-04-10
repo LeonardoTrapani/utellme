@@ -3,7 +3,7 @@ import Head from "next/head";
 
 import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiSortUp, BiSortDown, BiSortAlt2 } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs"
 import type { Feedback, OrderBy, Project } from "@prisma/client";
@@ -425,6 +425,7 @@ const InfoProjectModal: React.FC<{
 const SortContent: React.FC<{
   currentSort: OrderBy | undefined;
   projectId: string | undefined;
+  onLoadingChange: (value: boolean) => void;
 }> = (props) => {
   const [isAscending, setIsAscending] = useState(
     props.currentSort === "ratingAsc" || props.currentSort === "createdAtAsc"
@@ -476,7 +477,10 @@ const SortContent: React.FC<{
     }
   });
 
-  const { mutate: editProject } = api.projects.edit.useMutation({
+  const {
+    mutate: editProject,
+    isLoading: isEditProjectLoading
+  } = api.projects.edit.useMutation({
     onError: (e) => {
       toastTrpcError(
         "Something went wrong changing the sort.",
@@ -492,6 +496,11 @@ const SortContent: React.FC<{
       void refetchFeedback();
     }
   });
+
+  useEffect(() => {
+    props.onLoadingChange(isEditProjectLoading)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditProjectLoading])
 
   const onChangeSort = (isSortingByRatingLocal: boolean, isAscendingLocal: boolean) => {
     closeDropdown();
@@ -596,6 +605,7 @@ const ProjectMainContent: React.FC<{
   const {
     data: feedbacksData,
     isLoading: isFeedbackDataLoading,
+    isFetched: isFeedbacksFetching,
   } = api.feedbacks.getAll.useQuery({
     projectId: projectsData[props.selectedProjectIndex]?.id || "-1"
   }, {
