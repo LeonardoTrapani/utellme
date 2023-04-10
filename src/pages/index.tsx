@@ -1120,7 +1120,7 @@ const ProjectDrawerContainer: React.FC<{
       )
     }
   })
-  const { refetch: refetchProjects, isFetching: isProjectsFetching } = api.projects.getAll.useQuery();
+  const { refetch: refetchProjects } = api.projects.getAll.useQuery();
 
   const projectSubmitHandler = (projectTitle: string) => {
     if (!projectTitle.length) {
@@ -1177,7 +1177,7 @@ const ProjectDrawerContainer: React.FC<{
           </form>
           <div className="divider mt-2 mb-2" />
           {
-            (isNewProjectsLoading || isProjectsFetching) ?
+            (isNewProjectsLoading) ?
               <div className="flex justify-center">
                 <LoadingIndicator />
               </div>
