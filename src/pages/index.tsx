@@ -366,7 +366,7 @@ const InfoProjectModal: React.FC<{
                 <p className="font-bold">{projectInfo.createdAt.toDateString()}</p>
               </div>
               <div className="flex justify-between items-center">
-                <p>Feedback number:</p>
+                <p>Feedback received:</p>
                 <p className="font-bold">{projectInfo._count.feedbacks}</p>
               </div>
               <div className="flex justify-between items-center">
