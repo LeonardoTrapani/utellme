@@ -1253,7 +1253,7 @@ const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
               :
               <></>
           }
-          <p className="max-h-40 overflow-y-auto">
+          <p className={`overflow-y-auto ${props.feedback.title ? 'max-h-52'  : 'max-h-60'}`}>
             {props.feedback.content}
           </p>
         </div>
