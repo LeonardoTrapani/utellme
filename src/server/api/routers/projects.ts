@@ -27,7 +27,7 @@ export const projectsRouter = createTRPCRouter({
   }),
 
   getInfo: publicProcedure.input(z.object({
-    projectId: z.string()
+    projectId: z.string().trim()
   })).query(async ({ ctx, input }) => {
     return await ctx.prisma.project.findFirst({
       where: {
@@ -42,8 +42,8 @@ export const projectsRouter = createTRPCRouter({
   }),
 
   create: protectedProcedure.input(z.object({
-    name: z.string().min(1).max(75),
-    description: z.string().min(1).nullish(),
+    name: z.string().trim().min(1).max(75),
+    description: z.string().trim().min(1).nullish(),
   })).mutation(async ({ ctx, input }) => {
     return await ctx.prisma.project.create({
       data: {
@@ -55,9 +55,9 @@ export const projectsRouter = createTRPCRouter({
   }),
 
   edit: protectedProcedure.input(z.object({
-    newName: z.string().min(1).max(75).nullish(),
-    newDescription: z.string().nullish(),
-    projectId: z.string(),
+    newName: z.string().trim().min(1).max(75).nullish(),
+    newDescription: z.string().trim().nullish(),
+    projectId: z.string().trim(),
   })).mutation(async ({ ctx, input }) => {
     return await ctx.prisma.project.updateMany({
       data: {
@@ -71,7 +71,9 @@ export const projectsRouter = createTRPCRouter({
     })
   }),
 
-  delete: protectedProcedure.input(z.object({ projectId: z.string() })).mutation(async ({ ctx, input }) => {
+  delete: protectedProcedure.input(z.object({
+    projectId: z.string().trim()
+  })).mutation(async ({ ctx, input }) => {
     await ctx.prisma.project.deleteMany({
       where: {
         id: input.projectId,

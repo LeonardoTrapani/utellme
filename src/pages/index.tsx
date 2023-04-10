@@ -208,7 +208,7 @@ const DeleteProjectModal: React.FC<{
   const deleteHandler = (updatedValue?: string) => {
     if (!props.projectTitle) return;
     const value = updatedValue || props.inputValue;
-    if (value === props.projectTitle) {
+    if (value.trim() === props.projectTitle.trim()) {
       props.resetModalState()
       props.onDelete();
     } else {
