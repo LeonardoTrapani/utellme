@@ -960,17 +960,6 @@ const ActionIconsComponent: React.FC<{
         props.areThereProjects &&
         (
           <>
-            <SingleActionIcon>
-              <DropdownSort
-                currentSort={props.currentSort}
-                projectId={props.projectId}
-              />
-            </SingleActionIcon>
-            <SingleActionIcon tooltipName="project info">
-              <label htmlFor="info-project-modal" className="cursor-pointer">
-                <BiInfoCircle size={26} />
-              </label>
-            </SingleActionIcon>
             <SingleActionIcon
               onPress={() => {
                 void onGenerateQr(props.projectId || "-1", props.projectName || "this project");
@@ -992,6 +981,17 @@ const ActionIconsComponent: React.FC<{
               tooltipName="share project"
             >
               <BiShareAlt size={26} />
+            </SingleActionIcon>
+            <SingleActionIcon tooltipName="project info">
+              <label htmlFor="info-project-modal" className="cursor-pointer">
+                <BiInfoCircle size={26} />
+              </label>
+            </SingleActionIcon>
+            <SingleActionIcon tooltipName="sort">
+              <DropdownSort
+                currentSort={props.currentSort}
+                projectId={props.projectId}
+              />
             </SingleActionIcon>
             <SingleActionIcon
               tooltipName="Edit Project"
