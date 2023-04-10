@@ -29,8 +29,29 @@ model Project {
   userId             String
   user               User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   feedbacks          Feedback[]
+  orderBy            OrderBy    @default(createdAtDesc)
+  filterBy           FilterBy[] @default([])
+  customFilterDate   DateTime?
+  averageRating      Float?
   createdAt          DateTime   @default(now())
   lastChildUpdatedAt DateTime   @default(now())
+}
+
+enum OrderBy {
+  createdAtDesc
+  createdAtAsc
+  ratingDesc
+  ratingAsc
+}
+
+enum FilterBy {
+  rating5
+  rating4
+  rating3
+  rating2
+  rating1
+  anonymous
+  customDate
 }
 
 model Feedback {
@@ -39,7 +60,7 @@ model Feedback {
   content   String   @db.Text
   projectId String
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  rating    Int      @default(5)
+  rating    Int      @db.SmallInt
   author    String?  @db.VarChar(35)
   createdAt DateTime @default(now())
 }

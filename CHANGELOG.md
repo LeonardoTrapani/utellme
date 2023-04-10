@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.11](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.10...v0.1.11) (2023-04-10)
+
+
+### Features
+
+* added sorting on getFeedback ([ede4a6c](https://github.com/LeonardoTrapani/tell-me/commit/ede4a6c273788495d5a02ea03c2dbcd762d11ad9))
+* average rating on backend ([3951d80](https://github.com/LeonardoTrapani/tell-me/commit/3951d80ecabccbb23b8b6aa43619a6113574ab9d))
+* change orderBy mutations ([4cbd870](https://github.com/LeonardoTrapani/tell-me/commit/4cbd8706b2c67e701ba252e8aba4a166a8df6122))
+* changed feedback number to feedback recieved ([df8a8b0](https://github.com/LeonardoTrapani/tell-me/commit/df8a8b05bf977b825282cf6f760f66b1556a4b59))
+* changed feedback number to feedback recieved 2 ([ee8495e](https://github.com/LeonardoTrapani/tell-me/commit/ee8495eb81b40cfc9f1ab86c8bb674c397549325))
+* changed prisma schema to accept filters and sorts ([d5b1336](https://github.com/LeonardoTrapani/tell-me/commit/d5b13362f083f4bbe1b8020a367eea35c0db5cb9))
+* changed prisma schema to accept filters and sorts2 ([b1632b6](https://github.com/LeonardoTrapani/tell-me/commit/b1632b6e2fc59840c1130d78dd3f69401de5eddc))
+* filter dropwdown icon ([722bb1e](https://github.com/LeonardoTrapani/tell-me/commit/722bb1ec2798fbaaaf5992e0c88271bb0f92d7f1))
+* fixed average rating that can be null ([530cc2d](https://github.com/LeonardoTrapani/tell-me/commit/530cc2d0e92984512e8de8b745a3fc815833a036))
+* info modal ([0e391fd](https://github.com/LeonardoTrapani/tell-me/commit/0e391fd8494797e2dd261a66c300c5380ef4b6bd))
+* info modal component ([049cc10](https://github.com/LeonardoTrapani/tell-me/commit/049cc102537129dfef727fd20b0a838e5eef3940))
+* managing sort state by project db prop working ([48d0cc2](https://github.com/LeonardoTrapani/tell-me/commit/48d0cc29514354b934fe8f2af3e4aa3df981aceb))
+* removed annoying loaindg on projects ([9c99917](https://github.com/LeonardoTrapani/tell-me/commit/9c99917c17a8646af4424eac1853878f88775f19))
+* removed initial loading ([649fd93](https://github.com/LeonardoTrapani/tell-me/commit/649fd93e1bbf72955061e3359a23f0f4f5df30f1))
+* removed some projects being fetched before ([c5aa045](https://github.com/LeonardoTrapani/tell-me/commit/c5aa045a23ede8755cbb2f560dd7eb5c7dd02326))
+* sort component dropwdown ([8a1fa24](https://github.com/LeonardoTrapani/tell-me/commit/8a1fa24fe6275482a94a103f6987d4bcebd8dff2))
+
+
+### Bug Fixes
+
+* added switch file not being committed ([e1f26c2](https://github.com/LeonardoTrapani/tell-me/commit/e1f26c29e5b33dae4e2224da5090987090de48aa))
+* fixed switch component not being found ([dc56927](https://github.com/LeonardoTrapani/tell-me/commit/dc5692775f2b0b9410b1db5258fd3becae921103))
+* removed unused function ([af2acdf](https://github.com/LeonardoTrapani/tell-me/commit/af2acdf42ebf1cfe3fb5ec14b27f12e38e93ce85))
+
 ### [0.1.10](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.9...v0.1.10) (2023-04-09)
 
 
