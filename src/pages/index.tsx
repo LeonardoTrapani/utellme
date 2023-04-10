@@ -183,6 +183,52 @@ const Home: NextPage = () => {
   );
 };
 
+const MainPageContent: React.FC<{
+  selectedProjectIndex: number;
+  setSelectedProjectIndex: (i: number) => void;
+  projectsData: (Project & {
+    feedbacks: Feedback[];
+  })[] | undefined;
+  onRefetchProjects: () => void;
+}> = (props) => {
+  const onProjectPress = (i: number) => {
+    props.setSelectedProjectIndex(i);
+  }
+
+  const [windowWidth] = useWindowSize()
+
+  if (!props.projectsData) {
+    return <></>
+  }
+
+  return (
+    <ProjectDrawerContainer
+      projectsData={props.projectsData}
+      selectedProjectIndex={props.selectedProjectIndex}
+      onProjectPress={onProjectPress}
+    >
+      {
+        (windowWidth || 0) < 768 //if we are in mobile we need the icons above the main page content 
+        &&
+        <ActionIconsComponent
+          projectId={props.projectsData[props.selectedProjectIndex]?.id}
+          projectName={props.projectsData[props.selectedProjectIndex]?.name}
+          currentSort={props.projectsData[props.selectedProjectIndex]?.orderBy}
+          areThereProjects={props.projectsData.length > 0}
+          onRefetchProjectsAndFeedback={() => {
+            props.onRefetchProjects();
+          }}
+        />
+      }
+      <ProjectMainContent
+        selectedProjectIndex={props.selectedProjectIndex}
+        projectsData={props.projectsData}
+        onRefetchProjects={props.onRefetchProjects}
+      />
+    </ProjectDrawerContainer>
+  )
+}
+
 const closeDrawer = () => {
   const drawer = document.getElementById('drawer') as HTMLInputElement || undefined;
   if (drawer) {
@@ -383,6 +429,7 @@ const InfoProjectModal: React.FC<{
 
 const SortContent: React.FC<{
   currentSort: OrderBy | undefined;
+  projectId: string | undefined;
 }> = (props) => {
   const [isAscending, setIsAscending] = useState(
     props.currentSort === "ratingAsc" || props.currentSort === "createdAtAsc"
@@ -404,11 +451,80 @@ const SortContent: React.FC<{
     }
   }, [props.currentSort])
 
+  const {
+    refetch: refetchFeedback
+  } = api.feedbacks.getAll.useQuery({
+    projectId: props.projectId || "-1"
+  }, {
+    enabled: !!props.projectId,
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong fetching the feedback.",
+        e.data?.zodError?.fieldErrors,
+        [
+          { propertyName: "projectId", propertyMessage: "Project ID" },
+        ]
+      )
+    }
+  });
+
+  const {
+    refetch: refetchProjects
+  } = api.projects.getAll.useQuery(undefined, {
+    enabled: !!props.projectId,
+    onError: () => {
+      toastTrpcError(
+        "Something went wrong fetching the feedback.",
+        undefined,
+        []
+      )
+    }
+  });
+
+  const { mutate: editProject } = api.projects.edit.useMutation({
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong changing the sort.",
+        e.data?.zodError?.fieldErrors,
+        [
+          { propertyName: "projectId", propertyMessage: "Project ID" },
+          { propertyName: "newOrderBy", propertyMessage: "New Sort" },
+        ]
+      )
+    },
+    onSuccess: async () => {
+      await refetchProjects();
+      void refetchFeedback();
+    }
+  });
+
+  const onChangeSort = (isSortingByRatingLocal: boolean, isAscendingLocal: boolean) => {
+    let currentSort: OrderBy;
+    if (isSortingByRatingLocal) {
+      if (isAscendingLocal) {
+        currentSort = 'ratingAsc';
+      } else {
+        currentSort = 'ratingDesc';
+      }
+    } else {
+      if (isAscendingLocal) {
+        currentSort = 'createdAtAsc';
+      } else {
+        currentSort = 'createdAtDesc';
+      }
+    }
+    editProject({
+      projectId: props.projectId || '-1',
+      newOrderBy: currentSort
+    })
+  }
+
   return (
     <div className="flex gap-4">
       <select
         className="select select-bordered grow outline-none focus:outline-none"
         onChange={(e) => {
+          onChangeSort(e.currentTarget.value === 'Rating', isAscending);
           e.currentTarget.value === 'Rating' ? setIsSortingByRating(true) : setIsSortingByRating(false);
         }}
         value={isSortingByRating ? 'Rating' : 'Created Time'}
@@ -421,7 +537,10 @@ const SortContent: React.FC<{
         activeFirst={isAscending}
         first={<BiSortUp size={28} />}
         second={<BiSortDown size={28} />}
-        onSwitch={() => setIsAscending((prevState) => !prevState)}
+        onSwitch={() => {
+          onChangeSort(isSortingByRating, !isAscending)
+          setIsAscending((prevState) => !prevState)
+        }}
       />
     </div>
   )
@@ -442,45 +561,6 @@ const ModalActionButton: React.FC<{
         {props.children}
       </label>
     </a>
-  )
-}
-
-const MainPageContent: React.FC<{
-  selectedProjectIndex: number;
-  setSelectedProjectIndex: (i: number) => void;
-  projectsData: (Project & {
-    feedbacks: Feedback[];
-  })[] | undefined;
-  onRefetchProjects: () => void;
-}> = (props) => {
-  const onProjectPress = (i: number) => {
-    props.setSelectedProjectIndex(i);
-  }
-
-  const [windowWidth] = useWindowSize()
-
-  if (!props.projectsData) {
-    return <></>
-  }
-
-  return (
-    <ProjectDrawerContainer
-      projectsData={props.projectsData}
-      selectedProjectIndex={props.selectedProjectIndex}
-      onProjectPress={onProjectPress}
-    >
-      {
-        (windowWidth || 0) < 768 //if we are in mobile we need the icons above the main page content 
-        &&
-        <ActionIconsComponent
-          projectId={props.projectsData[props.selectedProjectIndex]?.id}
-          projectName={props.projectsData[props.selectedProjectIndex]?.name}
-          currentSort={props.projectsData[props.selectedProjectIndex]?.orderBy}
-          areThereProjects={props.projectsData.length > 0}
-        />
-      }
-      <ProjectMainContent selectedProjectIndex={props.selectedProjectIndex} projectsData={props.projectsData} onRefetchProjects={props.onRefetchProjects} />
-    </ProjectDrawerContainer>
   )
 }
 
@@ -565,7 +645,10 @@ const ProjectMainContent: React.FC<{
         (
           (!!projectsData && projectsData[props.selectedProjectIndex]?.feedbacks.length)
             ?
-            <FeedbackList feedbacks={projectsData[props.selectedProjectIndex]?.feedbacks} projectId={projectsData[props.selectedProjectIndex]?.id} />
+            <FeedbackList
+              feedbacks={projectsData[props.selectedProjectIndex]?.feedbacks}
+              projectId={projectsData[props.selectedProjectIndex]?.id}
+            />
             :
             <NoFeedbackComponent
               projectId={projectsData[props.selectedProjectIndex]?.id || "-1"}
@@ -863,7 +946,10 @@ const ActionIconsComponent: React.FC<{
         (
           <>
             <SingleActionIcon>
-              <DropdownSort currentSort={props.currentSort} />
+              <DropdownSort
+                currentSort={props.currentSort}
+                projectId={props.projectId}
+              />
             </SingleActionIcon>
             <SingleActionIcon tooltipName="project info">
               <label htmlFor="info-project-modal" className="cursor-pointer">
@@ -921,6 +1007,7 @@ const ActionIconsComponent: React.FC<{
 
 const DropdownSort: React.FC<{
   currentSort: OrderBy | undefined;
+  projectId: string | undefined;
 }> = (props) => {
   return (
     <div className="dropdown dropdown-end dropdown-hover">
@@ -928,7 +1015,10 @@ const DropdownSort: React.FC<{
         <BiSortAlt2 size={26} />
       </label>
       <div tabIndex={0} className="dropdown-content bg-base-300 menu p-2 shadow rounded-box w-52">
-        <SortContent currentSort={props.currentSort} />
+        <SortContent
+          currentSort={props.currentSort}
+          projectId={props.projectId}
+        />
       </div>
     </div>
   )
@@ -977,7 +1067,10 @@ const DeleteProjectActionIcon: React.FC<{
   )
 }
 
-const FeedbackList: React.FC<{ feedbacks: Feedback[] | undefined; projectId: string | undefined; }> = (props) => {
+const FeedbackList: React.FC<{
+  feedbacks: Feedback[] | undefined;
+  projectId: string | undefined;
+}> = (props) => {
   const {
     data: feedbacksData,
     isLoading: isFeedbackDataLoading,
