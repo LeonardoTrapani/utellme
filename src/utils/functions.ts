@@ -30,3 +30,11 @@ export const toastTrpcError = (
   }
   toast.error(errorMessage || defaultMessage);
 }
+
+export const isDarkTheme = () => {
+  if (typeof window !== "undefined") {
+    const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
+    return darkThemeMq.matches;
+  }
+  return true;
+}

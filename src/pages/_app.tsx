@@ -7,6 +7,7 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import { Toaster } from "react-hot-toast";
 import Script from "next/script";
+import Link from "next/link";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -52,6 +53,20 @@ const GoogleAnalytics: React.FC<{
         `,
         }}
       />
+    </>
+  )
+}
+
+export const FaviconScripts = () => {
+  return (
+    <>
+      <Link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+      <Link rel="icon" type="image/png" href="/favicon-32x32.png" />
+      <Link rel="icon" type="image/png" href="/favicon-16x16.png" />
+      <Link rel="manifest" href="/site.webmanifest" />
+      <Link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+      <meta name="msapplication-TileColor" content="#da532c" />
+      <meta name="theme-color" content="#ffffff" />
     </>
   )
 }

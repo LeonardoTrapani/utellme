@@ -7,9 +7,10 @@ import Input from "~/components/Input";
 import LoadingIndicator from "~/components/LoadingIndicator";
 import NotFoundPage from "~/components/NotFoundPage";
 import { SelectRatingComponent, } from "~/components/RatingComponent";
-import { TellMeComponentButton } from "~/components/TellMeComponent";
+import { UTellMeComponentButton } from "~/components/UTellMeComponent";
 import { api } from "~/utils/api";
 import { toastTrpcError } from "~/utils/functions";
+import { FaviconScripts } from "../_app";
 
 const NewFeedbackPage: NextPage = () => {
   const [hasGivenFeedback, setHasGivenFeedback] = React.useState(false);
@@ -91,7 +92,8 @@ const NewFeedbackPage: NextPage = () => {
     <>
       <Head>
         <title>{project?.name || "uTellMe"}</title>
-        <meta name="description" content={`Give feedback to ${project?.name || "my prject"}`} />
+        <meta name="description" content={`Give feedback to ${project?.name || "my prject"} with uTellMe`} />
+        <FaviconScripts />
       </Head>
       <main>
         {
@@ -226,7 +228,7 @@ const FeedbackCompletedPage = () => {
       <h1 className="text-2xl"><span className="text-primary font-semibold">Thank you </span>for the feedback!</h1>
       <div className="text-center">
         <h3>powered by</h3>
-        <TellMeComponentButton />
+        <UTellMeComponentButton isMedium />
       </div>
     </div>
   )

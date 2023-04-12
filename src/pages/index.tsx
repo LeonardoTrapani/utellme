@@ -16,9 +16,10 @@ import { useWindowSize } from "~/utils/hooks";
 import { toast } from "react-hot-toast";
 import QRCode from 'qrcode'
 import Input from "~/components/Input";
-import { TellMeComponentButton } from "~/components/TellMeComponent";
+import { UTellMeComponentButton } from "~/components/UTellMeComponent";
 import { toastTrpcError } from "~/utils/functions";
 import { SwitchComponent } from "~/components/SwitchComponent";
+import { FaviconScripts } from "./_app";
 
 const Home: NextPage = () => {
   const { status: sessionStatus } = useSession();
@@ -127,7 +128,8 @@ const Home: NextPage = () => {
     <>
       <Head>
         <title>uTellMe</title>
-        <meta name="description" content="get free quick and easy feedback" />
+        <meta name="description" content="get free quick and easy feedback with uTellMe" />
+        <FaviconScripts />
       </Head>
       <main>
         {(sessionStatus === 'loading')
@@ -1259,7 +1261,7 @@ const ProjectDrawerContainer: React.FC<{
 const TitleAndAvatarComponen = () => {
   return (
     <div className="flex justify-between items-center">
-      <TellMeComponentButton />
+      <UTellMeComponentButton />
       <Avatar>
         <li>
           <a onClick={() => {
