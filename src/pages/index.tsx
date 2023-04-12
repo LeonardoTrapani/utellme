@@ -39,7 +39,7 @@ const Home: NextPage = () => {
       }
     });
 
-  const { mutate: deleteProject } = api.projects.delete.useMutation({
+  const { mutate: deleteProject, isLoading: isDeleteProjectLoading } = api.projects.delete.useMutation({
     onSuccess: () => {
       void refetchProjects();
       setSelectedProjectIndex(0);
@@ -55,7 +55,7 @@ const Home: NextPage = () => {
     }
   });
 
-  const { mutate: editProject } = api.projects.edit.useMutation({
+  const { mutate: editProject, isLoading: isEditProjectLoading } = api.projects.edit.useMutation({
     onSuccess: () => {
       void refetchProjects();
     },
@@ -145,6 +145,8 @@ const Home: NextPage = () => {
                 selectedProjectIndex={selectedProjectIndex}
                 projectsData={projects}
                 onRefetchProjects={() => void refetchProjects()}
+                isDeleteProjectLoading={isDeleteProjectLoading}
+                isEditProjectLoading={isEditProjectLoading}
               />
               {
                 <>
@@ -188,6 +190,8 @@ const MainPageContent: React.FC<{
   setSelectedProjectIndex: (i: number) => void;
   projectsData: Project[] | undefined;
   onRefetchProjects: () => void;
+  isEditProjectLoading: boolean;
+  isDeleteProjectLoading: boolean;
 }> = (props) => {
   const onProjectPress = (i: number) => {
     props.setSelectedProjectIndex(i);
@@ -213,12 +217,16 @@ const MainPageContent: React.FC<{
           projectName={props.projectsData[props.selectedProjectIndex]?.name}
           currentSort={props.projectsData[props.selectedProjectIndex]?.orderBy}
           areThereProjects={props.projectsData.length > 0}
+          isEditProjectLoading={props.isEditProjectLoading}
+          isDeleteProjectLoading={props.isDeleteProjectLoading}
         />
       }
       <ProjectMainContent
         selectedProjectIndex={props.selectedProjectIndex}
         projectsData={props.projectsData}
         onRefetchProjects={props.onRefetchProjects}
+        isEditProjectLoading={props.isEditProjectLoading}
+        isDeleteProjectLoading={props.isDeleteProjectLoading}
       />
     </ProjectDrawerContainer>
   )
@@ -573,9 +581,11 @@ const ProjectMainContent: React.FC<{
   selectedProjectIndex: number;
   projectsData: Project[] | undefined;
   onRefetchProjects: () => void;
+  isEditProjectLoading: boolean;
+  isDeleteProjectLoading: boolean;
 }> = (props) => {
   const projectsData = props.projectsData;
-  const { mutate: editDescription } = api.projects.edit.useMutation({
+  const { mutate: editDescription, isLoading: isEditDescriptionLoading } = api.projects.edit.useMutation({
     onSuccess: () => {
       props.onRefetchProjects()
     },
@@ -632,6 +642,8 @@ const ProjectMainContent: React.FC<{
             projectId={projectsData[props.selectedProjectIndex]?.id}
             areThereProjects={projectsData.length > 0}
             projectName={projectsData[props.selectedProjectIndex]?.name}
+            isDeleteProjectLoading={props.isDeleteProjectLoading}
+            isEditProjectLoading={props.isEditProjectLoading}
           />
           :
           <></>
@@ -649,6 +661,7 @@ const ProjectMainContent: React.FC<{
             <DescriptionOrAddDescriptionComponent
               projectDescription={projectsData[props.selectedProjectIndex]?.description}
               editDescription={editDescriptionHandler}
+              isEditDescriptionLoading={isEditDescriptionLoading}
             />
           }
         </div>
@@ -660,6 +673,8 @@ const ProjectMainContent: React.FC<{
               projectId={projectsData[props.selectedProjectIndex]?.id}
               areThereProjects={projectsData.length > 0}
               projectName={projectsData[props.selectedProjectIndex]?.name}
+              isEditProjectLoading={props.isEditProjectLoading}
+              isDeleteProjectLoading={props.isDeleteProjectLoading}
             />
             :
             <></>
@@ -717,9 +732,11 @@ const FeedbackList: React.FC<{
 const DescriptionOrAddDescriptionComponent: React.FC<{
   projectDescription: string | null | undefined;
   editDescription: (value: string) => void;
+  isEditDescriptionLoading: boolean;
 }> = (props) => {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [value, setValue] = useState(props.projectDescription || "");
+
   useEffect(() => {
     if (textAreaRef.current) {
       textAreaRef.current.style.height = "0px"
@@ -743,6 +760,12 @@ const DescriptionOrAddDescriptionComponent: React.FC<{
     )
   }
 
+  if (props.isEditDescriptionLoading) {
+    return (
+      <LoadingIndicator isSmall />
+    )
+  }
+
   return (
     <textarea
       placeholder="Add a description"
@@ -750,7 +773,7 @@ const DescriptionOrAddDescriptionComponent: React.FC<{
         `
         input input-ghost w-full p-0 m-0 outline-none 
         b-0 outline-0 focus:outline-0 h-6 placeholder-gray-500 
-        italic none resize-none
+        italic none resize-none overflow-hidden
         `
       }
       onKeyDown={(e) => {
@@ -977,6 +1000,8 @@ const ActionIconsComponent: React.FC<{
   areThereProjects: boolean;
   projectName: string | undefined;
   currentSort: OrderBy | undefined;
+  isDeleteProjectLoading: boolean;
+  isEditProjectLoading: boolean;
 }> = (props) => {
   const [windowWidth] = useWindowSize()
   const isSmall = (windowWidth || 0) < 768;
@@ -1029,16 +1054,22 @@ const ActionIconsComponent: React.FC<{
             <SingleActionIcon
               tooltipName="Edit Project"
             >
-              <label htmlFor="edit-project-modal" className="cursor-pointer">
-                <BiEdit size={26} />
-              </label>
+              {
+                props.isEditProjectLoading ? <LoadingIndicator isSmall /> :
+                  <label htmlFor="edit-project-modal" className="cursor-pointer">
+                    <BiEdit size={26} />
+                  </label>
+              }
             </SingleActionIcon>
             <DeleteProjectActionIcon
               tooltipName="Delete Project"
             >
-              <label htmlFor="delete-project-modal" className="cursor-pointer">
-                <BiTrash size={26} />
-              </label>
+              {
+                props.isDeleteProjectLoading ? <LoadingIndicator isSmall /> :
+                  <label htmlFor="delete-project-modal" className="cursor-pointer">
+                    <BiTrash size={26} />
+                  </label>
+              }
             </DeleteProjectActionIcon>
           </>
         )
@@ -1061,7 +1092,7 @@ const DropdownSort: React.FC<{
     <div className="dropdown dropdown-end flex">
       <label tabIndex={0} className="cursor-pointer">
         {
-          isLoading ? <LoadingIndicator isSmall/> :
+          isLoading ? <LoadingIndicator isSmall /> :
             <BiSortAlt2 size={26} />
         }
       </label>
