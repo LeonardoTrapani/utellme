@@ -27,7 +27,7 @@ export const UTellMeComponent: React.FC<{
   const isDarkThemeVar = isDarkTheme();
   return (
     <div className="px-2">
-      <Image alt="uTellMe logo" src={isDarkThemeVar ? DarkThemeLogo : LightThemeLogo} className={`object-contain w-full ${props.isBig ? 'h-20' : props.isMedium ? 'h-10' : 'h-6'}`} />
+      <Image alt="uTellMe logo" src={isDarkThemeVar ? DarkThemeLogo : LightThemeLogo} className={`object-contain w-full ${props.isBig ? 'h-20' : props.isMedium ? 'h-10' : 'h-5'}`} />
     </div>
   )
 }

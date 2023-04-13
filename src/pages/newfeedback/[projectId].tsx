@@ -228,7 +228,7 @@ const FeedbackCompletedPage = () => {
       <h1 className="text-2xl"><span className="text-primary font-semibold">Thank you </span>for the feedback!</h1>
       <div className="text-center">
         <h3>powered by</h3>
-        <UTellMeComponentButton isMedium />
+        <UTellMeComponentButton />
       </div>
     </div>
   )
