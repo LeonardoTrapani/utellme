@@ -106,6 +106,7 @@ const NewFeedbackPage: NextPage = () => {
                 !hasGivenFeedback ?
                   <MainGetFeedbackContent
                     projectName={project?.name}
+                    projectDescription={project?.description}
                     currentRating={rating}
                     setRating={(rating) => {
                       setRating(rating);
@@ -130,7 +131,8 @@ const NewFeedbackPage: NextPage = () => {
 }
 
 const MainGetFeedbackContent: React.FC<{
-  projectName?: string;
+  projectName: string | undefined;
+  projectDescription: string | null | undefined;
   currentRating: number | undefined;
   onSubmitFeedback: () => void;
   setRating: (rating: number) => void;
@@ -165,7 +167,7 @@ const MainGetFeedbackContent: React.FC<{
 
   return (
     <div className="max-w-xl md:max-w-3xl m-auto my-4 p-4 rounded-xl">
-      <GetFeedbackTitle projectName={props.projectName} />
+      <GetFeedbackTitle projectName={props.projectName} projectDescription={props.projectDescription} />
       <div className="divider mt-2 mb-2" />
       <div className={`h-10 items-center w-min m-auto rounded-xl mb-2 ${props.ratingHasError ? "border-error border-2" : ""}`}>
         <SelectRatingComponent
@@ -210,15 +212,21 @@ const MainGetFeedbackContent: React.FC<{
 }
 
 const GetFeedbackTitle: React.FC<{
-  projectName?: string;
+  projectName: string | undefined;
+  projectDescription: string | undefined | null;
 }> = (props) => {
   return (
     <div className="grid">
       <div>
         <h3 className="text-xl"><span className="text-primary">Tell me&nbsp;</span>your feedback about</h3>
         <h1 className="text-4xl font-bold">{props.projectName || "my project"}</h1>
+        {
+          props.projectDescription &&
+          <p className="italic max-h-40 overflow-auto">{props.projectDescription}</p>
+        }
       </div>
-    </div>);
+    </div>
+  );
 }
 
 
