@@ -1,18 +1,16 @@
 import React from "react";
 
-import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { getProviders, signIn } from "next-auth/react";
-import type { ClientSafeProvider } from "next-auth/react"
+import type { GetServerSidePropsContext } from "next";
+import { signIn } from "next-auth/react";
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "~/server/auth";
 import { FcGoogle } from "react-icons/fc";
-import { FaDiscord } from "react-icons/fa";
 import { BsGithub } from "react-icons/bs";
 import { useRouter } from "next/router";
 import { UTellMeComponent } from "~/components/UTellMeComponent";
 import Head from "next/head";
 
-const SignInPage = ({ providers }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const SignInPage = () => {
   const router = useRouter();
   const queryError = Array.isArray(router.query.error) ? router.query.error[0] : router.query.error;
   return (
@@ -28,12 +26,8 @@ const SignInPage = ({ providers }: InferGetServerSidePropsType<typeof getServerS
           </div>
           <AuthErrorComponent error={queryError} />
           <div className="flex flex-col gap-2">
-            {!Object.values(providers).length ? <div>Error: couldn&apos;t find providers</div> :
-              (Object.values(providers).map((provider) => {
-                if (provider.id === 'github') return <GithubProvider key={provider.name} provider={provider} />;
-                if (provider.id === 'discord') return <DiscordProvider key={provider.name} provider={provider} />;
-                if (provider.id === 'google') return <GoogleProvider key={provider.name} provider={provider} />;
-              }))}
+            <GithubProvider />
+            <GoogleProvider />
           </div>
         </div>
       </div >
@@ -65,47 +59,45 @@ const AuthErrorComponent: React.FC<{
 };
 
 const GeneralProvider: React.FC<{
-  provider: ClientSafeProvider;
+  providerId: string;
+  providerName: string;
   children: React.ReactNode;
   className?: string;
 }> = (props) => {
   return (
     <button
-      key={props.provider.name}
+      key={props.providerName}
       className={`p-2 border border-current h-12 flex gap-2 items-center justify-center  ${props.className ?? ""}`}
       onClick={() => {
-        void signIn(props.provider.id)
+        void signIn(props.providerId)
       }}>
       {props.children}
       <p>
-        Continue with {props.provider.name}
+        Continue with {props.providerName}
       </p>
     </button>
   )
 };
 
-const GithubProvider: React.FC<{
-  provider: ClientSafeProvider;
-}> = (props) => {
+const GithubProvider: React.FC = () => {
   const iconSize = 24;
   return (
-    <GeneralProvider provider={props.provider}>
+    <GeneralProvider providerName="GitHub" providerId="github">
       <BsGithub size={iconSize} />
     </GeneralProvider>
   )
 };
 
-const GoogleProvider: React.FC<{
-  provider: ClientSafeProvider;
-}> = (props) => {
+const GoogleProvider: React.FC = () => {
   const iconSize = 24;
   return (
-    <GeneralProvider provider={props.provider}>
+    <GeneralProvider providerName="Google" providerId="google">
       <FcGoogle size={iconSize} />
     </GeneralProvider>
   )
 };
 
+/*
 const DiscordProvider: React.FC<{
   provider: ClientSafeProvider;
 }> = (props) => {
@@ -116,6 +108,7 @@ const DiscordProvider: React.FC<{
     </GeneralProvider>
   )
 };
+*/
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions);
@@ -127,11 +120,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     return { redirect: { destination: "/" } };
   }
 
-  const providers = await getProviders();
-  console.log(providers);
-
   return {
-    props: { providers: providers ?? [] },
+    props: {},
   }
 }
 
