@@ -9,6 +9,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaDiscord } from "react-icons/fa";
 import { BsGithub } from "react-icons/bs";
 import { useRouter } from "next/router";
+import { UTellMeComponent } from "~/components/UTellMeComponent";
 
 const SignInPage = ({ providers }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
@@ -16,8 +17,8 @@ const SignInPage = ({ providers }: InferGetServerSidePropsType<typeof getServerS
   return (
     <div className="flex h-screen w-full justify-center items-center">
       <div className="w-96 flex flex-col p-2">
-        <div className={"text-center " + (!queryError ? "mb-4" : "")}>
-          <h1 className="text-3xl font-semibold"><span>Tell</span> <span className="text-primary font-bold">Me!</span></h1>
+        <div className={"text-center " + (!queryError ? "mb-6" : "")}>
+          <UTellMeComponent isMedium/>
         </div>
         <AuthErrorComponent error={queryError} />
         <div className="flex flex-col gap-2">
