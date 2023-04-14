@@ -1,11 +1,5 @@
-import { signIn } from "next-auth/react";
 import React from "react";
 
-const SignInPage = () => {
-  void signIn();
-  return <></>;
-}
-/*
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { getProviders, signIn } from "next-auth/react";
 import type { ClientSafeProvider } from "next-auth/react"
@@ -13,31 +7,53 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "~/server/auth";
 import { FcGoogle } from "react-icons/fc";
 import { FaDiscord } from "react-icons/fa";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
-import toast from "react-hot-toast";
 import { BsGithub } from "react-icons/bs";
+import { useRouter } from "next/router";
 
 const SignInPage = ({ providers }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
-
+  const queryError = Array.isArray(router.query.error) ? router.query.error[0] : router.query.error;
   return (
     <div className="flex h-screen w-full justify-center items-center">
       <div className="w-96 flex flex-col p-2">
-        <div className="text-center mb-8">
+        <div className={"text-center " + (!queryError ? "mb-4" : "")}>
           <h1 className="text-3xl font-semibold"><span>Tell</span> <span className="text-primary font-bold">Me!</span></h1>
         </div>
+        <AuthErrorComponent error={queryError} />
         <div className="flex flex-col gap-2">
           {Object.values(providers).map((provider) => {
-            if (provider.id === 'google') return <GoogleProvider key={provider.name} provider={provider} />;
-            if (provider.id === 'discord') return <DiscordProvider key={provider.name} provider={provider} />;
             if (provider.id === 'github') return <GithubProvider key={provider.name} provider={provider} />;
+            if (provider.id === 'discord') return <DiscordProvider key={provider.name} provider={provider} />;
+            if (provider.id === 'google') return <GoogleProvider key={provider.name} provider={provider} />;
           })}
         </div>
       </div>
     </div>
   )
 }
+
+const AuthErrorComponent: React.FC<{
+  error: string | undefined;
+}> = (props) => {
+  if (!props.error) return <></>;
+  let error = props.error;
+  switch (props.error) {
+    case "OAuthAccountNotLinked":
+      error = "You already have an account with this email, please sign in with that account.";
+      break;
+    case "CredentialsSignin":
+      error = "The credentials you provided are incorrect, please try again.";
+    default:
+      error = "There was an error signing in, please try again.";
+      break;
+  }
+
+  return (
+    <div className="text-center bg-error my-4 py-2">
+      <p className="text-gray-800">{error}</p>
+    </div>
+  );
+};
 
 const GeneralProvider: React.FC<{
   provider: ClientSafeProvider;
@@ -109,6 +125,4 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   }
 }
 
-*/
 export default SignInPage;
-

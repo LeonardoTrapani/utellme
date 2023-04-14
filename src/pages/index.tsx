@@ -242,7 +242,7 @@ const closeDrawer = () => {
 }
 
 const RedirectToLogin = () => {
-  void signIn()
+  //TODO: change in getServersideProsp
   return (
     <div></div>
   )
