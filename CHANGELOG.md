@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.12](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.11...v0.1.12) (2023-04-14)
+
+
+### Features
+
+* added google analytics ([973ebad](https://github.com/LeonardoTrapani/tell-me/commit/973ebada294e403c4e1fa31bf65a746d1a0e8ebe))
+* added trimming to both backend and frontend to avoid white spaces ([2068787](https://github.com/LeonardoTrapani/tell-me/commit/2068787ae752fd60a2ade06261a25ecc4a89573f))
+* authentication custom page with custom error handling ([99d2559](https://github.com/LeonardoTrapani/tell-me/commit/99d2559f57cc0014f977cc8ad1ccb9271d592b92))
+* automatic redirect if not logged in ([66d5e00](https://github.com/LeonardoTrapani/tell-me/commit/66d5e00a4f15aa08748c32a7b5822dfc2618e2b1))
+* better ux with loading states ([32fadcf](https://github.com/LeonardoTrapani/tell-me/commit/32fadcfce2f82fb72e02eae3ca24081c07fb2f78))
+* changed action icons order to show sort dropdow in screen ([85c4f3e](https://github.com/LeonardoTrapani/tell-me/commit/85c4f3e63a41cc7fe094b40f31b8cd8adf009d3a))
+* changed icon and favicon ([0cb5672](https://github.com/LeonardoTrapani/tell-me/commit/0cb5672cb0d4a92d64c5e081cb0d3c281ea4ec90))
+* changed logo ([b4c24b6](https://github.com/LeonardoTrapani/tell-me/commit/b4c24b6b24858547ecc78ec7f3e9b0e7b883bca4))
+* description shown on newfeedback page ([ec15507](https://github.com/LeonardoTrapani/tell-me/commit/ec15507b0842f22309ed31af45f3a47920d3fde1))
+* loading with sort mutation ([628877c](https://github.com/LeonardoTrapani/tell-me/commit/628877c7025579aaa85088ef2c533a56ea1bbade))
+* new logo ([c056fd9](https://github.com/LeonardoTrapani/tell-me/commit/c056fd9fadd7ee0c5359fdcded220f7efc997da9))
+* removed client side sorting ([df119ba](https://github.com/LeonardoTrapani/tell-me/commit/df119ba438aba4d1a8aac41e6afefa8bc339e8d7))
+* removed discord authentication ([b3a96ab](https://github.com/LeonardoTrapani/tell-me/commit/b3a96ab5ff5ffc683dba0d9d28719cba872a8af0))
+* removed share messages ([2cb8e43](https://github.com/LeonardoTrapani/tell-me/commit/2cb8e43ede02d54a700b13ca79300ae3de7cd5cb))
+* sort dropdown closes after changed sort ([209440c](https://github.com/LeonardoTrapani/tell-me/commit/209440c4e3d2050d4c5207b88a397a963019364b))
+* updated google analytics and change page names ([a63225d](https://github.com/LeonardoTrapani/tell-me/commit/a63225dbcb26e7c60384ea53be5a52d191647324))
+
 ### [0.1.11](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.10...v0.1.11) (2023-04-10)
 
 
