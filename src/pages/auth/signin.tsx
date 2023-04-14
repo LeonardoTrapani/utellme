@@ -10,26 +10,33 @@ import { FaDiscord } from "react-icons/fa";
 import { BsGithub } from "react-icons/bs";
 import { useRouter } from "next/router";
 import { UTellMeComponent } from "~/components/UTellMeComponent";
+import Head from "next/head";
 
 const SignInPage = ({ providers }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const queryError = Array.isArray(router.query.error) ? router.query.error[0] : router.query.error;
   return (
-    <div className="flex h-screen w-full justify-center items-center">
-      <div className="w-96 flex flex-col p-2">
-        <div className={"text-center " + (!queryError ? "mb-6" : "")}>
-          <UTellMeComponent isMedium/>
-        </div>
-        <AuthErrorComponent error={queryError} />
-        <div className="flex flex-col gap-2">
-          {Object.values(providers).map((provider) => {
-            if (provider.id === 'github') return <GithubProvider key={provider.name} provider={provider} />;
-            if (provider.id === 'discord') return <DiscordProvider key={provider.name} provider={provider} />;
-            if (provider.id === 'google') return <GoogleProvider key={provider.name} provider={provider} />;
-          })}
+    <>
+      <Head>
+        <title>Signin</title>
+        <meta name="description" content="Signin to uTellMe" />
+      </Head>
+      <div className="flex h-screen w-full justify-center items-center">
+        <div className="w-96 flex flex-col p-2">
+          <div className={"text-center " + (!queryError ? "mb-6" : "")}>
+            <UTellMeComponent isMedium />
+          </div>
+          <AuthErrorComponent error={queryError} />
+          <div className="flex flex-col gap-2">
+            {Object.values(providers).map((provider) => {
+              if (provider.id === 'github') return <GithubProvider key={provider.name} provider={provider} />;
+              if (provider.id === 'discord') return <DiscordProvider key={provider.name} provider={provider} />;
+              if (provider.id === 'google') return <GoogleProvider key={provider.name} provider={provider} />;
+            })}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 
