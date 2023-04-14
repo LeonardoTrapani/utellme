@@ -47,12 +47,19 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+  pages: {
+    signIn: "/auth/signin",
+    error: "/auth/signin",
+    signOut: "/auth/signin"
+  },
   adapter: PrismaAdapter(prisma),
   providers: [
+    /*
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
     }),
+    */
     GoogleProvider({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,

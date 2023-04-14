@@ -1,7 +1,9 @@
 import type { NextPage } from "next";
 import Head from "next/head";
+import type { GetServerSidePropsContext } from "next";
+import { authOptions } from "~/server/auth";
 
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useEffect, useRef, useState } from "react";
 import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiSortUp, BiSortDown, BiSortAlt2 } from "react-icons/bi"
@@ -20,6 +22,7 @@ import { UTellMeComponentButton } from "~/components/UTellMeComponent";
 import { toastTrpcError } from "~/utils/functions";
 import { SwitchComponent } from "~/components/SwitchComponent";
 import { FaviconScripts } from "./_app";
+import { getServerSession } from "next-auth";
 
 const Home: NextPage = () => {
   const { status: sessionStatus } = useSession();
@@ -136,56 +139,62 @@ const Home: NextPage = () => {
           ?
           <></>
           :
-          isSignedIn ? (
-            <>
-              <MainPageContent
-                setSelectedProjectIndex={(i: number) => {
-                  setSelectedProjectIndex(i);
-                  resetDeleteModalState();
-                  resetEditModalState();
-                }}
-                selectedProjectIndex={selectedProjectIndex}
-                projectsData={projects}
-                onRefetchProjects={() => void refetchProjects()}
-                isDeleteProjectLoading={isDeleteProjectLoading}
-                isEditProjectLoading={isEditProjectLoading}
-              />
-              {
-                <>
-                  <DeleteProjectModal
-                    onDelete={projectDeleteHandler}
-                    projectTitle={projects?.[selectedProjectIndex]?.name}
-                    modalHasError={deleteModalHasError}
-                    setModalHasError={setDeleteModalHasError}
-                    resetModalState={resetDeleteModalState}
-                    inputValue={deleteModalInputValue}
-                    setInputValue={setDeleteModalInputValue}
-                  />
-                  <EditProjectModal
-                    projectName={projects?.[selectedProjectIndex]?.name || 'Project name'}
-                    projectDescription={projects?.[selectedProjectIndex]?.description || 'Project description'}
-                    resetModalState={resetEditModalState}
-                    setDescriptionInputValue={setEditProjectDescriptionValue}
-                    setNameInputValue={setEditProjectNameValue}
-                    nameInputValue={editProjectNameValue}
-                    descriptionInputValue={editProjectDescriptionValue}
-                    onEdit={projectEditHandler}
-                    editProjectNameHasError={editProjectNameHasError}
-                    setNameInputHasError={(value) => { setEditProjectNameHasError(value) }}
-                  />
-                  <InfoProjectModal projectId={projects?.[selectedProjectIndex]?.id} />
-                </>
-              }
-            </>
-          )
-            :
-            <RedirectToLogin />
-          //<LandingPage />
+          <>
+            <MainPageContent
+              setSelectedProjectIndex={(i: number) => {
+                setSelectedProjectIndex(i);
+                resetDeleteModalState();
+                resetEditModalState();
+              }}
+              selectedProjectIndex={selectedProjectIndex}
+              projectsData={projects}
+              onRefetchProjects={() => void refetchProjects()}
+              isDeleteProjectLoading={isDeleteProjectLoading}
+              isEditProjectLoading={isEditProjectLoading}
+            />
+            {
+              <>
+                <DeleteProjectModal
+                  onDelete={projectDeleteHandler}
+                  projectTitle={projects?.[selectedProjectIndex]?.name}
+                  modalHasError={deleteModalHasError}
+                  setModalHasError={setDeleteModalHasError}
+                  resetModalState={resetDeleteModalState}
+                  inputValue={deleteModalInputValue}
+                  setInputValue={setDeleteModalInputValue}
+                />
+                <EditProjectModal
+                  projectName={projects?.[selectedProjectIndex]?.name || 'Project name'}
+                  projectDescription={projects?.[selectedProjectIndex]?.description || 'Project description'}
+                  resetModalState={resetEditModalState}
+                  setDescriptionInputValue={setEditProjectDescriptionValue}
+                  setNameInputValue={setEditProjectNameValue}
+                  nameInputValue={editProjectNameValue}
+                  descriptionInputValue={editProjectDescriptionValue}
+                  onEdit={projectEditHandler}
+                  editProjectNameHasError={editProjectNameHasError}
+                  setNameInputHasError={(value) => { setEditProjectNameHasError(value) }}
+                />
+                <InfoProjectModal projectId={projects?.[selectedProjectIndex]?.id} />
+              </>
+            }
+          </>
         }
       </main >
     </>
   );
 };
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getServerSession(context.req, context.res, authOptions);
+
+  if (!session) {
+    return { redirect: { destination: "/auth/signin" } };
+  }
+  return {
+    props: {}
+  };
+}
 
 const MainPageContent: React.FC<{
   selectedProjectIndex: number;
@@ -239,13 +248,6 @@ const closeDrawer = () => {
   if (drawer) {
     drawer.checked = false;
   }
-}
-
-const RedirectToLogin = () => {
-  void signIn()
-  return (
-    <div></div>
-  )
 }
 
 export default Home;
