@@ -28,14 +28,15 @@ const SignInPage = ({ providers }: InferGetServerSidePropsType<typeof getServerS
           </div>
           <AuthErrorComponent error={queryError} />
           <div className="flex flex-col gap-2">
-            {Object.values(providers).map((provider) => {
-              if (provider.id === 'github') return <GithubProvider key={provider.name} provider={provider} />;
-              if (provider.id === 'discord') return <DiscordProvider key={provider.name} provider={provider} />;
-              if (provider.id === 'google') return <GoogleProvider key={provider.name} provider={provider} />;
-            })}
+            {!Object.values(providers).length ? <div>Error: couldn&apos;t find providers</div> :
+              (Object.values(providers).map((provider) => {
+                if (provider.id === 'github') return <GithubProvider key={provider.name} provider={provider} />;
+                if (provider.id === 'discord') return <DiscordProvider key={provider.name} provider={provider} />;
+                if (provider.id === 'google') return <GoogleProvider key={provider.name} provider={provider} />;
+              }))}
           </div>
         </div>
-      </div>
+      </div >
     </>
   )
 }
@@ -127,6 +128,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   }
 
   const providers = await getProviders();
+  console.log(providers);
 
   return {
     props: { providers: providers ?? [] },
