@@ -5,18 +5,36 @@ import { SessionProvider } from "next-auth/react";
 import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
+import * as gtag from "~/utils/gtag";
 import { Toaster } from "react-hot-toast";
 import Script from "next/script";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleRouteChange = (url: URL) => {
+      gtag.pageview(url);
+    };
+    router.events.on("routeChangeComplete", handleRouteChange);
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, [router.events]);
+
   return (
     <>
-      <Iubenda />
-      <GoogleAnalytics googleAnalyticsId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || ""} />
-      <GoogleAdsense />
+      {
+        /*
+          <GoogleTagManager />
+          <Iubenda />
+       */
+      }
       <SessionProvider session={session}>
         <Component {...pageProps} />
       </SessionProvider>
@@ -25,59 +43,36 @@ const MyApp: AppType<{ session: Session | null }> = ({
           background: "#252932",
           color: "#A7ADBA",
         }
-      }} />
+      }}
+      />
     </>
   );
 };
 
-const GoogleAdsense: React.FC = () => {
-  return (
-    <Script
-      async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6958470270834145"
-      crossOrigin="anonymous"
-    />
-  )
-}
-
-const GoogleAnalytics: React.FC<{
-  googleAnalyticsId: string;
-}> = (props) => {
+/*
+const GoogleTagManager: React.FC = () => {
   return (
     <>
-      <Script strategy="afterInteractive" src={`https://www.googletagmanager.com/gtag/js?id=${props.googleAnalyticsId}`} />
-      <Script
-        id='google-analytics'
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '${props.googleAnalyticsId}', {
-            page_path: window.location.pathname,
-          });
-        `,
-        }}
-      />
+      <Script id="google-tag-manager" strategy="afterInteractive">
+        {`function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WPT8F2V');`}
+      </Script>
+      <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WPT8F2V"
+          height="0" width="0" style={{
+            display: "none",
+            visibility: "hidden",
+          }} />
+      </noscript>
     </>
   )
 }
+*/
 
-export const FaviconScripts = () => {
-  return (
-    <>
-      <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-      <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-      <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-      <link rel="manifest" href="/site.webmanifest" />
-      <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
-      <meta name="msapplication-TileColor" content="#da532c" />
-      <meta name="theme-color" content="#ffffff" />
-    </>
-  )
-};
-
+/*
 const Iubenda = () => {
   return (
     <>
@@ -94,5 +89,6 @@ const Iubenda = () => {
     </>
   )
 }
+*/
 
 export default api.withTRPC(MyApp);

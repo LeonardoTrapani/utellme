@@ -132,7 +132,6 @@ const Home: NextPage = () => {
       <Head>
         <title>uTellMe</title>
         <meta name="description" content="get free quick and easy feedback with uTellMe" />
-        <FaviconScripts />
       </Head>
       <main>
         {(sessionStatus === 'loading')
