@@ -20,7 +20,7 @@ export default class MyDocument extends Document {
   }
 }
 
-const GoogleAdsense: React.FC = () => {
+export const GoogleAdsense: React.FC = () => {
   return (
     <Script
       async
@@ -31,7 +31,7 @@ const GoogleAdsense: React.FC = () => {
   )
 }
 
-const GoogleAnalytics: React.FC<{
+export const GoogleAnalytics: React.FC<{
   googleAnalyticsId: string;
 }> = (props) => {
   return (

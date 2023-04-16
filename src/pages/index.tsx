@@ -21,7 +21,6 @@ import Input from "~/components/Input";
 import { UTellMeComponentButton } from "~/components/UTellMeComponent";
 import { toastTrpcError } from "~/utils/functions";
 import { SwitchComponent } from "~/components/SwitchComponent";
-import { FaviconScripts } from "./_app";
 import { getServerSession } from "next-auth";
 
 const Home: NextPage = () => {
