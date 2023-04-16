@@ -14,11 +14,8 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <>
-      {
-        <>
-          <GoogleAnalytics googleAnalyticsId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || ""} />
-        </>
-      }
+      <GoogleAnalytics googleAnalyticsId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || ""} />
+      <GoogleAdsense />
       <SessionProvider session={session}>
         <Component {...pageProps} />
       </SessionProvider>
@@ -31,6 +28,16 @@ const MyApp: AppType<{ session: Session | null }> = ({
     </>
   );
 };
+
+const GoogleAdsense: React.FC = () => {
+  return (
+    <Script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6958470270834145"
+      crossOrigin="anonymous"
+    />
+  )
+}
 
 const GoogleAnalytics: React.FC<{
   googleAnalyticsId: string;
