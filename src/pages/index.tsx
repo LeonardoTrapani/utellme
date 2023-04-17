@@ -945,7 +945,6 @@ const downloadFile = (fileName: string, blob: Blob) => {
 
   // Start download
   link.click();
-  toast("Downloaded!")
 
   // Clean up and remove the link
   link.parentNode?.removeChild(link);
