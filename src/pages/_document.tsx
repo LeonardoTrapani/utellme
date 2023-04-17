@@ -8,8 +8,6 @@ export default class MyDocument extends Document {
     return (
       <Html>
         <Head>
-          <GoogleAnalytics googleAnalyticsId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || ""} />
-          <GoogleAdsense />
           <FaviconScripts />
         </Head>
         <body className="bg-base-100">
