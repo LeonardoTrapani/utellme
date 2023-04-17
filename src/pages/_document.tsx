@@ -1,6 +1,7 @@
 import React from "react";
 import Document, { Html, Head, Main, NextScript } from "next/document";
 import Script from "next/script";
+import Link from "next/link";
 
 export default class MyDocument extends Document {
   render() {
@@ -11,8 +12,19 @@ export default class MyDocument extends Document {
           <GoogleAdsense />
           <FaviconScripts />
         </Head>
-        <body>
-          <Main />
+        <body className="bg-base-100">
+          <div className="min-h-screen">
+            <Main />
+          </div>
+          <div className="flex justify-center items-center gap-2 mb-2">
+            <Link className="link link-hover" href="/policies/cookies">
+              <p>Cookie Notice</p>
+            </Link>
+            <p>&#183;</p>
+            <Link href="/policies/privacy-policy" className="link link-hover">
+              <p>Privacy Police</p>
+            </Link>
+          </div>
           <NextScript />
         </body>
       </Html>
