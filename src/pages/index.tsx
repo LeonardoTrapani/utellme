@@ -19,7 +19,7 @@ import { toast } from "react-hot-toast";
 import QRCode from 'qrcode'
 import Input from "~/components/Input";
 import { UTellMeComponentButton } from "~/components/UTellMeComponent";
-import { toastTrpcError } from "~/utils/functions";
+import { timeSinceNow, toastTrpcError } from "~/utils/functions";
 import { SwitchComponent } from "~/components/SwitchComponent";
 import { FaviconScripts } from "./_app";
 import { getServerSession } from "next-auth";
@@ -1299,9 +1299,12 @@ const ProjectComponent: React.FC<{
 const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
   return (
     <li key={props.feedback.id}>
-      <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between">
+      <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between shadow-lg">
         <div>
-          <StaticRatingComponent rating={props.feedback.rating} />
+          <div className="flex justify-between items-start">
+            <StaticRatingComponent rating={props.feedback.rating} />
+            <p className="text-gray-500 leading-3">{timeSinceNow(props.feedback.createdAt)}</p>
+          </div>
           {
             props.feedback.title ?
               <h2 className="text-xl font-bold">
