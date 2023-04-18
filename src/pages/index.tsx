@@ -768,7 +768,7 @@ const DescriptionOrAddDescriptionComponent: React.FC<{
 
   if (props.isEditDescriptionLoading) {
     return (
-      <LoadingIndicator isSmall />
+      <LoadingIndicator isSmall showInstantly/>
     )
   }
 
@@ -1061,7 +1061,7 @@ const ActionIconsComponent: React.FC<{
               tooltipName="Edit Project"
             >
               {
-                props.isEditProjectLoading ? <LoadingIndicator isSmall /> :
+                props.isEditProjectLoading ? <LoadingIndicator isSmall showInstantly/> :
                   <label htmlFor="edit-project-modal" className="cursor-pointer">
                     <BiEdit size={26} />
                   </label>
@@ -1071,7 +1071,7 @@ const ActionIconsComponent: React.FC<{
               tooltipName="Delete Project"
             >
               {
-                props.isDeleteProjectLoading ? <LoadingIndicator isSmall /> :
+                props.isDeleteProjectLoading ? <LoadingIndicator isSmall showInstantly/> :
                   <label htmlFor="delete-project-modal" className="cursor-pointer">
                     <BiTrash size={26} />
                   </label>
@@ -1098,7 +1098,7 @@ const DropdownSort: React.FC<{
     <div className="dropdown dropdown-end flex">
       <label tabIndex={0} className="cursor-pointer">
         {
-          isLoading ? <LoadingIndicator isSmall /> :
+          isLoading ? <LoadingIndicator isSmall showInstantly/> :
             <BiSortAlt2 size={26} />
         }
       </label>
@@ -1244,7 +1244,7 @@ const ProjectDrawerContainer: React.FC<{
           {
             (isNewProjectsLoading) ?
               <div className="flex justify-center">
-                <LoadingIndicator />
+                <LoadingIndicator showInstantly/>
               </div>
               :
               props.projectsData?.map((project, i) => {
