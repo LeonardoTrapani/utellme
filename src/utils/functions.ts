@@ -10,6 +10,54 @@ toastTrpcError(
   ]
 )
 */
+
+enum TimeType {
+  Year = "year",
+  Month = "month",
+  Day = "day",
+  Hour = "hour",
+  Minute = "minute",
+  Second = "second",
+}
+
+export const timeSinceNow = (date: Date) => {
+  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+
+  let interval = seconds / 31536000;
+
+  const returnValue = (interval: number, type: TimeType) => {
+    if (type === TimeType.Second) {
+      return "just now";
+    }
+    if (interval.toFixed(0) === "1") {
+      return `1 ${type} ago`;
+    } else {
+      return `${interval.toFixed(0)} ${type}s ago`;
+    }
+  };
+
+  if (interval > 1) {
+    return returnValue(interval, TimeType.Year);
+  }
+  interval = seconds / 2592000;
+  if (interval > 1) {
+    return returnValue(interval, TimeType.Month);
+  }
+  interval = seconds / 86400;
+  if (interval > 1) {
+    return returnValue(interval, TimeType.Day);
+  }
+  interval = seconds / 3600;
+  if (interval > 1) {
+    return returnValue(interval, TimeType.Hour);
+  }
+  interval = seconds / 60;
+  if (interval > 1) {
+    return returnValue(interval, TimeType.Minute);
+  }
+  return returnValue(seconds, TimeType.Second);
+}
+
 export const toastTrpcError = (
   defaultMessage: string,
   errorMessages: {
