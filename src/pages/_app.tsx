@@ -94,6 +94,3 @@ export const GoogleAnalytics: React.FC<{
 }
 
 export default api.withTRPC(MyApp);
-
-// In order to give you the best experience, we and our third party partners may use cookies and similar technologies, for example, to analyze usage and optimize our sites and services, personalize content, tailor and measure our marketing and to keep the site secure. Please visit our privacy notice for more information and our cookies notice for a list of all cookies used. Our Cookies Notice
-
