@@ -5,46 +5,76 @@ import { SessionProvider } from "next-auth/react";
 import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
+import * as gtag from "~/utils/gtag";
 import { Toaster } from "react-hot-toast";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 import Script from "next/script";
+import { useCookieConsent } from "~/utils/hooks";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  const [cookieConsent, setCookieConsent] = useCookieConsent();
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleRouteChange = (url: URL) => {
+      gtag.pageview(url);
+    };
+    router.events.on("routeChangeComplete", handleRouteChange);
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, [router.events]);
+
   return (
     <>
+      {
+        !cookieConsent && (
+          <div className="">
+          </div>
+        )
+      }
       <GoogleAnalytics googleAnalyticsId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || ""} />
       <GoogleAdsense />
-      <SessionProvider session={session}>
-        <Component {...pageProps} />
-      </SessionProvider>
       <Toaster toastOptions={{
         style: {
           background: "#252932",
           color: "#A7ADBA",
         }
-      }} />
+      }}
+      />
+      <SessionProvider session={session}>
+        <Component {...pageProps} />
+      </SessionProvider>
     </>
   );
 };
 
-const GoogleAdsense: React.FC = () => {
+export const GoogleAdsense: React.FC = () => {
   return (
     <Script
       async
+      data-ad-client="ca-pub-6958470270834145"
       src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6958470270834145"
       crossOrigin="anonymous"
     />
   )
 }
 
-const GoogleAnalytics: React.FC<{
+export const GoogleAnalytics: React.FC<{
   googleAnalyticsId: string;
 }> = (props) => {
   return (
     <>
-      <Script strategy="afterInteractive" src={`https://www.googletagmanager.com/gtag/js?id=${props.googleAnalyticsId}`} />
+      <Script
+        async
+        strategy="afterInteractive"
+        src={`https://www.googletagmanager.com/gtag/js?id=${props.googleAnalyticsId}`}
+      />
       <Script
         id='google-analytics'
         strategy="afterInteractive"
@@ -59,20 +89,6 @@ const GoogleAnalytics: React.FC<{
         `,
         }}
       />
-    </>
-  )
-}
-
-export const FaviconScripts = () => {
-  return (
-    <>
-      <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-      <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-      <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-      <link rel="manifest" href="/site.webmanifest" />
-      <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
-      <meta name="msapplication-TileColor" content="#da532c" />
-      <meta name="theme-color" content="#ffffff" />
     </>
   )
 }

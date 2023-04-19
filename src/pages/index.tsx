@@ -21,7 +21,6 @@ import Input from "~/components/Input";
 import { UTellMeComponentButton } from "~/components/UTellMeComponent";
 import { timeSinceNow, toastTrpcError } from "~/utils/functions";
 import { SwitchComponent } from "~/components/SwitchComponent";
-import { FaviconScripts } from "./_app";
 import { getServerSession } from "next-auth";
 
 const Home: NextPage = () => {
@@ -132,7 +131,6 @@ const Home: NextPage = () => {
       <Head>
         <title>uTellMe</title>
         <meta name="description" content="get free quick and easy feedback with uTellMe" />
-        <FaviconScripts />
       </Head>
       <main>
         {(sessionStatus === 'loading')
@@ -947,7 +945,6 @@ const downloadFile = (fileName: string, blob: Blob) => {
 
   // Start download
   link.click();
-  toast("Downloaded!")
 
   // Clean up and remove the link
   link.parentNode?.removeChild(link);
