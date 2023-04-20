@@ -26,12 +26,39 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 const IndexSettings = () => {
+  const { status } = useSession();
+  return (
+    <>
+      <Head>
+        <title>Settings</title>
+        <meta name="description" content="uTellMe settings" />
+      </Head>
+      {
+        status === "loading" ?
+          <div className="flex justify-center items-center h-screen">
+            <LoadingIndicator />
+          </div> :
+
+          <div className="max-w-3xl m-auto p-2 flex flex-col gap-10">
+            <div className="flex items-center">
+              <UTellMeComponentButton />
+              <h1 className="text-3xl font-bold">Settings</h1>
+            </div>
+            <AccountAndSigninComponent />
+            <DeleteAccountComponent />
+          </div>
+      }
+    </>
+  );
+};
+
+const AccountAndSigninComponent: React.FC = () => {
   const [usernameValue, setUsernameValue] = useState("");
   const [hasUpdatedUsername, setHasUpdatedUsername] = useState(false);
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [isNewUsernameLoading, setIsNewUsernameLoading] = useState(false);
   const [usernameInitialLength, setUsernameInitialLength] = useState<number | undefined>(undefined);
-  const { data, status } = useSession();
+  const { data } = useSession();
 
   const { mutate: updateName } = api.user.updateName.useMutation({
     onSuccess: () => {
@@ -76,110 +103,81 @@ const IndexSettings = () => {
   const isSmall = (windowWidth || 0) < 768;
 
   return (
-    <>
-      <Head>
-        <title>Settings</title>
-        <meta name="description" content="uTellMe settings" />
-      </Head>
-      {
-        status === "loading" ?
-          <div className="flex justify-center items-center h-screen">
-            <LoadingIndicator />
-          </div> :
 
-          <div className="max-w-3xl m-auto p-2">
+    <div className="flex flex-col items-start">
+      <h2 className="text-2xl font-bold mb-2">Account & Sign-in</h2>
+      <div className="divider my-2" />
+      <div className="flex items-center gap-2 mb-4 w-full">
+        <AvatarContent isBig sessionData={data} />
+        {
+          data?.user.name &&
+          <div className="flex flex-col grow">
             <div className="flex items-center">
-              <UTellMeComponentButton />
-              <h1 className="text-3xl font-bold">Settings</h1>
-            </div>
-            <div className="divider my-1" />
-            <div className="flex flex-col items-start">
-              <h2 className="text-2xl font-bold mb-2">Account & Sign-in</h2>
-              <div className="flex items-center gap-4 mb-4 w-full">
-                <AvatarContent isBig sessionData={data} />
-                {
-                  data?.user.name &&
-                  <div className="flex flex-col grow">
-                    <div className="flex items-center">
-                      {
-                        isNewUsernameLoading ? <LoadingIndicator isSmall /> :
-                          isEditingUsername ?
-                            <Input
-                              id={usernameInputId}
-                              name="username"
-                              labelDisabled
-                              onChange={(value) => {
-                                setUsernameValue(value)
-                              }}
-                              placeholder="Username"
-                              value={usernameValue}
-                              borderHidden
-                              initialLength={usernameInitialLength}
-                              inputClassName="text-lg font-semibold h-min w-min"
-                              maxLength={35}
-                              onSubmit={(e) => {
-                                handleUsernameChange(e.currentTarget.value);
-                              }}
-                              isGhost
-                            /> : <p className="text-lg font-semibold">{data.user.name}</p>
-                      }
-                      {
-                        isEditingUsername ?
-                          <a
-                            className={`${usernameValue.length ? 'cursor-pointer' : 'cursor-not-allowed'}`}
-                            onClick={() => {
-                              if (usernameValue.length) {
-                                handleUsernameChange(usernameValue);
-                              }
-                            }}
-                          >
-                            <BiCheck size={22} className={usernameValue.length > 0 ? "text-success" : ""} />
-                          </a>
-                          :
-                          <a className="cursor-pointer ml-1" onClick={() => {
-                            setIsEditingUsername(true);
-                            setTimeout(() => {
-                              const input = document.getElementById(usernameInputId) as HTMLInputElement | null;
-                              if (input) input.focus();
-                            }, 100)
-                          }}>
-                            <BiPencil size={20} />
-                          </a>
-                      }
-                    </div>
-                    <p className="">{data.user.email}</p>
-                  </div>
-                }
-                {
-                  !isSmall ?
-                    <AccountButtons />
-                    :
-                    <></>
-                }
-              </div>
               {
-                isSmall ?
-                  <AccountButtons isRow />
+                isNewUsernameLoading ? <LoadingIndicator isSmall /> :
+                  isEditingUsername ?
+                    <Input
+                      id={usernameInputId}
+                      name="username"
+                      labelDisabled
+                      onChange={(value) => {
+                        setUsernameValue(value)
+                      }}
+                      placeholder="Username"
+                      value={usernameValue}
+                      borderHidden
+                      initialLength={usernameInitialLength}
+                      inputClassName="text-lg font-semibold h-min w-min"
+                      maxLength={35}
+                      onSubmit={(e) => {
+                        handleUsernameChange(e.currentTarget.value);
+                      }}
+                      isGhost
+                    /> : <p className="text-lg font-semibold">{data.user.name}</p>
+              }
+              {
+                isEditingUsername ?
+                  <a
+                    className={`${usernameValue.length ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+                    onClick={() => {
+                      if (usernameValue.length) {
+                        handleUsernameChange(usernameValue);
+                      }
+                    }}
+                  >
+                    <BiCheck size={22} className={usernameValue.length > 0 ? "text-success" : ""} />
+                  </a>
                   :
-                  <></>
+                  <a className="cursor-pointer ml-1" onClick={() => {
+                    setIsEditingUsername(true);
+                    setTimeout(() => {
+                      const input = document.getElementById(usernameInputId) as HTMLInputElement | null;
+                      if (input) input.focus();
+                    }, 100)
+                  }}>
+                    <BiPencil size={20} />
+                  </a>
               }
             </div>
+            <p className="">{data.user.email}</p>
           </div>
+        }
+        {
+          !isSmall ?
+            <SignoutButton />
+            :
+            <></>
+        }
+      </div>
+      {
+        isSmall ?
+          <SignoutButton />
+          :
+          <></>
       }
-    </>
-  );
-};
-
-const AccountButtons: React.FC<{
-  isRow?: boolean;
-}> = (props) => {
-  return (
-    <div className={`ml-auto ${props.isRow ? 'flex items-center gap-2' : 'flex flex-col gap-2'}`}>
-      <SignoutButton isFull={!props.isRow} />
-      <DeleteAccountButton />
     </div>
   )
-}
+};
 const DeleteAccountButton: React.FC = () => {
   const { mutate: deleteAccount } = api.user.deleteAccount.useMutation({
     onError: (e) => {
@@ -195,7 +193,7 @@ const DeleteAccountButton: React.FC = () => {
   });
   return (
     <button
-      className="flex justify-between btn justify-self-end ml-auto flex-grow btn-error"
+      className="btn btn-error"
       onClick={() => {
         void deleteAccount();
       }}
@@ -205,6 +203,16 @@ const DeleteAccountButton: React.FC = () => {
   )
 }
 
+const DeleteAccountComponent: React.FC = () => {
+  return (
+    <div className="w-full">
+      <h2 className="text-2xl text-error">Delete account</h2>
+      <div className="divider my-2" />
+      <p className="mb-4">Once you delete your account, there is no going back. Please be certain.</p>
+      <DeleteAccountButton />
+    </div>
+  )
+}
 export const SignoutButton: React.FC<{
   isFull?: boolean;
 }> = (props) => {
