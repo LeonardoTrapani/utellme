@@ -28,3 +28,10 @@ export const useRedirectWithoutSession = () => {
   return session;
 };
 
+export const useCookieConsent = () => {
+  const [cookieConsent, setCookieConsent] = useState<{
+    required: boolean;
+    optional: boolean;
+  } | null>(null);
+  return [cookieConsent, setCookieConsent];
+}

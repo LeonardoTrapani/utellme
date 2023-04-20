@@ -10,7 +10,6 @@ import { SelectRatingComponent, } from "~/components/RatingComponent";
 import { UTellMeComponentButton } from "~/components/UTellMeComponent";
 import { api } from "~/utils/api";
 import { toastTrpcError } from "~/utils/functions";
-import { FaviconScripts } from "../_app";
 
 const NewFeedbackPage: NextPage = () => {
   const [hasGivenFeedback, setHasGivenFeedback] = React.useState(false);
@@ -93,7 +92,6 @@ const NewFeedbackPage: NextPage = () => {
       <Head>
         <title>{project?.name || "uTellMe"}</title>
         <meta name="description" content={`Give feedback to ${project?.name || "my prject"} with uTellMe`} />
-        <FaviconScripts />
       </Head>
       <main>
         {
