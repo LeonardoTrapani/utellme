@@ -12,7 +12,6 @@ import Input from "~/components/Input";
 import LoadingIndicator from "~/components/LoadingIndicator";
 import { api } from "~/utils/api";
 import { reloadSession, toastTrpcError } from "~/utils/functions";
-import { Sign } from "crypto";
 import { useWindowSize } from "~/utils/hooks";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
@@ -70,7 +69,7 @@ const IndexSettings = () => {
       setIsEditingUsername(false);
       updateName({ newName: value });
     }
-  }
+  };
 
   const usernameInputId = "username-input";
   const [windowWidth] = useWindowSize()
