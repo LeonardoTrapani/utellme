@@ -1,16 +1,5 @@
 import toast from "react-hot-toast";
 
-/*
-This function should be called in the onError (on query or mutation) of the trpc client and should look like this:
-toastTrpcError(
-  "Something went wrong creating the project.",
-  e.data?.zodError?.fieldErrors,
-  [
-    { propertyName: "name", propertyMessage: "Project name" },
-  ]
-)
-*/
-
 enum TimeType {
   Year = "year",
   Month = "month",
@@ -58,6 +47,17 @@ export const timeSinceNow = (date: Date) => {
   return returnValue(seconds, TimeType.Second);
 }
 
+
+/*
+This function should be called in the onError (on query or mutation) of the trpc client and should look like this:
+toastTrpcError(
+  "Something went wrong creating the project.",
+  e.data?.zodError?.fieldErrors,
+  [
+    { propertyName: "name", propertyMessage: "Project name" },
+  ]
+)
+*/
 export const toastTrpcError = (
   defaultMessage: string,
   errorMessages: {
@@ -85,4 +85,9 @@ export const isDarkTheme = () => {
     return darkThemeMq.matches;
   }
   return true;
+}
+
+export const reloadSession = () => {
+  const event = new Event("visibilitychange");
+  document.dispatchEvent(event);
 }
