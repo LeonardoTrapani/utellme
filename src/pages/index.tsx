@@ -7,7 +7,8 @@ import { signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useEffect, useRef, useState } from "react";
 import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiSortUp, BiSortDown, BiSortAlt2 } from "react-icons/bi"
-import { BsIncognito } from "react-icons/bs"
+import { BsIncognito } from "react-icons/bs";
+import { FiSettings } from "react-icons/fi";
 import type { Feedback, OrderBy, Project } from "@prisma/client";
 import { StaticRatingComponent } from "~/components/RatingComponent";
 import LoadingIndicator from "~/components/LoadingIndicator";
@@ -22,6 +23,7 @@ import { UTellMeComponentButton } from "~/components/UTellMeComponent";
 import { timeSinceNow, toastTrpcError } from "~/utils/functions";
 import { SwitchComponent } from "~/components/SwitchComponent";
 import { getServerSession } from "next-auth";
+import Link from "next/link";
 
 const Home: NextPage = () => {
   const { status: sessionStatus } = useSession();
@@ -764,7 +766,7 @@ const DescriptionOrAddDescriptionComponent: React.FC<{
 
   if (props.isEditDescriptionLoading) {
     return (
-      <LoadingIndicator isSmall />
+      <LoadingIndicator isSmall showInstantly/>
     )
   }
 
@@ -1056,7 +1058,7 @@ const ActionIconsComponent: React.FC<{
               tooltipName="Edit Project"
             >
               {
-                props.isEditProjectLoading ? <LoadingIndicator isSmall /> :
+                props.isEditProjectLoading ? <LoadingIndicator isSmall showInstantly/> :
                   <label htmlFor="edit-project-modal" className="cursor-pointer">
                     <BiEdit size={26} />
                   </label>
@@ -1066,7 +1068,7 @@ const ActionIconsComponent: React.FC<{
               tooltipName="Delete Project"
             >
               {
-                props.isDeleteProjectLoading ? <LoadingIndicator isSmall /> :
+                props.isDeleteProjectLoading ? <LoadingIndicator isSmall showInstantly/> :
                   <label htmlFor="delete-project-modal" className="cursor-pointer">
                     <BiTrash size={26} />
                   </label>
@@ -1093,7 +1095,7 @@ const DropdownSort: React.FC<{
     <div className="dropdown dropdown-end flex">
       <label tabIndex={0} className="cursor-pointer">
         {
-          isLoading ? <LoadingIndicator isSmall /> :
+          isLoading ? <LoadingIndicator isSmall showInstantly/> :
             <BiSortAlt2 size={26} />
         }
       </label>
@@ -1239,7 +1241,7 @@ const ProjectDrawerContainer: React.FC<{
           {
             (isNewProjectsLoading) ?
               <div className="flex justify-center">
-                <LoadingIndicator />
+                <LoadingIndicator showInstantly/>
               </div>
               :
               props.projectsData?.map((project, i) => {
@@ -1271,6 +1273,12 @@ const TitleAndAvatarComponen = () => {
             </p>
             <BiLogOut size={20} />
           </a>
+        </li>
+        <li>
+          <Link href="/settings" className="flex justify-between">
+            <p>Settings</p>
+            <FiSettings />
+          </Link>
         </li>
       </Avatar>
     </div>

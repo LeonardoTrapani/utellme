@@ -57,7 +57,6 @@ export const projectsRouter = createTRPCRouter({
     ]).nullish(),
     projectId: z.string().trim().min(1),
   })).mutation(async ({ ctx, input }) => {
-    console.log("UPDATING THIS SHIT WITH A NEW ORDERBY: ", input.newOrderBy)
     return await ctx.prisma.project.updateMany({
       data: {
         name: input.newName || undefined,
