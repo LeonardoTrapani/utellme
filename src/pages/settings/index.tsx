@@ -152,14 +152,14 @@ const IndexSettings = () => {
                 }
                 {
                   !isSmall ?
-                    <SignoutButton />
+                    <AccountButtons />
                     :
                     <></>
                 }
               </div>
               {
                 isSmall ?
-                  <SignoutButton />
+                  <AccountButtons isRow />
                   :
                   <></>
               }
@@ -170,16 +170,53 @@ const IndexSettings = () => {
   );
 };
 
-export const SignoutButton = () => {
+const AccountButtons: React.FC<{
+  isRow?: boolean;
+}> = (props) => {
   return (
-    <a onClick={() => {
+    <div className={`ml-auto ${props.isRow ? 'flex items-center gap-2' : 'flex flex-col gap-2'}`}>
+      <SignoutButton isFull={!props.isRow} />
+      <DeleteAccountButton />
+    </div>
+  )
+}
+const DeleteAccountButton: React.FC = () => {
+  const { mutate: deleteAccount } = api.user.deleteAccount.useMutation({
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong deleting your account. Please try again later.",
+        e.data?.zodError?.fieldErrors,
+        []
+      )
+    },
+    onSuccess: () => {
       void signOut();
-    }} className="flex justify-between btn justify-self-end ml-auto">
+    }
+  });
+  return (
+    <button
+      className="flex justify-between btn justify-self-end ml-auto flex-grow btn-error"
+      onClick={() => {
+        void deleteAccount();
+      }}
+    >
+      delete account
+    </button>
+  )
+}
+
+export const SignoutButton: React.FC<{
+  isFull?: boolean;
+}> = (props) => {
+  return (
+    <button onClick={() => {
+      void signOut();
+    }} className={`flex justify-between btn justify-self-end ml-auto ${props.isFull ? 'w-full flex-grow' : ''}`}>
       <p>
         Sign Out
       </p>
       <BiLogOut size={20} />
-    </a>
+    </button>
   );
 }
 
