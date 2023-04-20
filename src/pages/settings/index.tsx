@@ -12,6 +12,8 @@ import Input from "~/components/Input";
 import LoadingIndicator from "~/components/LoadingIndicator";
 import { api } from "~/utils/api";
 import { reloadSession, toastTrpcError } from "~/utils/functions";
+import { Sign } from "crypto";
+import { useWindowSize } from "~/utils/hooks";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions);
@@ -71,6 +73,8 @@ const IndexSettings = () => {
   }
 
   const usernameInputId = "username-input";
+  const [windowWidth] = useWindowSize()
+  const isSmall = (windowWidth || 0) < 768;
 
   return (
     <>
@@ -147,20 +151,37 @@ const IndexSettings = () => {
                     <p className="">{data.user.email}</p>
                   </div>
                 }
-                <a onClick={() => {
-                  void signOut();
-                }} className="flex justify-between btn justify-self-end ml-auto">
-                  <p>
-                    Sign Out
-                  </p>
-                  <BiLogOut size={20} />
-                </a>
+                {
+                  !isSmall ?
+                    <SignoutButton />
+                    :
+                    <></>
+                }
               </div>
+              {
+                isSmall ?
+                  <SignoutButton />
+                  :
+                  <></>
+              }
             </div>
           </div>
       }
     </>
   );
 };
+
+export const SignoutButton = () => {
+  return (
+    <a onClick={() => {
+      void signOut();
+    }} className="flex justify-between btn justify-self-end ml-auto">
+      <p>
+        Sign Out
+      </p>
+      <BiLogOut size={20} />
+    </a>
+  );
+}
 
 export default IndexSettings;
