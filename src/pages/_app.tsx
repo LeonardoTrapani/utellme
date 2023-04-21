@@ -6,10 +6,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
-import * as gtag from "~/utils/gtag";
 import { Toaster } from "react-hot-toast";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
 import Script from "next/script";
 import { useCookieConsent } from "~/utils/hooks";
 
@@ -18,18 +15,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   const [cookieConsent, setCookieConsent] = useCookieConsent();
-
-  const router = useRouter();
-
-  useEffect(() => {
-    const handleRouteChange = (url: URL) => {
-      gtag.pageview(url);
-    };
-    router.events.on("routeChangeComplete", handleRouteChange);
-    return () => {
-      router.events.off("routeChangeComplete", handleRouteChange);
-    };
-  }, [router.events]);
 
   return (
     <>
