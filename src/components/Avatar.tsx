@@ -13,7 +13,7 @@ const AvatarDropdown: React.FC<{
   return (
     < div className="dropdown dropdown-end" >
       <label tabIndex={0} className="hover:cursor-pointer m-1">
-        <AvatarContent sessionData={sessionData}/>
+        <AvatarContent sessionData={sessionData} />
       </label>
       <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
         {props.children}

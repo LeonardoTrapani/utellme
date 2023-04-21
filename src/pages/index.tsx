@@ -24,6 +24,7 @@ import { timeSinceNow, toastTrpcError } from "~/utils/functions";
 import { SwitchComponent } from "~/components/SwitchComponent";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { ModalActionButton } from "~/components/Modal";
 
 const Home: NextPage = () => {
   const { status: sessionStatus } = useSession();
@@ -561,24 +562,6 @@ const SortContent: React.FC<{
         }}
       />
     </div>
-  )
-}
-
-const ModalActionButton: React.FC<{
-  modalId: string;
-  children: React.ReactNode;
-  isRed?: boolean;
-  onClick?: () => void;
-  disableClose?: boolean;
-  isPrimary?: boolean;
-}> = (props) => {
-  return (
-    <a onClick={props.onClick}>
-      <label htmlFor={!props.disableClose ? props.modalId : 'you are not closing'}
-        className={`btn ${props.isPrimary ? 'btn-primary' : ''} ${props.isRed ? 'btn-error' : ''}`}>
-        {props.children}
-      </label>
-    </a>
   )
 }
 
