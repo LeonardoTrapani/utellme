@@ -11,7 +11,7 @@ export const UTellMeComponentButton: React.FC<{
 }> = (props) => {
   return (
     <Link
-      className={`font-bold select-none text-start justify-self-start cursor-pointer ${props.isBig ? 'text-2xl' : 'text-xl'}`}
+      className={`select-none cursor-pointer ${props.isBig ? 'text-2xl' : 'text-xl'}`}
       href={{
         pathname: '/'
       }}
@@ -26,8 +26,7 @@ export const UTellMeComponent: React.FC<{
 }> = (props) => {
   const isDarkThemeVar = isDarkTheme();
   return (
-    <div className="px-2 text-start justify-self-start">
-      <Image alt="uTellMe logo" src={isDarkThemeVar ? DarkThemeLogo : LightThemeLogo} className={`object-contain w-full ${props.isBig ? 'h-20' : props.isMedium ? 'h-10' : 'h-5'}`} />
-    </div>
+    <Image alt="uTellMe logo" src={isDarkThemeVar ? DarkThemeLogo : LightThemeLogo}
+      className={`object-contain ${props.isBig ? 'w-64' : props.isMedium ? 'w-36' : 'w-20'}`} />
   )
 }
