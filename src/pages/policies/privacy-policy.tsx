@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React from "react";
 import { UTellMeComponentButton } from "~/components/UTellMeComponent";
-import { PolicyParagraph } from "./cookies";
+import { PolicyParagraph, SupportEmailLink } from "./cookies";
 
 const PrivacyPolicy: React.FC = () => {
   return (
@@ -25,13 +25,7 @@ const PrivacyPolicy: React.FC = () => {
         utellme
       </Link>&nbsp;one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by utellme and how we use it.</h3>
 
-      <p>If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us on our&nbsp;
-        <Link href={{
-          pathname: '/contact'
-        }} className="link link-hover">
-          contact page
-        </Link>
-        .</p>
+      <p>If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us at&nbsp;<SupportEmailLink />.</p>
 
       <p>This Privacy Policy applies only to our online activities and is valid for visitors to our website with regards to the information that they shared and/or collect in utellme. This policy is not applicable to any information collected offline or via channels other than this website.</p>
 

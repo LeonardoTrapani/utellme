@@ -74,17 +74,15 @@ const CookiePolicy: React.FC = () => {
         Hopefully that has clarified things for you. As was previously mentioned if there is something that you aren&apos;t sure whether you need or not it is usually safer to leave cookies enabled in case it does interact with one of the features you use on our site.
       </PolicyParagraph>
 
-      <p>If you are still looking for more information you can contact us on&nbsp;
-        <Link href={{
-          pathname: '/contact'
-        }}
-          className="link"
-        >
-          this page
-        </Link>
-      </p>
+      <p>If you are still looking for more information you can contact us at <SupportEmailLink /></p>
     </div >
   );
+}
+
+export const SupportEmailLink = () => {
+  return (
+    <a href="mailto:support@utellme.app" className="link">support@utellme.app</a>
+  )
 }
 
 export const PolicyParagraph: React.FC<{

@@ -90,7 +90,7 @@ const DeleteAccountModal: React.FC<{
       <div>
         <h1 className="text-2xl font-bold">Are you sure you want to delete your account?</h1>
         <div className="divider my-2" />
-        <p>This action cannot be undone. You will <span className="font-semibold">immediately lose all your projects</span> along with all your feedback. If you have any problems please <Link href="/contact" className="link link-hover">contact us</Link></p>
+        <p>This action cannot be undone. You will <span className="font-semibold">immediately lose all your projects</span> along with all your feedback. If you have any problems please <Link href="mailto:support@utellme.app" className="link link-hover">contact us</Link></p>
         <div className="py-6 flex flex-col gap-2">
           <p>To verify, type <span className="italic">delete my account</span> below:</p>
           <Input
