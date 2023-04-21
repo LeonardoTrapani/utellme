@@ -39,7 +39,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
           </div>
         )
       }
-      <GoogleAnalytics googleAnalyticsId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || ""} />
       <Analytics />
       <GoogleAdsense />
       <Toaster toastOptions={{
@@ -64,34 +63,6 @@ export const GoogleAdsense: React.FC = () => {
       src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6958470270834145"
       crossOrigin="anonymous"
     />
-  )
-}
-
-export const GoogleAnalytics: React.FC<{
-  googleAnalyticsId: string;
-}> = (props) => {
-  return (
-    <>
-      <Script
-        async
-        strategy="afterInteractive"
-        src={`https://www.googletagmanager.com/gtag/js?id=${props.googleAnalyticsId}`}
-      />
-      <Script
-        id='google-analytics'
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '${props.googleAnalyticsId}', {
-            page_path: window.location.pathname,
-          });
-        `,
-        }}
-      />
-    </>
   )
 }
 
