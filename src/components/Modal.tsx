@@ -42,6 +42,18 @@ const Modal: React.FC<{
   )
 }
 
+export const OpenModalButton: React.FC<{
+  children: React.ReactNode;
+  id: string;
+}> = (props) => {
+  return (
+    <label htmlFor={props.id} className="cursor-pointer">
+      {props.children}
+    </label>
+
+  );
+}
+
 export const ModalActionButton: React.FC<ModalButtonProps> = (props) => {
   return (
     <a onClick={props.onClick}>

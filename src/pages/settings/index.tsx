@@ -13,6 +13,8 @@ import LoadingIndicator from "~/components/LoadingIndicator";
 import { api } from "~/utils/api";
 import { reloadSession, toastTrpcError } from "~/utils/functions";
 import { useWindowSize } from "~/utils/hooks";
+import Modal, { OpenModalButton } from "~/components/Modal";
+import Link from "next/link";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions);
@@ -26,6 +28,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 const IndexSettings = () => {
+  const deleteAccountModalId = "delete-account-modal";
   const { status } = useSession();
   return (
     <>
@@ -38,19 +41,84 @@ const IndexSettings = () => {
           <div className="flex justify-center items-center h-screen">
             <LoadingIndicator />
           </div> :
-
-          <div className="max-w-3xl m-auto p-2 flex flex-col gap-10">
-            <div className="flex items-center">
-              <UTellMeComponentButton />
-              <h1 className="text-3xl font-bold">Settings</h1>
+          <>
+            <div className="max-w-3xl m-auto p-2 flex flex-col gap-10">
+              <div className="flex items-center">
+                <UTellMeComponentButton />
+                <h1 className="text-3xl font-bold">Settings</h1>
+              </div>
+              <AccountAndSigninComponent />
+              <DeleteAccountComponent modalId={deleteAccountModalId} />
             </div>
-            <AccountAndSigninComponent />
-            <DeleteAccountComponent />
-          </div>
+            <DeleteAccountModal modalId={deleteAccountModalId} />
+          </>
       }
     </>
   );
 };
+
+const DeleteAccountModal: React.FC<{
+  modalId: string;
+}> = (props) => {
+  const [deleteMyAccountValue, setDeleteMyAccountValue] = useState("");
+  const [deleteMyAccountHasError, setDeleteMyAccountHasError] = useState(false);
+
+  const { mutate: deleteAccount } = api.user.deleteAccount.useMutation({
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong deleting your account. Please try again later.",
+        e.data?.zodError?.fieldErrors,
+        []
+      )
+    },
+    onSuccess: () => {
+      void signOut();
+    }
+  });
+
+  const deleteAccountHandler = (value: string) => {
+    if (value === "delete my account") {
+      void deleteAccount();
+      setDeleteMyAccountHasError(false);
+      return;
+    }
+    setDeleteMyAccountHasError(true);
+  };
+
+  return (
+    <Modal id={props.modalId}>
+      <div>
+        <h1 className="text-2xl font-bold">Are you sure you want to delete your account?</h1>
+        <div className="divider my-2" />
+        <p>This action cannot be undone. You will <span className="font-semibold">immediately lose all your projects</span> along with all your feedback. If you have any problems please <Link href="/contact" className="link link-hover">contact us</Link></p>
+        <div className="py-6 flex flex-col gap-2">
+          <p>To verify, type <span className="italic">delete my account</span> below:</p>
+          <Input
+            labelDisabled
+            placeholder='delete my account'
+            value={deleteMyAccountValue}
+            onSubmit={(e) => {
+              deleteAccountHandler(e.currentTarget.value);
+            }}
+            name="Verify"
+            onChange={(value) => {
+              setDeleteMyAccountValue(value);
+            }}
+            isError={deleteMyAccountHasError}
+          />
+        </div>
+        <button
+          className="btn btn-error m-auto flex"
+          onClick={() => {
+            deleteAccountHandler(deleteMyAccountValue);
+          }}
+        >
+          delete account
+        </button>
+      </div>
+    </Modal>
+  )
+}
 
 const AccountAndSigninComponent: React.FC = () => {
   const [usernameValue, setUsernameValue] = useState("");
@@ -203,13 +271,17 @@ const DeleteAccountButton: React.FC = () => {
   )
 }
 
-const DeleteAccountComponent: React.FC = () => {
+const DeleteAccountComponent: React.FC<{
+  modalId: string;
+}> = (props) => {
   return (
     <div className="w-full">
       <h2 className="text-2xl text-error">Delete account</h2>
       <div className="divider my-2" />
       <p className="mb-4">Once you delete your account, there is no going back. Please be certain.</p>
-      <DeleteAccountButton />
+      <OpenModalButton id={props.modalId}>
+        <div className="btn btn-error">Delete Account</div>
+      </OpenModalButton>
     </div>
   )
 }
