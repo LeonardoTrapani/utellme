@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.13](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.12...v0.1.13) (2023-04-21)
+
+
+### Features
+
+* account & signin settings ([25ad3ca](https://github.com/LeonardoTrapani/tell-me/commit/25ad3ca72696a295bc5185838665943ce4556410))
+* added a fallback if there aren't providers ([91a56e4](https://github.com/LeonardoTrapani/tell-me/commit/91a56e4a90314e5fa23d6659d302c05a57b785f5))
+* added cookie and privacy consent banner ([b70ce19](https://github.com/LeonardoTrapani/tell-me/commit/b70ce192ab3a8190e51dbc730a63c38afc269f22))
+* added custom policies ([a1413f0](https://github.com/LeonardoTrapani/tell-me/commit/a1413f033ca27bde879d1f5c2e974292d4995177))
+* added googleadsense ([b2a079c](https://github.com/LeonardoTrapani/tell-me/commit/b2a079c941771685a5fad3f603b32204f0cbd8c3))
+* added head to the signin page ([1fd5195](https://github.com/LeonardoTrapani/tell-me/commit/1fd519514bfa2cf5c74715e39cefacfc943b5d2c))
+* added privacy and cookie notice on every page footer ([4055df0](https://github.com/LeonardoTrapani/tell-me/commit/4055df0c3d3b3cf8a86c11217d94dbf84671a179))
+* added vercel analytic ([f34ff24](https://github.com/LeonardoTrapani/tell-me/commit/f34ff245b377d6ebc8965f743ef534f8d36a3e05))
+* cookie consent hook ([edce7ff](https://github.com/LeonardoTrapani/tell-me/commit/edce7ff23fee587042de871dcc79dc5275883814))
+* delete account also with mutation ([50b2d0c](https://github.com/LeonardoTrapani/tell-me/commit/50b2d0cbc8b17b045aaaad83f5bcec590500286f))
+* delete account confirm input ([ad243c6](https://github.com/LeonardoTrapani/tell-me/commit/ad243c6652858ce16e394d13394205ba8246cd24))
+* edit username functionalit ([b75fa2b](https://github.com/LeonardoTrapani/tell-me/commit/b75fa2bd9adf1768763c196c33ca29d83520b827))
+* feedback shows created time (time since created) ([d0f246b](https://github.com/LeonardoTrapani/tell-me/commit/d0f246b0042b1163d8f447a099051e8b1cf53545))
+* formatted cookie novice and privacy police ([b452c9d](https://github.com/LeonardoTrapani/tell-me/commit/b452c9d967314a69ad583bf3401d57c0daa0eb22))
+* loading indicator not shown when not needed ([de4b2a1](https://github.com/LeonardoTrapani/tell-me/commit/de4b2a10f7cd4f31d5ec5a069093d75f7440d65e))
+* modal component ([2b28d0f](https://github.com/LeonardoTrapani/tell-me/commit/2b28d0fea65dca9f4e371d7b79e7973067f7b27b))
+* modal component2 ([17957e5](https://github.com/LeonardoTrapani/tell-me/commit/17957e58185b8b3d494558a431fe215b9e86f911))
+* removed iubenda cookie banner and added _document ([03c9da3](https://github.com/LeonardoTrapani/tell-me/commit/03c9da31a51aedfc55c37a090a642b93ad5abbad))
+* removed refers. to contact page and added email support@utellme.app ([32c1af9](https://github.com/LeonardoTrapani/tell-me/commit/32c1af9f4fc766d2f24fd17e09c1a8f0c756baa0))
+* responsiveness of signout button ([6c54b18](https://github.com/LeonardoTrapani/tell-me/commit/6c54b18ee7aad04fa559c98c45e3529d8e0dee96))
+* settings page ([7b98a82](https://github.com/LeonardoTrapani/tell-me/commit/7b98a82ecbcaab456b9e8bf40c0871110595cda2))
+* user trpc route ([694651a](https://github.com/LeonardoTrapani/tell-me/commit/694651a2f8f816cbaa732c3c77debab33d162c36))
+* username input functionality ([85d8c55](https://github.com/LeonardoTrapani/tell-me/commit/85d8c55c062e5e58d9c3180daac5ae11ed48d019))
+
+
+### Bug Fixes
+
+* fixed linting errors + google analytics not working ([7eb3f46](https://github.com/LeonardoTrapani/tell-me/commit/7eb3f46f23f983b3859be833952a5683e271550b))
+* force logo to go at the left ([4da10be](https://github.com/LeonardoTrapani/tell-me/commit/4da10be89f0f1450e717721cf34a23067d3af893))
+* hard coding providers ([fa37220](https://github.com/LeonardoTrapani/tell-me/commit/fa37220e759bc8d74145e08306c4780d868cef97))
+* removed comment ([840443c](https://github.com/LeonardoTrapani/tell-me/commit/840443cb7381747cfa48739db6cb31c6d0431081))
+* removed downloaded button ([0dae28d](https://github.com/LeonardoTrapani/tell-me/commit/0dae28d7bad6267ad4ad8148ce1113c2343cff66))
+* removed unused google anaylitics and adsense scripts ([57b0273](https://github.com/LeonardoTrapani/tell-me/commit/57b02735280fd65a5bbb3c03dc9e98d74a40ec96))
+
 ### [0.1.12](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.11...v0.1.12) (2023-04-14)
 
 
