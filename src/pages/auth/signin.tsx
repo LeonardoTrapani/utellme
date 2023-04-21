@@ -21,7 +21,7 @@ const SignInPage = () => {
       </Head>
       <div className="flex h-screen w-full justify-center items-center">
         <div className="w-96 flex flex-col p-2">
-          <div className={"text-center " + (!queryError ? "mb-6" : "")}>
+          <div className={`m-auto ${!queryError ? "mb-6" : ""}`}>
             <UTellMeComponent isMedium />
           </div>
           <AuthErrorComponent error={queryError} />
