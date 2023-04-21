@@ -42,8 +42,8 @@ const IndexSettings = () => {
             <LoadingIndicator />
           </div> :
           <>
-            <div className="max-w-3xl m-auto p-2 flex flex-col gap-10">
-              <div className="flex items-center">
+            <div className="max-w-3xl m-auto p-2 flex flex-col gap-6">
+              <div className="flex items-center gap-2">
                 <UTellMeComponentButton />
                 <h1 className="text-3xl font-bold">Settings</h1>
               </div>
@@ -89,7 +89,7 @@ const DeleteAccountModal: React.FC<{
     <Modal id={props.modalId}>
       <div>
         <h1 className="text-2xl font-bold">Are you sure you want to delete your account?</h1>
-        <div className="divider my-2" />
+        <div className="divider my-0" />
         <p>This action cannot be undone. You will <span className="font-semibold">immediately lose all your projects</span> along with all your feedback. If you have any problems please <Link href="mailto:support@utellme.app" className="link link-hover">contact us</Link></p>
         <div className="py-6 flex flex-col gap-2">
           <p>To verify, type <span className="italic">delete my account</span> below:</p>
@@ -174,7 +174,7 @@ const AccountAndSigninComponent: React.FC = () => {
 
     <div className="flex flex-col items-start">
       <h2 className="text-2xl font-bold mb-2">Account & Sign-in</h2>
-      <div className="divider my-2" />
+      <div className="divider my-0" />
       <div className="flex items-center gap-2 mb-4 w-full">
         <AvatarContent isBig sessionData={data} />
         {
@@ -253,7 +253,7 @@ const DeleteAccountComponent: React.FC<{
   return (
     <div className="w-full">
       <h2 className="text-2xl text-error">Delete account</h2>
-      <div className="divider my-2" />
+      <div className="divider my-0" />
       <p className="mb-4">Once you delete your account, there is no going back. Please be certain.</p>
       <OpenModalButton id={props.modalId}>
         <div className="btn btn-error">Delete Account</div>

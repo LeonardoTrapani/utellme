@@ -1,9 +1,8 @@
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
-import LightThemeLogo from "../assets/uTellMe logo-light.png"
-import DarkThemeLogo from "../assets/uTellMe logo-dark.png"
-import { isDarkTheme } from "~/utils/functions";
+import LightThemeLogo from "../assets/utellme-logo-light.svg"
+import DarkThemeLogo from "../assets/utellme-logo-dark.svg"
+import { useIsDarkMode } from "~/utils/hooks";
 
 export const UTellMeComponentButton: React.FC<{
   isBig?: boolean;
@@ -11,7 +10,7 @@ export const UTellMeComponentButton: React.FC<{
 }> = (props) => {
   return (
     <Link
-      className={`select-none cursor-pointer ${props.isBig ? 'text-2xl' : 'text-xl'}`}
+      className={`select-none cursor-pointer ${props.isBig ? 'text-2xl' : 'text-xl'} cursor-pointer`}
       href={{
         pathname: '/'
       }}
@@ -24,9 +23,15 @@ export const UTellMeComponent: React.FC<{
   isBig?: boolean;
   isMedium?: boolean;
 }> = (props) => {
-  const isDarkThemeVar = isDarkTheme();
+  const isDarkThemeVar = useIsDarkMode();
   return (
-    <Image alt="uTellMe logo" src={isDarkThemeVar ? DarkThemeLogo : LightThemeLogo}
-      className={`object-contain ${props.isBig ? 'w-64' : props.isMedium ? 'w-36' : 'w-20'}`} />
+    <div
+      className={`object-contain ${props.isBig ? 'w-48 mt-8' : props.isMedium ? 'w-28 mt-5' : 'w-12 mt-2'}`}
+    >
+      {
+
+        isDarkThemeVar ? <DarkThemeLogo /> : <LightThemeLogo />
+      }
+    </div>
   )
 }
