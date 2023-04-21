@@ -246,30 +246,6 @@ const AccountAndSigninComponent: React.FC = () => {
     </div>
   )
 };
-const DeleteAccountButton: React.FC = () => {
-  const { mutate: deleteAccount } = api.user.deleteAccount.useMutation({
-    onError: (e) => {
-      toastTrpcError(
-        "Something went wrong deleting your account. Please try again later.",
-        e.data?.zodError?.fieldErrors,
-        []
-      )
-    },
-    onSuccess: () => {
-      void signOut();
-    }
-  });
-  return (
-    <button
-      className="btn btn-error"
-      onClick={() => {
-        void deleteAccount();
-      }}
-    >
-      delete account
-    </button>
-  )
-}
 
 const DeleteAccountComponent: React.FC<{
   modalId: string;
