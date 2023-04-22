@@ -1249,9 +1249,7 @@ const ProjectDrawerContainer: React.FC<{
 const TitleAndAvatarComponen = () => {
   return (
     <div className="flex justify-between items-center">
-      <div className="ml-1">
-        <UTellMeComponentButton hasText/>
-      </div>
+      <UTellMeComponentButton hasText />
       <Avatar>
         <li>
           <a onClick={() => {

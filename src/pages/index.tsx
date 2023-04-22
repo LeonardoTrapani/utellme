@@ -3,6 +3,7 @@ import Head from "next/head"
 import type { GetServerSidePropsContext } from "next/types";
 import { authOptions } from "~/server/auth";
 import { getServerSession } from "next-auth";
+import Navbar from "~/components/Navbar";
 
 const Index: React.FC = () => {
   return (
@@ -12,6 +13,7 @@ const Index: React.FC = () => {
         <meta name="description" content="utellme is a web app to get the most efficient feedback with utellme." />
       </Head>
       <main>
+        <Navbar />
         <div className="p-10">
           <h1>utellme</h1>
         </div>

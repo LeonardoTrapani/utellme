@@ -8,9 +8,7 @@ const CookiePolicy: React.FC = () => {
       <div>
         <h1 className="text-3xl font-bold">
           <div className="flex items-center justify-center">
-            <div className="mr-1">
-              <UTellMeComponentButton />
-            </div>
+            <UTellMeComponentButton />
             <span>
               Cookie Notice
             </span>

@@ -216,13 +216,16 @@ const AccountAndSigninComponent: React.FC = () => {
                     <BiCheck size={22} className={usernameValue.length > 0 ? "text-success" : ""} />
                   </a>
                   :
-                  <a className="cursor-pointer ml-1" onClick={() => {
-                    setIsEditingUsername(true);
-                    setTimeout(() => {
-                      const input = document.getElementById(usernameInputId) as HTMLInputElement | null;
-                      if (input) input.focus();
-                    }, 100)
-                  }}>
+                  <a
+                    className="cursor-pointer ml-1"
+                    onClick={() => {
+                      setIsEditingUsername(true);
+                      setTimeout(() => {
+                        const input = document.getElementById(usernameInputId) as HTMLInputElement | null;
+                        if (input) input.focus();
+                      }, 100)
+                    }}
+                  >
                     <BiPencil size={20} />
                   </a>
               }

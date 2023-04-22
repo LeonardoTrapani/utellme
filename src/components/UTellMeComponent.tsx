@@ -11,7 +11,7 @@ export const UTellMeComponentButton: React.FC<{
 }> = (props) => {
   return (
     <Link
-      className={`select-none cursor-pointer ${props.isBig ? 'text-2xl' : 'text-xl'} cursor-pointer`}
+      className={`select-none cursor-pointer ${props.isBig ? 'text-2xl' : 'text-xl'} cursor-pointer btn-ghost px-1 m-0 rounded-xl transition-all`}
       href={{
         pathname: '/'
       }}
@@ -20,6 +20,7 @@ export const UTellMeComponentButton: React.FC<{
     </Link>
   )
 }
+
 export const UTellMeComponent: React.FC<{
   isBig?: boolean;
   isMedium?: boolean;
