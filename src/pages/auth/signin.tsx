@@ -21,8 +21,10 @@ const SignInPage = () => {
       </Head>
       <div className="flex h-screen w-full justify-center items-center">
         <div className="w-96 flex flex-col p-2">
-          <div className={`m-auto ${!queryError ? "mb-6" : ""}`}>
-            <UTellMeComponent isMedium />
+          <div className={`${!queryError ? "mb-6" : ""}`}>
+            <div className="flex justify-center items-center gap-2">
+              <UTellMeComponent hasText isMedium/>
+            </div>
           </div>
           <AuthErrorComponent error={queryError} />
           <div className="flex flex-col gap-2">
