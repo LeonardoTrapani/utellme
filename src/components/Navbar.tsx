@@ -20,7 +20,7 @@ const Navbar: React.FC = () => {
             </button>
             :
             <Link href="/auth/signin">
-              <div className='btn btn-ghost'>
+              <div className='btn btn-primary'>
                 Sign In
               </div>
             </Link>

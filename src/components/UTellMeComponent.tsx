@@ -30,7 +30,7 @@ export const UTellMeComponent: React.FC<{
   return (
     <div className="flex items-center">
       <div
-        className={`object-contain ${props.isBig ? 'w-40 mt-8' : props.isMedium ? 'w-20 mt-5' : 'w-11 mt-2'}`}
+        className={`object-contain ${props.isBig ? 'w-96 mt-8' : props.isMedium ? 'w-20 mt-5' : 'w-11 mt-2'}`}
       >
         {
 
