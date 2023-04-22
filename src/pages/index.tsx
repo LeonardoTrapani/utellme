@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Head from "next/head"
 import type { GetServerSidePropsContext } from "next/types";
 import { authOptions } from "~/server/auth";
@@ -6,8 +6,12 @@ import { getServerSession } from "next-auth";
 import { UTellMeComponent } from "~/components/UTellMeComponent";
 import Link from "next/link";
 import ScarnQRIllustration from "../assets/scan qr illustration.svg"
+import LoginIllustration from "../assets/login illustration.svg"
 import ScanQRIllustrationDark from "../assets/scan qr illustration-dark.svg"
 import GiveFeedbackPhoto from "../assets/Give feedback photo.png"
+import ShareMainScreenImage from "../assets/share-project-image.png"
+import ViewFeedbackPageImage from "../assets/view-feedback-page.png"
+import CreateProjectIllustration from "../assets/create-project-illustration.svg"
 import Image from "next/image";
 import { useIsDarkMode } from "~/utils/hooks";
 
@@ -20,7 +24,8 @@ const Index: React.FC = () => {
       </Head>
       <main>
         <Hero />
-        <GiveFeedbackSteps />
+        <Steps />
+        <FAQ />
       </main>
     </>
   );
@@ -47,17 +52,70 @@ const Hero = () => {
         <div>
           <h1 className="text-6xl font-bold">UTellMe</h1>
           <p className="py-6">No one would spend more than one minute giving feedback. Don&apos;t waste the time of your collegues, friends or family and <span className="text-primary">actually</span> get feedback with UTellMe.</p>
-          <Link href="/auth/signin" className="btn btn-primary h-12 w-36">SIGN IN</Link>
+          <Link href="/auth/signin" className="btn btn-primary">Start for free</Link>
         </div>
       </div>
     </div>
   )
 }
 
-const GiveFeedbackSteps = () => {
-  const isDarkMode = useIsDarkMode();
+const Steps = () => {
+  const [isCustomerSide, setIsCustomerSide] = useState(true);
   return (
     <div className="bg-base-100 p-20 max-w-5xl m-auto">
+      <div className="text-center flex flex-col justify-center items-center gap-2">
+        <p className="text-xl">It takes one minute for</p>
+        <div className="btn-group mb-8">
+          <button
+            className={`btn ${isCustomerSide ? 'btn-active' : ''}`}
+            onClick={() => {
+              setIsCustomerSide(true);
+            }}
+          >
+            your customer
+          </button>
+          <button
+            className={`btn ${!isCustomerSide ? 'btn-active' : ''}`}
+            onClick={() => {
+              setIsCustomerSide(false);
+            }}
+          >
+            you
+          </button>
+        </div>
+        {isCustomerSide ? <YourCustomerPov /> : <YourPov />}
+        <p className="text-6xl font-bold text-center mt-12">Done!</p>
+      </div>
+    </div>
+  )
+}
+
+const YourPov = () => {
+  return (
+    <div className="grid grid-cols-2 justify-center items-center gap-y-5">
+      <StepsRow i={1} title="Create an account">
+        <LoginIllustration />
+      </StepsRow>
+      <StepsRow i={2} title="Create a project">
+        <CreateProjectIllustration />
+      </StepsRow>
+      <StepsRow i={3} title="Share the link / QR-Code">
+        <PhoneMockup showMargin>
+          <Image src={ShareMainScreenImage} alt="utellme main screen when you can share the link or the qr code" />
+        </PhoneMockup>
+      </StepsRow>
+      <StepsRow i={4} title="View your feedback">
+        <PhoneMockup showMargin>
+          <Image src={ViewFeedbackPageImage} alt="utellme view feedback page" />
+        </PhoneMockup>
+      </StepsRow>
+    </div>
+  )
+}
+const YourCustomerPov = () => {
+  const isDarkMode = useIsDarkMode();
+  return (
+    <>
       <div className="grid grid-cols-2 justify-center items-center gap-y-5">
         <StepsRow i={1} title="Scan the QR-Code">
           {
@@ -71,8 +129,7 @@ const GiveFeedbackSteps = () => {
           </PhoneMockup>
         </StepsRow>
       </div>
-      <p className="text-6xl font-bold text-center mt-12">Done!</p>
-    </div>
+    </>
   )
 }
 
@@ -103,13 +160,18 @@ const StepsRow: React.FC<{
 
 const PhoneMockup: React.FC<{
   children: React.ReactNode;
+  showMargin?: boolean;
 }> = (props) => {
   return (
     <div className="mockup-phone">
       <div className="camera"></div>
-      <div className="display">
-        <div className="artboard artboard-demo phone-1 " style={{
-          background: '#252B34'
+      <div className="display" style={props.showMargin ?
+        {
+          background: '#2B303C'
+        } : {}
+      }>
+        <div className={`artboard artboard-demo phone-1 ${props.showMargin ? 'mt-8' : ''}`} style={{
+          background: !props.showMargin ? '#252B34' : '#2B303C'
         }}>
           {
             props.children
@@ -118,6 +180,10 @@ const PhoneMockup: React.FC<{
       </div>
     </div>
   )
+}
+
+const FAQ = () => {
+  return <div></div>
 }
 
 export default Index;
