@@ -48,12 +48,12 @@ const Hero = () => {
   return (
     <div className="hero min-h-screen bg-base-300">
       <div className="hero-content flex-col lg:flex-row-reverse">
-        <div className="max-w-sm rounded-lg">
+        <div className="max-w-sm rounded-lg w-1/2">
           <UTellMeComponent isBig />
         </div>
-        <div>
-          <h1 className="text-6xl font-bold">UTellMe</h1>
-          <p className="py-6">No one would spend more than one minute giving feedback. Don&apos;t waste the time of your collegues, friends or family and <span className="text-primary">actually</span> get feedback with UTellMe.</p>
+        <div className="w-1/2">
+          <h1 className="text-6xl font-bold">The most <span className="text-primary">Efficient</span> Feedback</h1>
+          <p className="py-6">No one would spend more than one minute giving feedback. Don&apos;t waste the time of your collegues, friends or family and <span className="text-primary font-semibold">actually</span> get feedback with <span className="text-primary font-semibold">UTellMe</span>.</p>
           <Link href="/auth/signin" className="btn btn-primary">Start for free</Link>
         </div>
       </div>
