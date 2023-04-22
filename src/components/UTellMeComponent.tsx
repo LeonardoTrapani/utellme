@@ -7,6 +7,7 @@ import { useIsDarkMode } from "~/utils/hooks";
 export const UTellMeComponentButton: React.FC<{
   isBig?: boolean;
   isMedium?: boolean;
+  hasText?: boolean;
 }> = (props) => {
   return (
     <Link
@@ -15,22 +16,31 @@ export const UTellMeComponentButton: React.FC<{
         pathname: '/'
       }}
     >
-      <UTellMeComponent isBig={props.isBig} isMedium={props.isMedium} />
+      <UTellMeComponent isBig={props.isBig} isMedium={props.isMedium} hasText={props.hasText} />
     </Link>
   )
 }
 export const UTellMeComponent: React.FC<{
   isBig?: boolean;
   isMedium?: boolean;
+  hasText?: boolean;
 }> = (props) => {
   const isDarkThemeVar = useIsDarkMode();
   return (
-    <div
-      className={`object-contain ${props.isBig ? 'w-48 mt-8' : props.isMedium ? 'w-28 mt-5' : 'w-12 mt-2'}`}
-    >
-      {
+    <div className="flex items-center">
+      <div
+        className={`object-contain ${props.isBig ? 'w-40 mt-8' : props.isMedium ? 'w-20 mt-5' : 'w-11 mt-2'}`}
+      >
+        {
 
-        isDarkThemeVar ? <DarkThemeLogo /> : <LightThemeLogo />
+          isDarkThemeVar ? <DarkThemeLogo /> : <LightThemeLogo />
+        }
+      </div>
+      {
+        props.hasText &&
+        <div className={`font-bold ${props.isBig ? 'mt-4 text-6xl' : props.isMedium ? 'mt-1 text-4xl' : 'text-xl'}`}>
+          UTellMe
+        </div>
       }
     </div>
   )

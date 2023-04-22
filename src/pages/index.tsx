@@ -1250,7 +1250,7 @@ const TitleAndAvatarComponen = () => {
   return (
     <div className="flex justify-between items-center">
       <div className="ml-1">
-        <UTellMeComponentButton />
+        <UTellMeComponentButton hasText/>
       </div>
       <Avatar>
         <li>

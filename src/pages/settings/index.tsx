@@ -43,7 +43,7 @@ const IndexSettings = () => {
           </div> :
           <>
             <div className="max-w-3xl m-auto p-2 flex flex-col gap-6">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 m-auto">
                 <UTellMeComponentButton />
                 <h1 className="text-3xl font-bold">Settings</h1>
               </div>

@@ -23,8 +23,7 @@ const SignInPage = () => {
         <div className="w-96 flex flex-col p-2">
           <div className={`${!queryError ? "mb-6" : ""}`}>
             <div className="flex justify-center items-center gap-2">
-              <h1 className="text-4xl font-bold">Signin</h1>
-              <UTellMeComponent isMedium />
+              <UTellMeComponent hasText isMedium/>
             </div>
           </div>
           <AuthErrorComponent error={queryError} />
