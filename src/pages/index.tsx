@@ -14,6 +14,7 @@ import ShareMainScreenImage from "../assets/share-project-image.png"
 import ViewFeedbackPageImage from "../assets/view-feedback-page.png"
 import CreateProjectIllustration from "../assets/create-project-illustration.svg"
 import CreateProjectIllustrationDark from "../assets/create-project-illustration-dark.svg"
+import UTellMe3DMocukup from "../assets/utellme-3d-mockup.png"
 import Image from "next/image";
 import { useIsDarkMode } from "~/utils/hooks";
 
@@ -48,8 +49,10 @@ const Hero = () => {
   return (
     <div className="hero min-h-screen bg-base-300">
       <div className="hero-content flex-col lg:flex-row-reverse">
-        <div className="max-w-sm rounded-lg w-1/2">
-          <UTellMeComponent isBig />
+        <div className="w-80">
+          <Image src={UTellMe3DMocukup}
+            className="object-scale-down"
+            alt="utellme main screen on a 3d iphone mockup" />
         </div>
         <div className="w-1/2">
           <h1 className="text-6xl font-bold">The most <span className="text-primary">Efficient</span> Feedback</h1>
@@ -106,9 +109,9 @@ const YourPov = () => {
       <StepsRow i={2} title="Create a project">
         {
 
-        !isDarkMode ?
-        <CreateProjectIllustration /> : 
-        <CreateProjectIllustrationDark />
+          !isDarkMode ?
+            <CreateProjectIllustration /> :
+            <CreateProjectIllustrationDark />
         }
       </StepsRow>
       <StepsRow i={3} title="Share the link / QR-Code">
