@@ -1,6 +1,6 @@
 import React from "react";
 import Head from "next/head"
-import { GetServerSidePropsContext } from "next/types";
+import type { GetServerSidePropsContext } from "next/types";
 import { authOptions } from "~/server/auth";
 import { getServerSession } from "next-auth";
 
