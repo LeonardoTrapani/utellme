@@ -65,7 +65,7 @@ const GiveFeedbackSteps = () => {
               <ScarnQRIllustration /> : <ScanQRIllustrationDark />
           }
         </StepsRow>
-        <StepsRow i={2} title="Write your feedback">
+        <StepsRow i={2} title="Write the feedback">
           <PhoneMockup>
             <Image src={GiveFeedbackPhoto} alt="give feedback from utellme mockup" />
           </PhoneMockup>
