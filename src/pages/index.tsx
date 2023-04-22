@@ -7,11 +7,13 @@ import { UTellMeComponent } from "~/components/UTellMeComponent";
 import Link from "next/link";
 import ScarnQRIllustration from "../assets/scan qr illustration.svg"
 import LoginIllustration from "../assets/login illustration.svg"
+import LoginIllustrationDark from "../assets/login illustration-dark.svg"
 import ScanQRIllustrationDark from "../assets/scan qr illustration-dark.svg"
 import GiveFeedbackPhoto from "../assets/Give feedback photo.png"
 import ShareMainScreenImage from "../assets/share-project-image.png"
 import ViewFeedbackPageImage from "../assets/view-feedback-page.png"
 import CreateProjectIllustration from "../assets/create-project-illustration.svg"
+import CreateProjectIllustrationDark from "../assets/create-project-illustration-dark.svg"
 import Image from "next/image";
 import { useIsDarkMode } from "~/utils/hooks";
 
@@ -91,13 +93,23 @@ const Steps = () => {
 }
 
 const YourPov = () => {
+  const isDarkMode = useIsDarkMode();
   return (
-    <div className="grid grid-cols-2 justify-center items-center gap-y-5">
+    <div className="grid grid-cols-2 justify-center items-center gap-y-10">
       <StepsRow i={1} title="Create an account">
-        <LoginIllustration />
+        {
+          !isDarkMode ?
+            <LoginIllustration /> :
+            <LoginIllustrationDark />
+        }
       </StepsRow>
       <StepsRow i={2} title="Create a project">
-        <CreateProjectIllustration />
+        {
+
+        !isDarkMode ?
+        <CreateProjectIllustration /> : 
+        <CreateProjectIllustrationDark />
+        }
       </StepsRow>
       <StepsRow i={3} title="Share the link / QR-Code">
         <PhoneMockup showMargin>
@@ -116,7 +128,7 @@ const YourCustomerPov = () => {
   const isDarkMode = useIsDarkMode();
   return (
     <>
-      <div className="grid grid-cols-2 justify-center items-center gap-y-5">
+      <div className="grid grid-cols-2 justify-center items-center gap-y-10">
         <StepsRow i={1} title="Scan the QR-Code">
           {
             !isDarkMode ?
