@@ -6,7 +6,7 @@ import { authOptions } from "~/server/auth";
 import { signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useEffect, useRef, useState } from "react";
-import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiSortUp, BiSortDown, BiSortAlt2 } from "react-icons/bi"
+import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiSortUp, BiSortDown, BiSortAlt2, BiCartAdd } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs";
 import { FiSettings } from "react-icons/fi";
 import type { Feedback, OrderBy, Project } from "@prisma/client";
@@ -20,7 +20,7 @@ import { toast } from "react-hot-toast";
 import QRCode from 'qrcode'
 import Input from "~/components/Input";
 import { UTellMeComponentButton } from "~/components/UTellMeComponent";
-import { timeSinceNow, toastTrpcError } from "~/utils/functions";
+import { countLines, timeSinceNow, toastTrpcError } from "~/utils/functions";
 import { SwitchComponent } from "~/components/SwitchComponent";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
@@ -705,7 +705,7 @@ const FeedbackList: React.FC<{
 }> = (props) => {
   return (
     <div className="overflow-y-auto">
-      <ul className="gap-2 grid md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4 mb-2 lg:mb-0">
+      <ul className="gap-2 grid md:grid-cols-2 grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4 mb-2 lg:mb-0">
         {
           props.feedbacksData?.map((feedback) => {
             return <FeedbackComponent key={feedback.id} feedback={feedback} />
@@ -1289,6 +1289,8 @@ const ProjectComponent: React.FC<{
 }
 
 const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
+  const [isShowMore, setIsShowMore] = useState(false);
+  const linesLimit = 6;
   return (
     <li key={props.feedback.id}>
       <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between shadow-sm">
@@ -1305,9 +1307,22 @@ const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
               :
               <></>
           }
-          <p className={`overflow-y-auto ${props.feedback.title ? 'max-h-52' : 'max-h-60'}`}>
+          <p className={!isShowMore ? 'line-clamp-6' : ''}>
             {props.feedback.content}
           </p>
+          {
+            countLines(props.feedback.content) > linesLimit &&
+            <div className="flex">
+              <button
+                className="link text-sm ml-auto"
+                onClick={() => {
+                  setIsShowMore((prev) => !prev)
+                }}
+              >
+                {isShowMore ? 'show less' : 'show more'}
+              </button>
+            </div>
+          }
         </div>
         {
           props.feedback.author ?

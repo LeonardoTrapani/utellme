@@ -6,7 +6,7 @@ import Link from "next/link";
 export default class MyDocument extends Document {
   render() {
     return (
-      <Html className="bg-base-100 scroll-smooth">
+      <Html className="bg-base-100 scroll-smooth overflow-x-hidden break-words whitespace-pre-wrap">
         <Head>
           <FaviconScripts />
         </Head>
