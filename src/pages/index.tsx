@@ -5,7 +5,7 @@ import { authOptions } from "~/server/auth";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import Image from "next/image";
-import { useIsDarkMode } from "~/utils/hooks";
+import { useIsDarkMode, useWindowSize } from "~/utils/hooks";
 import { UTellMeComponentButton } from "~/components/UTellMeComponent";
 
 const Index: React.FC = () => {
@@ -256,10 +256,13 @@ const StepsRow: React.FC<{
   i: number;
 }> = (props) => {
   const isOdd = props.i % 2 !== 0;
+  const [windowWidth] = useWindowSize()
+  const isSmall = (windowWidth || 0) < 768;
+  const invert = isOdd && !isSmall;
   return (
     <>
       {
-        isOdd &&
+        invert &&
         <div className="relative m-auto">
           {props.children}
         </div>
@@ -274,7 +277,7 @@ const StepsRow: React.FC<{
         <h3 className="font-semibold text-2xl md:text-3xl lg:text-3xl text-center">{props.title}</h3>
       </div>
       {
-        !isOdd &&
+        !invert &&
         <div className="relative m-auto">
           {props.children}
         </div>
