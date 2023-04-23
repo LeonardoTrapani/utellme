@@ -28,7 +28,7 @@ const Index: React.FC = () => {
         <Hero />
         <Steps />
         <FAQ />
-        <div className="mb-4"/>
+        <div className="mb-4" />
       </main>
     </>
   );
@@ -48,20 +48,26 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 const Hero = () => {
   return (
     <>
-      <div className="hero h-screen bg-base-300">
-        <div className="hero-content flex-col lg:flex-row-reverse">
-          <div className="w-80">
-            <Image src={UTellMe3DMocukup}
-              className="object-scale-down"
-              alt="utellme main screen on a 3d iphone mockup" />
-          </div>
-          <div className="w-1/2">
-            <h1 className="text-6xl font-bold">The most <span className="text-primary">Efficient</span> Feedback</h1>
-            <p className="py-6">No one would spend more than one minute giving feedback. Don&apos;t waste the time of your collegues, friends or family and <span className="text-primary font-semibold">actually</span> get feedback with <span className="text-primary font-semibold">UTellMe</span>.</p>
-            <ActionButton />
+      <section className="pt-12 pb-16 md:pt-8 bg-base-300">
+        <div className="px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
+          <div className="grid max-w-md grid-cols-1 mx-auto md:max-w-full md:items-center md:grid-cols-2 gap-y-12 md:gap-x-16">
+            <div className="text-center md:text-left">
+              <div className="">
+                <h1 className="text-4xl font-bold sm:text-4xl md:text-5xl">Get <span className="text-primary">Feedback</span><br /> in Seconds</h1>
+                <p className="py-6">No one would spend more than one minute giving feedback. Don&apos;t waste the time of your collegues, friends or family and <span className="text-primary font-semibold">actually</span> get feedback with <span className="text-primary font-semibold">UTellMe</span>.</p>
+              </div>
+              <div>
+                <ActionButton />
+              </div>
+            </div>
+            <div className="w-52 md:w-72 lg:w-80 m-auto">
+              <Image src={UTellMe3DMocukup}
+                className="object-scale-down"
+                alt="utellme main screen on a 3d iphone mockup" />
+            </div>
           </div>
         </div>
-      </div>
+      </section>
     </>
   )
 }
