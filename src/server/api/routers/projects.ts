@@ -48,7 +48,7 @@ export const projectsRouter = createTRPCRouter({
 
   edit: protectedProcedure.input(z.object({
     newName: z.string().trim().min(1).max(75).nullish(),
-    newDescription: z.string().trim().min(1).nullish(),
+    newDescription: z.string().trim().nullish(),
     newOrderBy: z.enum([
       "createdAtDesc",
       "createdAtAsc",
