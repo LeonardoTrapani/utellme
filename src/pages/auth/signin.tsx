@@ -9,6 +9,7 @@ import { BsGithub } from "react-icons/bs";
 import { useRouter } from "next/router";
 import { UTellMeComponentButton } from "~/components/UTellMeComponent";
 import Head from "next/head";
+import Link from "next/link";
 
 const SignInPage = () => {
   const router = useRouter();
@@ -21,21 +22,24 @@ const SignInPage = () => {
       </Head>
       <div className="flex h-screen w-full justify-center items-center">
         <div className="w-96 flex flex-col p-2">
-          <div className={`${!queryError ? "mb-6" : ""}`}>
-            <div className="flex justify-center items-center gap-2">
-              <UTellMeComponentButton hasText isMedium />
-            </div>
+          <div className={`flex justify-center items-center gap-2 flex-col ${!queryError ? "mb-6" : ""}`}>
+            <UTellMeComponentButton hasText />
+            <h1 className="text-6xl font-bold text-center">Sign In</h1>
           </div>
           <AuthErrorComponent error={queryError} />
           <div className="flex flex-col gap-2">
-            <GithubProvider />
             <GoogleProvider />
+            <GithubProvider />
           </div>
+          <p className="text-xs py-4 text-center">
+            By creating an account, you agree to our <Link href="/policies/privacy-policy" className="link">privacy policy</Link>.
+          </p>
         </div>
-      </div >
+      </div>
     </>
   )
 }
+
 
 const AuthErrorComponent: React.FC<{
   error: string | undefined;
