@@ -3,7 +3,6 @@ import Head from "next/head"
 import type { GetServerSidePropsContext } from "next/types";
 import { authOptions } from "~/server/auth";
 import { getServerSession } from "next-auth";
-import { UTellMeComponent } from "~/components/UTellMeComponent";
 import Link from "next/link";
 import ScarnQRIllustration from "../assets/scan qr illustration.svg"
 import LoginIllustration from "../assets/login illustration.svg"
@@ -47,51 +46,55 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 const Hero = () => {
   return (
-    <div className="hero min-h-screen bg-base-300">
-      <div className="hero-content flex-col lg:flex-row-reverse">
-        <div className="w-80">
-          <Image src={UTellMe3DMocukup}
-            className="object-scale-down"
-            alt="utellme main screen on a 3d iphone mockup" />
-        </div>
-        <div className="w-1/2">
-          <h1 className="text-6xl font-bold">The most <span className="text-primary">Efficient</span> Feedback</h1>
-          <p className="py-6">No one would spend more than one minute giving feedback. Don&apos;t waste the time of your collegues, friends or family and <span className="text-primary font-semibold">actually</span> get feedback with <span className="text-primary font-semibold">UTellMe</span>.</p>
-          <Link href="/auth/signin" className="btn btn-primary">Start for free</Link>
+    <>
+      <div className="hero h-screen bg-base-300">
+        <div className="hero-content flex-col lg:flex-row-reverse">
+          <div className="w-80">
+            <Image src={UTellMe3DMocukup}
+              className="object-scale-down"
+              alt="utellme main screen on a 3d iphone mockup" />
+          </div>
+          <div className="w-1/2">
+            <h1 className="text-6xl font-bold">The most <span className="text-primary">Efficient</span> Feedback</h1>
+            <p className="py-6">No one would spend more than one minute giving feedback. Don&apos;t waste the time of your collegues, friends or family and <span className="text-primary font-semibold">actually</span> get feedback with <span className="text-primary font-semibold">UTellMe</span>.</p>
+            <Link href="/auth/signin" className="btn btn-primary">Start for free</Link>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 
 const Steps = () => {
   const [isCustomerSide, setIsCustomerSide] = useState(true);
   return (
-    <div className="bg-base-100 p-20 max-w-5xl m-auto">
-      <div className="text-center flex flex-col justify-center items-center gap-2">
-        <p className="text-xl">It takes one minute for</p>
-        <div className="btn-group mb-8">
-          <button
-            className={`btn ${isCustomerSide ? 'btn-active' : ''}`}
-            onClick={() => {
-              setIsCustomerSide(true);
-            }}
-          >
-            your customer
-          </button>
-          <button
-            className={`btn ${!isCustomerSide ? 'btn-active' : ''}`}
-            onClick={() => {
-              setIsCustomerSide(false);
-            }}
-          >
-            you
-          </button>
+    <>
+      <div className="bg-base-100 p-20 max-w-5xl m-auto">
+        <div className="text-center flex flex-col justify-center items-center gap-2">
+          <p className="text-xl">It takes one minute for</p>
+          <div className="btn-group mb-8">
+            <button
+              className={`btn ${isCustomerSide ? 'btn-active' : ''}`}
+              onClick={() => {
+                setIsCustomerSide(true);
+              }}
+            >
+              your customer
+            </button>
+            <button
+              className={`btn ${!isCustomerSide ? 'btn-active' : ''}`}
+              onClick={() => {
+                setIsCustomerSide(false);
+              }}
+            >
+              you
+            </button>
+          </div>
+          {isCustomerSide ? <YourCustomerPov /> : <YourPov />}
+          <p className="text-6xl font-bold text-center mt-12">Done!</p>
         </div>
-        {isCustomerSide ? <YourCustomerPov /> : <YourPov />}
-        <p className="text-6xl font-bold text-center mt-12">Done!</p>
       </div>
-    </div>
+    </>
   )
 }
 
