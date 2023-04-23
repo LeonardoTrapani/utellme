@@ -1,5 +1,9 @@
 import toast from "react-hot-toast";
 
+export const countLines = (text: string) => {
+  return text.split(/\r\n|\r|\n/).length
+};
+
 enum TimeType {
   Year = "year",
   Month = "month",
@@ -8,7 +12,6 @@ enum TimeType {
   Minute = "minute",
   Second = "second",
 }
-
 export const timeSinceNow = (date: Date) => {
   const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
 
