@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.14](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.13...v0.1.14) (2023-04-23)
+
+
+### Features
+
+* 3d iphone mockup on hero ([41c13c8](https://github.com/LeonardoTrapani/tell-me/commit/41c13c858bc54997519217f7acd7663ecb8617ff))
+* added customer pov and your pov ([168b5d5](https://github.com/LeonardoTrapani/tell-me/commit/168b5d52e248c11060096baa3ad79ad3eb10ecc5))
+* added hero page ([61481bf](https://github.com/LeonardoTrapani/tell-me/commit/61481bfa4cb478cb5ee6ec56833b033cca2a2dd2))
+* added navbar and fixed hover on utellmecomponent button ([e5323c5](https://github.com/LeonardoTrapani/tell-me/commit/e5323c56d43701036d9700df8e3259c0f43dbc7c))
+* added new utellme icon ([12c64ba](https://github.com/LeonardoTrapani/tell-me/commit/12c64ba7a32d529726978ae4e230ad1547441983))
+* added utellme text next to the icon ([e44bc65](https://github.com/LeonardoTrapani/tell-me/commit/e44bc65039640bedfc147fc939ecc5a488d60ff7))
+* faq component ([a99461e](https://github.com/LeonardoTrapani/tell-me/commit/a99461e7f6079330dcc5ed37f83bb9e888b6786e))
+* improved illustrations on dark theme ([34f5feb](https://github.com/LeonardoTrapani/tell-me/commit/34f5feb1e75c2b6d9c49b4953321d0783f340236))
+* merged changed in the main branch into landing-page ([ab6e474](https://github.com/LeonardoTrapani/tell-me/commit/ab6e474e39696cd4dbb7f93e061063b1cb98a019))
+* mobile drawer ([a34fb4f](https://github.com/LeonardoTrapani/tell-me/commit/a34fb4ff5a007e514f3be83b9c037a3d28cc2d6e))
+* moved assets to public and improved performance with next/image ([d713e8f](https://github.com/LeonardoTrapani/tell-me/commit/d713e8f1431091f60e39ffd64c032a163a77984a))
+* moved index page to dashboard ([829923e](https://github.com/LeonardoTrapani/tell-me/commit/829923e17330b14fd78f8f34b602ef7931d2134f))
+* navbar ([ffc9248](https://github.com/LeonardoTrapani/tell-me/commit/ffc92486d6b2fab324eb4978dc371d51182e3c78))
+* removed analytics references ([e56b136](https://github.com/LeonardoTrapani/tell-me/commit/e56b13663edcdba79d3a4a90b139f46797117634))
+* removed remaining imports from google analytics ([deaa756](https://github.com/LeonardoTrapani/tell-me/commit/deaa75628d1329be9817d383230fd06e05366207))
+* responsiveness ([ba49181](https://github.com/LeonardoTrapani/tell-me/commit/ba491814c89346dc5c937171c14fddf3f88257e5))
+* steps to get feedback on signin page ([c969d4b](https://github.com/LeonardoTrapani/tell-me/commit/c969d4bffb145f4171a1fdc84b6d4365bb8984c2))
+* updated hero title (removed company name) ([fc94428](https://github.com/LeonardoTrapani/tell-me/commit/fc944286a6b88b5de26c9186fd9528e73de1a372))
+
+
+### Bug Fixes
+
+* fixed steps row being inverted on mobile ([41d4cbe](https://github.com/LeonardoTrapani/tell-me/commit/41d4cbea75c2952c5c5ad3a014dc0f6c1e2991fa))
+* removed wrong pronoun ([baab056](https://github.com/LeonardoTrapani/tell-me/commit/baab0567967521b0dac8f3584cda74ca2463f1a1))
+* updated npm ([54b1866](https://github.com/LeonardoTrapani/tell-me/commit/54b1866ef7e41ed9a66d48e673131302ae2e76aa))
+
 ### [0.1.13](https://github.com/LeonardoTrapani/tell-me/compare/v0.1.12...v0.1.13) (2023-04-21)
 
 
