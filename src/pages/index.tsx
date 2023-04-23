@@ -21,13 +21,14 @@ const Index: React.FC = () => {
   return (
     <>
       <Head>
-        <title>utellme</title>
-        <meta name="description" content="utellme is a web app to get the most efficient feedback with utellme." />
+        <title>UTellMe</title>
+        <meta name="description" content="utellme is a web app to get the most efficient feedback. It is fast, easy to configure and has a nice UI." />
       </Head>
       <main>
         <Hero />
         <Steps />
         <FAQ />
+        <div className="mb-4"/>
       </main>
     </>
   );
@@ -57,11 +58,17 @@ const Hero = () => {
           <div className="w-1/2">
             <h1 className="text-6xl font-bold">The most <span className="text-primary">Efficient</span> Feedback</h1>
             <p className="py-6">No one would spend more than one minute giving feedback. Don&apos;t waste the time of your collegues, friends or family and <span className="text-primary font-semibold">actually</span> get feedback with <span className="text-primary font-semibold">UTellMe</span>.</p>
-            <Link href="/auth/signin" className="btn btn-primary">Start for free</Link>
+            <ActionButton />
           </div>
         </div>
       </div>
     </>
+  )
+}
+
+const ActionButton = () => {
+  return (
+    <Link href="/auth/signin" className="btn btn-primary">Start getting feedback</Link>
   )
 }
 
@@ -201,7 +208,65 @@ const PhoneMockup: React.FC<{
 }
 
 const FAQ = () => {
-  return <div></div>
+  return (
+    <div className="bg-base-200 py-10">
+      <div className="max-w-4xl m-auto">
+        <h2 className="text-4xl font-bold text-center mb-6">FAQ</h2>
+        <ul>
+          <FaqQuestion
+            question="How much is it going to cost?"
+            answer="Nothing! Our service is completely free."
+          />
+          <FaqQuestion
+            question="What type of projects is UTellMe good for?"
+            answer="UTellMe is good for any type of project: work, speeches, school expositions, freelance jobs, local businesses etc."
+          />
+          <FaqQuestion
+            question="What do I need feedback for?"
+            answer="Feedback is one of the most important things in any project. It is the only way to know if you are doing something right or wrong and to improve yourself."
+          />
+          <FaqQuestion
+            question="Why wouldn't I use something that is harder to configure but is going to ask more questions to my user?"
+            answer="The main problem in getting feedback is actually getting it. If you are asking too many questions, you are going to lose your customer. We want to make it as easy as possible for your user to give you feedback, so that he gives sincere feedback without getting annoyed."
+          />
+          <FaqQuestion
+            question="Who is going to see the feedback I recieve?"
+            answer="You are going to be able to see all the feedback you recieve in your dashboard. No one else is going to be able to see it. The goal of UTellMe is to get feedback to improve, not to show others what your users think about your project."
+          />
+          <FaqQuestion
+            question="Can I use UTellMe on mobile?"
+            answer="UTellMe is fully responsive, so you, and your users, can use it on every device."
+          />
+          <FaqQuestion
+            question="How can I share my projects to get feedback?"
+            answer="You can use a link or a QR-Code that you can take from your project's dashboard."
+          />
+        </ul>
+        <div className="mt-10 flex justify-center">
+          <ActionButton />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const FaqQuestion: React.FC<{
+  question: string;
+  answer: string;
+}> = (props) => {
+  return (
+    <li>
+      <div className="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box">
+        <input type="checkbox" />
+        <div className="collapse-title text-lg font-medium">
+          {props.question}
+        </div>
+        <div className="collapse-content">
+          <p>{props.answer}</p>
+        </div>
+      </div>
+    </li>
+  )
 }
 
 export default Index;
