@@ -7,7 +7,7 @@ import { authOptions } from "~/server/auth";
 import { FcGoogle } from "react-icons/fc";
 import { BsGithub } from "react-icons/bs";
 import { useRouter } from "next/router";
-import { UTellMeComponent } from "~/components/UTellMeComponent";
+import { UTellMeComponentButton } from "~/components/UTellMeComponent";
 import Head from "next/head";
 
 const SignInPage = () => {
@@ -23,7 +23,7 @@ const SignInPage = () => {
         <div className="w-96 flex flex-col p-2">
           <div className={`${!queryError ? "mb-6" : ""}`}>
             <div className="flex justify-center items-center gap-2">
-              <UTellMeComponent hasText isMedium/>
+              <UTellMeComponentButton hasText isMedium />
             </div>
           </div>
           <AuthErrorComponent error={queryError} />

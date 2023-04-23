@@ -6,11 +6,11 @@ import Link from "next/link";
 export default class MyDocument extends Document {
   render() {
     return (
-      <Html>
+      <Html className="bg-base-100 scroll-smooth">
         <Head>
           <FaviconScripts />
         </Head>
-        <body className="bg-base-100">
+        <body className="">
           <div className="min-h-screen">
             <Main />
           </div>
@@ -41,39 +41,11 @@ export const GoogleAdsense: React.FC = () => {
   )
 }
 
-export const GoogleAnalytics: React.FC<{
-  googleAnalyticsId: string;
-}> = (props) => {
-  return (
-    <>
-      <Script
-        async
-        strategy="afterInteractive"
-        src={`https://www.googletagmanager.com/gtag/js?id=${props.googleAnalyticsId}`}
-      />
-      <Script
-        id='google-analytics'
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '${props.googleAnalyticsId}', {
-            page_path: window.location.pathname,
-          });
-        `,
-        }}
-      />
-    </>
-  )
-}
-
 export const FaviconScripts = () => {
   return (
     <>
-      <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-      <link rel="icon" type="image/png" href="/favicon.png" />
+      <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg" />
+      <link rel="icon" type="image/png" href="/favicons/favicon.png" />
     </>
   )
 };

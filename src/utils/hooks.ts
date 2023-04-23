@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState, useLayoutEffect, useEffect } from "react";
+import { useState, useLayoutEffect, useEffect, useMemo } from "react";
 
 export const useIsDarkMode = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -17,10 +17,9 @@ export const useIsDarkMode = () => {
 
     return () => matchMedia.removeEventListener("change", modeMe);
   }, []);
-  
+
   return darkMode;
 }
-
 
 export const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -44,7 +43,7 @@ export const useRedirectWithoutSession = () => {
       void router.push("/auth/signin");
     }
   }, [router, session]);
-  
+
   return session;
 };
 

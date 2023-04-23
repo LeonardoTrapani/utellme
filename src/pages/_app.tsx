@@ -6,10 +6,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
-import * as gtag from "~/utils/gtag";
 import { Toaster } from "react-hot-toast";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
 import Script from "next/script";
 import { useCookieConsent } from "~/utils/hooks";
 
@@ -19,18 +16,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   const [cookieConsent, setCookieConsent] = useCookieConsent();
 
-  const router = useRouter();
-
-  useEffect(() => {
-    const handleRouteChange = (url: URL) => {
-      gtag.pageview(url);
-    };
-    router.events.on("routeChangeComplete", handleRouteChange);
-    return () => {
-      router.events.off("routeChangeComplete", handleRouteChange);
-    };
-  }, [router.events]);
-
   return (
     <>
       {
@@ -39,7 +24,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
           </div>
         )
       }
-      <GoogleAnalytics googleAnalyticsId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || ""} />
       <Analytics />
       <GoogleAdsense />
       <Toaster toastOptions={{
@@ -64,34 +48,6 @@ export const GoogleAdsense: React.FC = () => {
       src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6958470270834145"
       crossOrigin="anonymous"
     />
-  )
-}
-
-export const GoogleAnalytics: React.FC<{
-  googleAnalyticsId: string;
-}> = (props) => {
-  return (
-    <>
-      <Script
-        async
-        strategy="afterInteractive"
-        src={`https://www.googletagmanager.com/gtag/js?id=${props.googleAnalyticsId}`}
-      />
-      <Script
-        id='google-analytics'
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '${props.googleAnalyticsId}', {
-            page_path: window.location.pathname,
-          });
-        `,
-        }}
-      />
-    </>
   )
 }
 

@@ -8,9 +8,7 @@ const CookiePolicy: React.FC = () => {
       <div>
         <h1 className="text-3xl font-bold">
           <div className="flex items-center justify-center">
-            <div className="mr-1">
-              <UTellMeComponentButton />
-            </div>
+            <UTellMeComponentButton />
             <span>
               Cookie Notice
             </span>
@@ -49,15 +47,6 @@ const CookiePolicy: React.FC = () => {
       <PolicyParagraph title="Third Party Cookies">
         In some special cases we also use cookies provided by trusted third parties. The following section details which third party cookies you might encounter through this site.
         <ul className="pl-4 list-disc">
-          <li>
-            <p>utellme uses Google Analytics which is one of the most widespread and trusted analytics solution on the web for helping us to understand how you use the site and ways that we can improve your experience. These cookies may track things such as how long you spend on the site and the pages that you visit so we can continue to produce engaging content.</p>
-            <p className="text-gray-500">For more information on Google Analytics cookies, see the official&nbsp;
-              <Link href="https://analytics.google.com/" className="link link-hover">
-                Google Analytics page
-              </Link>
-              .
-            </p>
-          </li>
           <li>
             <p>The Google AdSense service we use to serve advertising uses a DoubleClick cookie to serve more relevant ads across the web and limit the number of times that a given ad is shown to you.</p>
             <p className="text-gray-500">For more information on Google AdSense see the official&nbsp;

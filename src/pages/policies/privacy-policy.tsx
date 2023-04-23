@@ -9,9 +9,7 @@ const PrivacyPolicy: React.FC = () => {
       <div>
         <h1 className="text-3xl font-bold">
           <div className="flex items-center justify-center">
-            <div className="mr-1">
-              <UTellMeComponentButton />
-            </div>
+            <UTellMeComponentButton />
             <span>
               Privacy Policy
             </span>
@@ -47,10 +45,6 @@ const PrivacyPolicy: React.FC = () => {
         <li>Communicate with you, either directly or through one of our partners, including for customer service, to provide you with updates and other information relating to the website, and for marketing and promotional purposes</li>
         <li>Send you emails</li>
         <li>Find and prevent fraud</li>
-      </PolicyParagraph>
-
-      <PolicyParagraph title="Log Files">
-        <p>Utellme follows a standard procedure of using log files. These files log visitors when they visit websites. All hosting companies do this and a part of hosting services&apos; analytics. The information collected by log files include internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date and time stamp, referring/exit pages, and possibly the number of clicks. These are not linked to any information that is personally identifiable. The purpose of the information is for analyzing trends, administering the site, tracking users&apos; movement on the website, and gathering demographic information.</p>
       </PolicyParagraph>
 
       <PolicyParagraph title="Cookies and Web Beacons">
