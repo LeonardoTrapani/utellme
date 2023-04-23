@@ -81,7 +81,7 @@ const LandingDrawer: React.FC<{
   return (
     <>
       <div className={`p-10 md:hidden w-72 h-screen top-0 fixed z-50 bg-base-300 transition-all duration-300 ${props.isOpened ? 'left-0' : '-left-full'}`}>
-        <UTellMeComponent hasText />
+        <UTellMeComponentButton hasText />
         <div className="flex flex-col py-4 gap-2">
           <Link href="/auth/signin" className="btn btn-primary btn-sm btn-outline">Sign in</Link>
           <div className="divider my-0" />
