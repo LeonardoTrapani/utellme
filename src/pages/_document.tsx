@@ -20,7 +20,7 @@ export default class MyDocument extends Document {
             </Link>
             <p>&#183;</p>
             <Link href="/policies/privacy-policy" className="link link-hover">
-              <p>Privacy Police</p>
+              <p>Privacy Policy</p>
             </Link>
           </div>
           <NextScript />
