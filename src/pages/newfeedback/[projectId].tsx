@@ -216,7 +216,6 @@ const GetFeedbackTitle: React.FC<{
   return (
     <div className="grid">
       <div>
-        <h3 className="text-xl"><span className="text-primary">Tell me&nbsp;</span>your feedback about</h3>
         <h1 className="text-4xl font-bold">{props.projectName || "my project"}</h1>
         {
           props.projectDescription &&
@@ -234,7 +233,7 @@ const FeedbackCompletedPage = () => {
       <h1 className="text-2xl"><span className="text-primary font-semibold">Thank you </span>for the feedback!</h1>
       <div className="text-center">
         <h3>powered by</h3>
-        <UTellMeComponentButton hasText/>
+        <UTellMeComponentButton hasText />
       </div>
     </div>
   )
