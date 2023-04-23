@@ -6,18 +6,27 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import Image from "next/image";
 import { useIsDarkMode, useWindowSize } from "~/utils/hooks";
-import { UTellMeComponentButton } from "~/components/UTellMeComponent";
+import { UTellMeComponent, UTellMeComponentButton } from "~/components/UTellMeComponent";
+import { BiMenu } from "react-icons/bi";
 
 const Index: React.FC = () => {
+  const [isDrawerOpened, setIsDrawerOpened] = useState(false);
   return (
     <>
       <Head>
         <title>UTellMe</title>
         <meta name="description" content="utellme is a web app to get the most efficient feedback. It is fast, easy to configure and has a nice UI." />
       </Head>
-      <main>
-        <Header />
-        <div className="mb-20 flex flex-col gap-20 pt-28">
+      <main onClick={() => {
+        if (isDrawerOpened) {
+          setIsDrawerOpened(false);
+        }
+      }}>
+        <Header onHeaderOpen={() => {
+          setIsDrawerOpened(true)
+        }} />
+        <LandingDrawer isOpened={isDrawerOpened} />
+        <div className="mb-20 flex flex-col gap-36 pt-28">
           <Hero />
           <Steps />
           <FAQ />
@@ -38,14 +47,22 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   };
 }
 
-const Header = () => {
+const Header: React.FC<{
+  onHeaderOpen: () => void;
+}> = (props) => {
   const isDarkMode = useIsDarkMode();
   return (
     <div className={`z-10 fixed w-full bg-gradient-to-b ${isDarkMode ? 'from-[#2B303B] via-[#2B303B]' : 'from-[#FFFFFF] via-[#FFFFFF]'}`}>
       <header className="relative py-4 md:py-6">
         <div className="px-4 mx-auto max-w-7xl from-blue-500 to-transparent sm:px-6 md:px-8 flex justify-between">
           <UTellMeComponentButton hasText />
-          <div className="flex md:hidden">open stuff</div>
+          <div className="flex md:hidden items-center">
+            <button onClick={() => {
+              props.onHeaderOpen();
+            }}>
+              <BiMenu size={40} />
+            </button>
+          </div>
           <div className="hidden md:flex md:ml-16 md:items-center md:justify-center md:space-x-10">
             <a className="link link-hover" href="#discover-more">Discover More</a>
             <a className="link link-hover" href="#faq">Faq</a>
@@ -58,10 +75,28 @@ const Header = () => {
   )
 }
 
+const LandingDrawer: React.FC<{
+  isOpened: boolean;
+}> = (props) => {
+  return (
+    <>
+      <div className={`p-10 md:hidden w-72 h-screen top-0 fixed z-50 bg-base-300 transition-all duration-300 ${props.isOpened ? 'left-0' : '-left-full'}`}>
+        <UTellMeComponent hasText />
+        <div className="flex flex-col py-4 gap-2">
+          <Link href="/auth/signin" className="btn btn-primary btn-sm btn-outline">Sign in</Link>
+          <div className="divider my-0" />
+          <a className="link link-hover" href="#discover-more">Discover More</a>
+          <a className="link link-hover" href="#faq">Faq</a>
+        </div>
+      </div>
+    </>
+  )
+}
+
 const Hero = () => {
   return (
     <>
-      <section className="md:py-10">
+      <section className="md:pt-10">
         <div className="px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
           <div className="grid max-w-md grid-cols-1 mx-auto md:max-w-full md:items-center md:grid-cols-2 gap-y-12 md:gap-x-16">
             <div className="text-center md:text-left">
@@ -75,7 +110,7 @@ const Hero = () => {
             </div>
             <Image
               src="/assets/utellme-3d-mockup.png"
-              className="w-52 md:w-72 h-auto m-auto"
+              className="w-52 md:w-72 lg:w-80 h-auto m-auto"
               height={0}
               width={0}
               sizes="100vh"
@@ -101,8 +136,8 @@ const Steps = () => {
   return (
     <section className="max-w-5xl m-auto">
       <div className="text-center flex flex-col justify-center items-center gap-2">
-        <p className="text-2xl font-semibold">It takes one minute for</p>
-        <div className="btn-group mb-8">
+        <p className="text-2xl font-semibold">It takes one minute for both</p>
+        <div className="btn-group mb-4">
           <button
             className={`btn ${isCustomerSide ? 'btn-active' : ''}`}
             onClick={() => {
@@ -121,7 +156,6 @@ const Steps = () => {
           </button>
         </div>
         {isCustomerSide ? <YourCustomerPov /> : <YourPov />}
-        <p className="text-5xl font-semibold text-center mt-4">Done!</p>
       </div>
     </section>
   )
@@ -245,7 +279,7 @@ const StepsRowContainer: React.FC<{
   children: React.ReactNode
 }> = (props) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
       {props.children}
     </div>
   )
