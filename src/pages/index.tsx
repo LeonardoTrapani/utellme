@@ -81,40 +81,38 @@ const ActionButton = () => {
 const Steps = () => {
   const [isCustomerSide, setIsCustomerSide] = useState(true);
   return (
-    <>
-      <div className="bg-base-100 p-20 max-w-5xl m-auto">
-        <div className="text-center flex flex-col justify-center items-center gap-2">
-          <p className="text-xl">It takes one minute for</p>
-          <div className="btn-group mb-8">
-            <button
-              className={`btn ${isCustomerSide ? 'btn-active' : ''}`}
-              onClick={() => {
-                setIsCustomerSide(true);
-              }}
-            >
-              your customer
-            </button>
-            <button
-              className={`btn ${!isCustomerSide ? 'btn-active' : ''}`}
-              onClick={() => {
-                setIsCustomerSide(false);
-              }}
-            >
-              you
-            </button>
-          </div>
-          {isCustomerSide ? <YourCustomerPov /> : <YourPov />}
-          <p className="text-6xl font-bold text-center mt-12">Done!</p>
+    <section className="bg-base-100 p-20 max-w-5xl m-auto">
+      <div className="text-center flex flex-col justify-center items-center gap-2">
+        <p className="text-xl">It takes one minute for</p>
+        <div className="btn-group mb-8">
+          <button
+            className={`btn ${isCustomerSide ? 'btn-active' : ''}`}
+            onClick={() => {
+              setIsCustomerSide(true);
+            }}
+          >
+            your customer
+          </button>
+          <button
+            className={`btn ${!isCustomerSide ? 'btn-active' : ''}`}
+            onClick={() => {
+              setIsCustomerSide(false);
+            }}
+          >
+            you
+          </button>
         </div>
+        {isCustomerSide ? <YourCustomerPov /> : <YourPov />}
+        <p className="text-6xl font-bold text-center mt-12">Done!</p>
       </div>
-    </>
+    </section>
   )
 }
 
 const YourPov = () => {
   const isDarkMode = useIsDarkMode();
   return (
-    <div className="grid grid-cols-2 justify-center items-center gap-y-10">
+    <StepsRowContainer>
       <StepsRow i={1} title="Create an account">
         {
           !isDarkMode ?
@@ -140,52 +138,59 @@ const YourPov = () => {
           <Image src={ViewFeedbackPageImage} alt="utellme view feedback page" />
         </PhoneMockup>
       </StepsRow>
-    </div>
+    </StepsRowContainer>
   )
 }
 const YourCustomerPov = () => {
   const isDarkMode = useIsDarkMode();
   return (
-    <>
-      <div className="grid grid-cols-2 justify-center items-center gap-y-10">
-        <StepsRow i={1} title="Scan the QR-Code">
-          {
-            !isDarkMode ?
-              <ScarnQRIllustration /> : <ScanQRIllustrationDark />
-          }
-        </StepsRow>
-        <StepsRow i={2} title="Write the feedback">
-          <PhoneMockup>
-            <Image src={GiveFeedbackPhoto} alt="give feedback from utellme mockup" />
-          </PhoneMockup>
-        </StepsRow>
-      </div>
-    </>
+    <StepsRowContainer>
+      <StepsRow i={1} title="Scan the QR-Code">
+        {
+          !isDarkMode ?
+            <ScarnQRIllustration /> : <ScanQRIllustrationDark />
+        }
+      </StepsRow>
+      <StepsRow i={2} title="Write the feedback">
+        <PhoneMockup>
+          <Image src={GiveFeedbackPhoto} alt="give feedback from utellme mockup" />
+        </PhoneMockup>
+      </StepsRow>
+    </StepsRowContainer>
   )
 }
 
+const StepsRowContainer: React.FC<{
+  children: React.ReactNode
+}> = (props) => {
+  return (
+    <div className="flex flex-col gap-6">
+      {props.children}
+    </div>
+  )
+}
 const StepsRow: React.FC<{
   title: string;
   children: React.ReactNode;
   i: number;
 }> = (props) => {
   return (
-    <>
-      {
-        props.i % 2 === 0 ? props.children : <></>
-      }
-      <div className="flex items-center gap-2 m-auto">
-        <div className="font-bold  text-4xl bg-primary w-14 aspect-square flex justify-center items-center rounded-full">
+    <div className={`gap-4 flex flex-col ${props.i % 2 === 0 ? 'lg:flex-row-reverse' : 'lg:flex-row'}`}>
+      <div className="flex items-center gap-2 m-auto flex-1">
+        <div
+          className="font-bold text-3xl md:text-4xl bg-primary w-11 md:w-14 aspect-square flex justify-center items-center rounded-full">
           <p className="text-slate-200">
             {props.i}
           </p>
         </div>
-        <p className="font-semibold text-3xl text-center">{props.title}</p>
+        <h3 className="font-semibold text-2xl md:text-3xl lg:text-3xl text-center">{props.title}</h3>
       </div>
-      {
-        props.i % 2 !== 0 ? props.children : <></>
-      }
-    </>
+      <div className="flex-1">
+        {
+          props.children
+        }
+      </div>
+    </div>
   )
 }
 
@@ -215,7 +220,7 @@ const PhoneMockup: React.FC<{
 
 const FAQ = () => {
   return (
-    <div className="bg-base-200 py-10">
+    <section className="bg-base-200 py-10 px-6">
       <div className="max-w-4xl m-auto">
         <h2 className="text-4xl font-bold text-center mb-6">FAQ</h2>
         <ul>
@@ -252,7 +257,7 @@ const FAQ = () => {
           <ActionButton />
         </div>
       </div>
-    </div>
+    </section>
   )
 }
 
