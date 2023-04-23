@@ -6,7 +6,7 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import Image from "next/image";
 import { useIsDarkMode, useWindowSize } from "~/utils/hooks";
-import { UTellMeComponent, UTellMeComponentButton } from "~/components/UTellMeComponent";
+import { UTellMeComponentButton } from "~/components/UTellMeComponent";
 import { BiMenu } from "react-icons/bi";
 
 const Index: React.FC = () => {
@@ -54,7 +54,7 @@ const Header: React.FC<{
   return (
     <div className={`z-10 fixed w-full bg-gradient-to-b ${isDarkMode ? 'from-[#2B303B] via-[#2B303B]' : 'from-[#FFFFFF] via-[#FFFFFF]'}`}>
       <header className="relative py-4 md:py-6">
-        <div className="px-4 mx-auto max-w-7xl from-blue-500 to-transparent sm:px-6 md:px-8 flex justify-between">
+        <div className="px-10 mx-auto max-w-7xl from-blue-500 to-transparent sm:px-6 md:px-8 flex justify-between">
           <UTellMeComponentButton hasText />
           <div className="flex md:hidden items-center">
             <button onClick={() => {
@@ -97,7 +97,7 @@ const Hero = () => {
   return (
     <>
       <section className="md:pt-10">
-        <div className="px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
+        <div className="px-10 mx-auto max-w-7xl sm:px-6 md:px-8">
           <div className="grid max-w-md grid-cols-1 mx-auto md:max-w-full md:items-center md:grid-cols-2 gap-y-12 md:gap-x-16">
             <div className="text-center md:text-left">
               <div className="">
@@ -172,7 +172,7 @@ const YourPov = () => {
               <Image
                 height={0}
                 width={0}
-                className="w-full"
+                className="w-full px-10"
                 src="/assets/login illustration.svg"
                 alt="utellme login illustration"
               />
@@ -182,7 +182,7 @@ const YourPov = () => {
               <Image
                 height={0}
                 width={0}
-                className="w-full"
+                className="w-full px-10"
                 src="/assets/login illustration-dark.svg"
                 alt="utellme login illustration"
               />
@@ -199,7 +199,7 @@ const YourPov = () => {
                 alt="utellme create project illustration"
                 width={0}
                 height={0}
-                className="w-full"
+                className="w-full px-10"
               />
             </div>
             :
@@ -209,7 +209,7 @@ const YourPov = () => {
                 alt="utellme create project illustration"
                 width={0}
                 height={0}
-                className="w-full"
+                className="w-full px-10"
               />
             </div>
         }
@@ -249,7 +249,7 @@ const YourCustomerPov = () => {
               alt="utellme scan qr illustration"
               height={0}
               width={0}
-              className="w-full"
+              className="w-full px-10"
             />
             :
             <Image
@@ -257,7 +257,7 @@ const YourCustomerPov = () => {
               alt="utellme scan qr illustration"
               height={0}
               width={0}
-              className="w-full"
+              className="w-full px-10"
             />
         }
       </StepsRow>
