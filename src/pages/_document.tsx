@@ -14,7 +14,7 @@ export default class MyDocument extends Document {
           <div className="min-h-screen">
             <Main />
           </div>
-          <div className="flex justify-center items-center gap-2 mb-2">
+          <div className="flex justify-center items-center gap-2 mb-2 text-xs">
             <Link className="link link-hover" href="/policies/cookies">
               <p>Cookie Notice</p>
             </Link>
