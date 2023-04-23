@@ -1,7 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import LightThemeLogo from "../assets/utellme-logo-light.svg"
-import DarkThemeLogo from "../assets/utellme-logo-dark.svg"
+import Image from "next/image";
 import { useIsDarkMode } from "~/utils/hooks";
 
 export const UTellMeComponentButton: React.FC<{
@@ -29,14 +28,26 @@ export const UTellMeComponent: React.FC<{
   const isDarkThemeVar = useIsDarkMode();
   return (
     <div className="flex items-center">
-      <div
-        className={`object-contain ${props.isBig ? 'w-96 mt-8' : props.isMedium ? 'w-20 mt-5' : 'w-11 mt-2'}`}
-      >
-        {
+      {
 
-          isDarkThemeVar ? <DarkThemeLogo /> : <LightThemeLogo />
-        }
-      </div>
+        isDarkThemeVar ?
+          <Image
+            src="/assets/utellme-logo-dark.svg"
+            alt="utellme logo"
+            className={`${props.isBig ? 'w-96' : props.isMedium ? 'w-20' : 'w-11'} h-auto`}
+            width={0}
+            height={0}
+          />
+          :
+          <Image
+            src="/assets/utellme-logo-light.svg"
+            alt="utellme logo"
+            className={`${props.isBig ? 'w-96 mt-8' : props.isMedium ? 'w-20 mt-5' : 'w-11 mt-2'} h-auto`}
+            width={0}
+            height={0}
+          />
+
+      }
       {
         props.hasText &&
         <div className={`font-bold ${props.isBig ? 'mt-4 text-6xl' : props.isMedium ? 'mt-1 text-4xl' : 'text-xl'}`}>

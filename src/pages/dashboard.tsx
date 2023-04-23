@@ -1291,7 +1291,7 @@ const ProjectComponent: React.FC<{
 const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
   return (
     <li key={props.feedback.id}>
-      <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between shadow-lg">
+      <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between shadow-sm">
         <div>
           <div className="flex justify-between items-start">
             <StaticRatingComponent rating={props.feedback.rating} />

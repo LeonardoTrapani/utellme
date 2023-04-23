@@ -33,7 +33,8 @@ export const AvatarContent: React.FC<{
         <Image
           src={props.sessionData.user.image}
           alt={`Tell Me Image Profile of ${props.sessionData.user.name || "Unknown"}`}
-          fill
+          height={props.isBig ? 80 : 44}
+          width={props.isBig ? 80 : 44}
           style={{
             objectFit: "cover",
             borderRadius: "1000px"

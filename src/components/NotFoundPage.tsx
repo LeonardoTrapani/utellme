@@ -7,7 +7,7 @@ const NotFoundPage: React.FC = () => {
       <div className="flex flex-col gap-2">
         <div className="divider" />
         <div className="flex m-auto">
-          <UTellMeComponentButton isMedium />
+          <UTellMeComponentButton isMedium hasText/>
         </div>
         <h1 className="text-9xl text-center">404</h1>
         <h1 className="text-2xl text-center">page not found</h1>

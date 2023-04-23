@@ -4,19 +4,9 @@ import type { GetServerSidePropsContext } from "next/types";
 import { authOptions } from "~/server/auth";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import ScarnQRIllustration from "../assets/scan qr illustration.svg"
-import LoginIllustration from "../assets/login illustration.svg"
-import LoginIllustrationDark from "../assets/login illustration-dark.svg"
-import ScanQRIllustrationDark from "../assets/scan qr illustration-dark.svg"
-import GiveFeedbackPhoto from "../assets/Give feedback photo.png"
-import ShareMainScreenImage from "../assets/share-project-image.png"
-import ViewFeedbackPageImage from "../assets/view-feedback-page.png"
-import CreateProjectIllustration from "../assets/create-project-illustration.svg"
-import CreateProjectIllustrationDark from "../assets/create-project-illustration-dark.svg"
-import UTellMe3DMocukup from "../assets/utellme-3d-mockup.png"
 import Image from "next/image";
 import { useIsDarkMode } from "~/utils/hooks";
-import { UTellMeComponent } from "~/components/UTellMeComponent";
+import { UTellMeComponentButton } from "~/components/UTellMeComponent";
 
 const Index: React.FC = () => {
   return (
@@ -54,7 +44,7 @@ const Header = () => {
     <div className={`z-10 fixed w-full bg-gradient-to-b ${isDarkMode ? 'from-[#2B303B] via-[#2B303B]' : 'from-[#FFFFFF] via-[#FFFFFF]'}`}>
       <header className="relative py-4 md:py-6">
         <div className="px-4 mx-auto max-w-7xl from-blue-500 to-transparent sm:px-6 md:px-8 flex justify-between">
-          <UTellMeComponent hasText />
+          <UTellMeComponentButton hasText />
           <div className="flex md:hidden">open stuff</div>
           <div className="hidden md:flex md:ml-16 md:items-center md:justify-center md:space-x-10">
             <a className="link link-hover" href="#discover-more">Discover More</a>
@@ -83,11 +73,15 @@ const Hero = () => {
                 <ActionButton />
               </div>
             </div>
-            <div className="w-52 md:w-72 lg:w-72 m-auto">
-              <Image src={UTellMe3DMocukup}
-                className="object-scale-down"
-                alt="utellme main screen on a 3d iphone mockup" />
-            </div>
+            <Image
+              src="/assets/utellme-3d-mockup.png"
+              className="w-52 md:w-72 h-auto m-auto"
+              height={0}
+              width={0}
+              sizes="100vh"
+              priority
+              alt="utellme main screen on a 3d iphone mockup"
+            />
           </div>
         </div>
         <div id="discover-more" />
@@ -140,27 +134,71 @@ const YourPov = () => {
       <StepsRow i={1} title="Create an account">
         {
           !isDarkMode ?
-            <LoginIllustration /> :
-            <LoginIllustrationDark />
+            <div className="relative">
+              <Image
+                height={0}
+                width={0}
+                className="w-full"
+                src="/assets/login illustration.svg"
+                alt="utellme login illustration"
+              />
+            </div>
+            :
+            <div className="relative">
+              <Image
+                height={0}
+                width={0}
+                className="w-full"
+                src="/assets/login illustration-dark.svg"
+                alt="utellme login illustration"
+              />
+            </div>
         }
       </StepsRow>
       <StepsRow i={2} title="Create a project">
         {
 
           !isDarkMode ?
-            <CreateProjectIllustration /> :
-            <CreateProjectIllustrationDark />
+            <div>
+              <Image
+                src="/assets/create-project-illustration.svg"
+                alt="utellme create project illustration"
+                width={0}
+                height={0}
+                className="w-full"
+              />
+            </div>
+            :
+            <div>
+              <Image
+                src="/assets/create-project-illustration-dark.svg"
+                alt="utellme create project illustration"
+                width={0}
+                height={0}
+                className="w-full"
+              />
+            </div>
         }
       </StepsRow>
       <StepsRow i={3} title="Share the link / QR-Code">
-        <PhoneMockup showMargin>
-          <Image src={ShareMainScreenImage} alt="utellme main screen when you can share the link or the qr code" />
-        </PhoneMockup>
+        <Image
+          src="/assets/utellme-mockup-03.png"
+          alt="utellme main screen when you can share the link or the qr code"
+          height={0}
+          width={0}
+          sizes="100vh"
+          className="w-64"
+        />
       </StepsRow>
       <StepsRow i={4} title="View your feedback">
-        <PhoneMockup showMargin>
-          <Image src={ViewFeedbackPageImage} alt="utellme view feedback page" />
-        </PhoneMockup>
+        <Image
+          src="/assets/utellme-mockup-01.png"
+          alt="utellme view feedback page"
+          height={0}
+          width={0}
+          sizes="100vh"
+          className="w-64"
+        />
       </StepsRow>
     </StepsRowContainer>
   )
@@ -172,13 +210,32 @@ const YourCustomerPov = () => {
       <StepsRow i={1} title="Scan the QR-Code">
         {
           !isDarkMode ?
-            <ScarnQRIllustration /> : <ScanQRIllustrationDark />
+            <Image
+              src="/assets/scan qr illustration.svg"
+              alt="utellme scan qr illustration"
+              height={0}
+              width={0}
+              className="w-full"
+            />
+            :
+            <Image
+              src="/assets/scan qr illustration-dark.svg"
+              alt="utellme scan qr illustration"
+              height={0}
+              width={0}
+              className="w-full"
+            />
         }
       </StepsRow>
       <StepsRow i={2} title="Write the feedback">
-        <PhoneMockup>
-          <Image src={GiveFeedbackPhoto} alt="give feedback from utellme mockup" />
-        </PhoneMockup>
+        <Image
+          src="/assets/utellme-mockup-02.png"
+          alt="give feedback from utellme mockup"
+          className="w-64 h-auto"
+          height={0}
+          width={0}
+          sizes="100vh"
+        />
       </StepsRow>
     </StepsRowContainer>
   )
@@ -188,7 +245,7 @@ const StepsRowContainer: React.FC<{
   children: React.ReactNode
 }> = (props) => {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {props.children}
     </div>
   )
@@ -198,8 +255,15 @@ const StepsRow: React.FC<{
   children: React.ReactNode;
   i: number;
 }> = (props) => {
+  const isOdd = props.i % 2 !== 0;
   return (
-    <div className={`gap-4 flex flex-col ${props.i % 2 === 0 ? 'lg:flex-row-reverse' : 'lg:flex-row'}`}>
+    <>
+      {
+        isOdd &&
+        <div className="relative m-auto">
+          {props.children}
+        </div>
+      }
       <div className="flex items-center gap-2 m-auto flex-1">
         <div
           className="font-bold text-3xl md:text-4xl bg-primary w-11 md:w-14 aspect-square flex justify-center items-center rounded-full">
@@ -209,36 +273,13 @@ const StepsRow: React.FC<{
         </div>
         <h3 className="font-semibold text-2xl md:text-3xl lg:text-3xl text-center">{props.title}</h3>
       </div>
-      <div className="flex-1">
-        {
-          props.children
-        }
-      </div>
-    </div>
-  )
-}
-
-const PhoneMockup: React.FC<{
-  children: React.ReactNode;
-  showMargin?: boolean;
-}> = (props) => {
-  return (
-    <div className="mockup-phone">
-      <div className="camera"></div>
-      <div className="display" style={props.showMargin ?
-        {
-          background: '#2B303C'
-        } : {}
-      }>
-        <div className={`artboard artboard-demo phone-1 ${props.showMargin ? 'mt-8' : ''}`} style={{
-          background: !props.showMargin ? '#252B34' : '#2B303C'
-        }}>
-          {
-            props.children
-          }
+      {
+        !isOdd &&
+        <div className="relative m-auto">
+          {props.children}
         </div>
-      </div>
-    </div>
+      }
+    </>
   )
 }
 

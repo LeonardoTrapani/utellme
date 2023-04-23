@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .alternate div:nth-child(2n + n) > div:first-child {
+    @apply bg-gray-100
+  }
+}
