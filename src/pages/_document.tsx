@@ -6,11 +6,11 @@ import Link from "next/link";
 export default class MyDocument extends Document {
   render() {
     return (
-      <Html>
+      <Html className="bg-base-100 scroll-smooth">
         <Head>
           <FaviconScripts />
         </Head>
-        <body className="bg-base-100">
+        <body className="">
           <div className="min-h-screen">
             <Main />
           </div>

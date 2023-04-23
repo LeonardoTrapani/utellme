@@ -16,6 +16,7 @@ import CreateProjectIllustrationDark from "../assets/create-project-illustration
 import UTellMe3DMocukup from "../assets/utellme-3d-mockup.png"
 import Image from "next/image";
 import { useIsDarkMode } from "~/utils/hooks";
+import { UTellMeComponent } from "~/components/UTellMeComponent";
 
 const Index: React.FC = () => {
   return (
@@ -25,10 +26,12 @@ const Index: React.FC = () => {
         <meta name="description" content="utellme is a web app to get the most efficient feedback. It is fast, easy to configure and has a nice UI." />
       </Head>
       <main>
-        <Hero />
-        <Steps />
-        <FAQ />
-        <div className="mb-4" />
+        <Header />
+        <div className="mb-20 flex flex-col gap-20 pt-28">
+          <Hero />
+          <Steps />
+          <FAQ />
+        </div>
       </main>
     </>
   );
@@ -45,10 +48,30 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   };
 }
 
+const Header = () => {
+  const isDarkMode = useIsDarkMode();
+  return (
+    <div className={`z-10 fixed w-full bg-gradient-to-b ${isDarkMode ? 'from-[#2B303B] via-[#2B303B]' : 'from-[#FFFFFF] via-[#FFFFFF]'}`}>
+      <header className="relative py-4 md:py-6">
+        <div className="px-4 mx-auto max-w-7xl from-blue-500 to-transparent sm:px-6 md:px-8 flex justify-between">
+          <UTellMeComponent hasText />
+          <div className="flex md:hidden">open stuff</div>
+          <div className="hidden md:flex md:ml-16 md:items-center md:justify-center md:space-x-10">
+            <a className="link link-hover" href="#discover-more">Discover More</a>
+            <a className="link link-hover" href="#faq">Faq</a>
+            <div className="divider divider-horizontal mx-0" />
+            <Link href="/auth/signin" className="btn btn-primary btn-outline">Sign in</Link>
+          </div>
+        </div>
+      </header>
+    </div>
+  )
+}
+
 const Hero = () => {
   return (
     <>
-      <section className="pt-12 pb-16 md:pt-8 bg-base-300">
+      <section className="md:py-10">
         <div className="px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
           <div className="grid max-w-md grid-cols-1 mx-auto md:max-w-full md:items-center md:grid-cols-2 gap-y-12 md:gap-x-16">
             <div className="text-center md:text-left">
@@ -60,13 +83,14 @@ const Hero = () => {
                 <ActionButton />
               </div>
             </div>
-            <div className="w-52 md:w-72 lg:w-80 m-auto">
+            <div className="w-52 md:w-72 lg:w-72 m-auto">
               <Image src={UTellMe3DMocukup}
                 className="object-scale-down"
                 alt="utellme main screen on a 3d iphone mockup" />
             </div>
           </div>
         </div>
+        <div id="discover-more" />
       </section>
     </>
   )
@@ -81,9 +105,9 @@ const ActionButton = () => {
 const Steps = () => {
   const [isCustomerSide, setIsCustomerSide] = useState(true);
   return (
-    <section className="bg-base-100 p-20 max-w-5xl m-auto">
+    <section className="max-w-5xl m-auto">
       <div className="text-center flex flex-col justify-center items-center gap-2">
-        <p className="text-xl">It takes one minute for</p>
+        <p className="text-2xl font-semibold">It takes one minute for</p>
         <div className="btn-group mb-8">
           <button
             className={`btn ${isCustomerSide ? 'btn-active' : ''}`}
@@ -103,7 +127,7 @@ const Steps = () => {
           </button>
         </div>
         {isCustomerSide ? <YourCustomerPov /> : <YourPov />}
-        <p className="text-6xl font-bold text-center mt-12">Done!</p>
+        <p className="text-5xl font-semibold text-center mt-4">Done!</p>
       </div>
     </section>
   )
@@ -220,10 +244,10 @@ const PhoneMockup: React.FC<{
 
 const FAQ = () => {
   return (
-    <section className="bg-base-200 py-10 px-6">
+    <section className="px-6" id="faq">
       <div className="max-w-4xl m-auto">
         <h2 className="text-4xl font-bold text-center mb-6">FAQ</h2>
-        <ul>
+        <ul className="flex flex-col gap-1">
           <FaqQuestion
             question="How much is it going to cost?"
             answer="Nothing! Our service is completely free."
@@ -253,9 +277,6 @@ const FAQ = () => {
             answer="You can use a link or a QR-Code that you can take from your project's dashboard."
           />
         </ul>
-        <div className="mt-10 flex justify-center">
-          <ActionButton />
-        </div>
       </div>
     </section>
   )
