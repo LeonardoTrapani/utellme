@@ -8,22 +8,13 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import { Toaster } from "react-hot-toast";
 import Script from "next/script";
-import { useCookieConsent } from "~/utils/hooks";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
-  const [cookieConsent, setCookieConsent] = useCookieConsent();
-
   return (
     <>
-      {
-        !cookieConsent && (
-          <div className="">
-          </div>
-        )
-      }
       <Analytics />
       <GoogleAdsense />
       <Toaster toastOptions={{

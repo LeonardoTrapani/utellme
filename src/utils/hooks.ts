@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState, useLayoutEffect, useEffect, useMemo } from "react";
+import { useState, useLayoutEffect, useEffect } from "react";
 
 export const useIsDarkMode = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -46,11 +46,3 @@ export const useRedirectWithoutSession = () => {
 
   return session;
 };
-
-export const useCookieConsent = () => {
-  const [cookieConsent, setCookieConsent] = useState<{
-    required: boolean;
-    optional: boolean;
-  } | null>(null);
-  return [cookieConsent, setCookieConsent];
-}
