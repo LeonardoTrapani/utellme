@@ -705,7 +705,7 @@ const FeedbackList: React.FC<{
 }> = (props) => {
   return (
     <div className="overflow-y-auto">
-      <ul className="gap-2 grid md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4">
+      <ul className="gap-2 grid md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4 mb-2 lg:mb-0">
         {
           props.feedbacksData?.map((feedback) => {
             return <FeedbackComponent key={feedback.id} feedback={feedback} />
