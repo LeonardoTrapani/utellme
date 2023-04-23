@@ -31,14 +31,15 @@ const SignInPage = () => {
             <GoogleProvider />
             <GithubProvider />
           </div>
-          <p className="text-xs py-4">
-            By creating an account, you agree to the <Link href="/policies/terms-of-service" className="link">Terms of Service</Link> and our <Link href="/policies/privacy-policy" className="link">privacy policy</Link>.
+          <p className="text-xs py-4 text-center">
+            By creating an account, you agree to our <Link href="/policies/privacy-policy" className="link">privacy policy</Link>.
           </p>
         </div>
       </div>
     </>
   )
 }
+
 
 const AuthErrorComponent: React.FC<{
   error: string | undefined;
