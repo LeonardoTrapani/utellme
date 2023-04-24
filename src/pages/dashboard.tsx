@@ -618,12 +618,19 @@ const ColorPreview: React.FC<{
 }> = (props) => {
   const [isDarkTheme, setIsDarkTheme] = useState(false);
   return (
-    <div className="h-full relative rounded-lg p-6" style={{
-      backgroundColor: props.backgroundColor || undefined,
-      color: props.textColor || undefined
-    }}>
+    <div
+      className={`h-full relative rounded-md p-6`}
+      style={{
+        backgroundColor: props.backgroundColor || (
+          isDarkTheme ? '#2B303B' : '#FFFFFF'
+        ),
+        color: props.textColor || (
+          isDarkTheme ? '#A7ADBA' : '#212936'
+        )
+      }}
+    >
       <button
-        className="btn btn-circle absolute h-10 aspect-square right-2 top-2 flex justify-center items-center rounded-full shadow-lg border"
+        className={"btn btn-circle absolute h-10 aspect-square right-2 top-2 flex justify-center items-center rounded-full shadow-lg border"}
         onClick={() => {
           setIsDarkTheme((prev) => !prev);
         }}
@@ -656,13 +663,22 @@ const ColorPreview: React.FC<{
         <StaticRatingComponent
           rating={3}
           primaryColor={props.primaryColor}
+          isDark={isDarkTheme}
         />
 
         <Input
           isDisabled
           name="Preview"
+          value="This is a preview"
           placeholder="This is a preview"
-          internalColor={props.backgroundColor}
+          labelColor={isDarkTheme ? '#21252D' : '#E5E6E6'}
+          borderColor={
+            isDarkTheme ? '#252932' : '#F2F2F2'
+          }
+          internalColor={props.backgroundColor ?
+            props.backgroundColor :
+            isDarkTheme ? '#252932' : '#F2F2F2'
+          }
         />
       </div>
     </div>

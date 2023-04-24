@@ -4,32 +4,38 @@ import { AiFillStar } from "react-icons/ai";
 export const StaticRatingComponent: React.FC<{
   rating: number;
   primaryColor?: string | null | undefined;
+  isDark?: boolean;
 }> = (props) => {
   return (
     <ul className="flex">
       <SingleRatingComponent
         rating={props.rating}
         color={props.primaryColor}
+        isDark={props.isDark}
         i={1}
       />
       <SingleRatingComponent
         rating={props.rating}
         color={props.primaryColor}
+        isDark={props.isDark}
         i={2}
       />
       <SingleRatingComponent
         rating={props.rating}
         color={props.primaryColor}
         i={3}
+        isDark={props.isDark}
       />
       <SingleRatingComponent
         rating={props.rating}
         color={props.primaryColor}
+        isDark={props.isDark}
         i={4}
       />
       <SingleRatingComponent
         rating={props.rating}
         color={props.primaryColor}
+        isDark={props.isDark}
         i={5}
       />
     </ul>
@@ -97,12 +103,21 @@ const SingleRatingComponent: React.FC<{
   onRatingChange?: (rating: number) => void;
   isBig?: boolean;
   color?: string | null | undefined;
+  isDark?: boolean;
 }> = (props) => {
   const active = (props.rating || 0) >= props.i;
   return (
     <a
       className={`
-        ${`${active ? 'text-primary' : 'text-gray-400 dark:text-base-content'} select-none`} 
+        ${`${active ? 'text-primary' :
+          typeof (props.isDark !== undefined)
+            ? props.isDark === true
+              ?
+              'text-gray-400'
+              :
+              'text-base-content'
+            : 'text-gray-400 dark:text-base-content'
+        } select-none`}
         cursor-pointer ${props.isBig ? 'text-4xl' : ''} self-center
         `
       }
@@ -117,4 +132,3 @@ const SingleRatingComponent: React.FC<{
     </a >
   )
 }
-//TODO: not put dark:text-current but the color of the text
