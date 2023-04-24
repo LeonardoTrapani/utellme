@@ -93,12 +93,16 @@ const NewFeedbackPage: NextPage = () => {
     if (project?.backgroundColor) {
       htmlElement.style.backgroundColor = project.backgroundColor;
     }
+    if (project?.textColor) {
+      htmlElement.style.color = project.textColor;
+    }
   }, [project])
   useEffect(() => {
     return () => {
       if (!document) return;
       const htmlElement = document.getElementsByTagName("html")[0] as HTMLElement;
       htmlElement.style.backgroundColor = "";
+      htmlElement.style.color = "";
     }
   }, [])
 
@@ -153,6 +157,7 @@ type PublicProjectInfoType = {
   message: string | null;
   backgroundColor: string | null;
   textColor: string | null;
+  titleColor: string | null;
 } | null | undefined
 
 const MainGetFeedbackContent: React.FC<{
@@ -242,16 +247,18 @@ const GetFeedbackTitle: React.FC<{
   return (
     <div
       className="grid"
-      style={{
-        color: props.publicProjectInfo?.textColor || "",
-      }}
     >
       <div>
         {
           props.publicProjectInfo?.message &&
           <p className="italic max-h-40 overflow-auto">{props.publicProjectInfo.message}</p>
         }
-        <h1 className="text-4xl font-bold">{props.publicProjectInfo?.name || "my project"}</h1>
+        <h1
+          className="text-4xl font-bold"
+          style={{
+            color: props.publicProjectInfo?.titleColor || "",
+          }}
+        >{props.publicProjectInfo?.name || "my project"}</h1>
         {
           props.publicProjectInfo?.description &&
           <p className="italic max-h-40 overflow-auto">{props.publicProjectInfo.description}</p>
@@ -268,11 +275,9 @@ const FeedbackCompletedPage: React.FC<{
   return (
     <div className="flex h-screen justify-center items-center flex-col gap-10">
       <h1 className="text-2xl"><span
-        className={
-          `${props.publicProjectInfo?.textColor || props.publicProjectInfo?.backgroundColor ? '' : 'text-primary'} font-semibold`
-        }>
+        className={`font-semibold`}>
         <span style={{
-          color: props.publicProjectInfo?.textColor || undefined
+          color: props.publicProjectInfo?.titleColor || undefined
         }}>Thank you </span></span>for the feedback!</h1>
       <div className="text-center">
         <h3>powered by</h3>

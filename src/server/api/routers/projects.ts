@@ -30,6 +30,7 @@ export const projectsRouter = createTRPCRouter({
         description: true,
         id: true,
         textColor: true,
+        titleColor: true,
         backgroundColor: true,
         message: true,
       }
@@ -64,6 +65,7 @@ export const projectsRouter = createTRPCRouter({
     projectId: z.string().trim().min(1),
     textColor: z.string().regex(/^#[0-9a-f]{6}$/i).nullish(),
     backgroundColor: z.string().regex(/^#[0-9a-f]{6}$/i).nullish(),
+    titleColor: z.string().regex(/^#[0-9a-f]{6}$/i).nullish(),
   })).mutation(async ({ ctx, input }) => {
     return await ctx.prisma.project.updateMany({
       data: {
@@ -73,6 +75,7 @@ export const projectsRouter = createTRPCRouter({
         orderBy: input.newOrderBy || undefined,
         textColor: input.textColor,
         backgroundColor: input.backgroundColor,
+        titleColor: input.titleColor,
       },
       where: {
         id: input.projectId,
@@ -106,6 +109,7 @@ export const projectsRouter = createTRPCRouter({
         createdAt: true,
         averageRating: true,
         textColor: true,
+        titleColor: true,
         backgroundColor: true,
         message: true,
       }
