@@ -8,7 +8,7 @@ const AvatarDropdown: React.FC<{
 }> = (props) => {
   const { data: sessionData } = useSession();
   if (!sessionData) {
-    return <p>We shouldn&apos;t be here</p>
+    return <></>
   }
   return (
     < div className="dropdown dropdown-end" >

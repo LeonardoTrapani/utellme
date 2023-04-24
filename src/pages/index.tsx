@@ -5,7 +5,7 @@ import { authOptions } from "~/server/auth";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import Image from "next/image";
-import { isDarkMode, useWindowSize } from "~/utils/hooks";
+import { useIsDarkMode, useWindowSize } from "~/utils/hooks";
 import { UTellMeComponentButton } from "~/components/UTellMeComponent";
 import { BiMenu } from "react-icons/bi";
 
@@ -50,7 +50,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 const Header: React.FC<{
   onHeaderOpen: () => void;
 }> = (props) => {
-  const isDarkModeVar = isDarkMode();
+  const isDarkModeVar = useIsDarkMode();
   return (
     <div className={`z-10 fixed w-full bg-gradient-to-b ${isDarkModeVar ? 'from-[#2B303B] via-[#2B303B]' : 'from-[#FFFFFF] via-[#FFFFFF]'}`}>
       <header className="relative py-4 md:py-6">
@@ -162,7 +162,7 @@ const Steps = () => {
 }
 
 const YourPov = () => {
-  const isDarkModeVar = isDarkMode();
+  const isDarkModeVar = useIsDarkMode();
   return (
     <StepsRowContainer>
       <StepsRow i={1} title="Create an account">
@@ -238,7 +238,7 @@ const YourPov = () => {
   )
 }
 const YourCustomerPov = () => {
-  const isDarkModeVar = isDarkMode();
+  const isDarkModeVar = useIsDarkMode();
   return (
     <StepsRowContainer>
       <StepsRow i={1} title="Scan the QR-Code">

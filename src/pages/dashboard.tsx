@@ -15,7 +15,7 @@ import LoadingIndicator from "~/components/LoadingIndicator";
 import Avatar from "~/components/Avatar";
 
 import { BiLogOut } from "react-icons/bi";
-import { useWindowSize } from "~/utils/hooks";
+import { useIsDarkMode, useWindowSize } from "~/utils/hooks";
 import { toast } from "react-hot-toast";
 import QRCode from 'qrcode'
 import Input from "~/components/Input";
@@ -247,6 +247,8 @@ const Home: NextPage = () => {
                   }}
                 >
                   <ColorProjectModalBody
+                    projectDescription={projects?.[selectedProjectIndex]?.description}
+                    projectName={projects?.[selectedProjectIndex]?.name}
                     projectBackgroundColorValue={projectBackgroundColorValue}
                     projectPrimaryColorValue={projectPrimaryColorValue}
                     projectTextColorValue={projectTextColorValue}
@@ -407,6 +409,8 @@ const DeleteProjectModal: React.FC<{
 }
 
 const ColorProjectModalBody: React.FC<{
+  projectName: string | null | undefined;
+  projectDescription: string | null | undefined;
   projectBackgroundColorValue: string | null;
   projectTextColorValue: string | null;
   projectPrimaryColorValue: string | null;
@@ -432,7 +436,8 @@ const ColorProjectModalBody: React.FC<{
       {
         isAdvancedOpen &&
         <>
-          <p className="text-sm text-gray-500">Double check the preview of both themes to make sure that all the content is visible in all cases</p>
+          <p className="text-sm text-gray-500">We don&apos;t suggest changing this settings. Double check the preview of both themes to make sure that all the content is visible in all cases</p>
+
           <PickColorRow
             text="Text Color"
             currentColor={props.projectTextColorValue}
@@ -463,13 +468,18 @@ const ColorProjectModalBody: React.FC<{
       >
         {isAdvancedOpen ? 'close advanced options' : 'open advanced options'}
       </button>
-      <div className="divider" />
-      <div className="border rounded-lg aspect-video">
-        <ColorPreview
-          textColor={props.projectTextColorValue}
-          backgroundColor={props.projectBackgroundColorValue}
-          primaryColor={props.projectPrimaryColorValue}
-        />
+      <div className="divider my-0" />
+      <div>
+        <h4 className="text-center mb-1 text-lg font-semibold uppercase">Preview</h4>
+        <div className="border rounded-lg">
+          <ColorPreview
+            projectTitle={props.projectName}
+            projectDescription={props.projectDescription}
+            textColor={props.projectTextColorValue}
+            backgroundColor={props.projectBackgroundColorValue}
+            primaryColor={props.projectPrimaryColorValue}
+          />
+        </div>
       </div>
     </div>
   )
@@ -603,17 +613,32 @@ const EditProjectModal: React.FC<{
 }
 
 const ColorPreview: React.FC<{
+  projectTitle: string | null | undefined;
+  projectDescription: string | null | undefined;
   primaryColor: string | null | undefined;
   backgroundColor: string | null | undefined;
   textColor: string | null | undefined;
 }> = (props) => {
-  const [isDarkTheme, setIsDarkTheme] = useState(false);
+  const isDarkModeInitial = useIsDarkMode()
+  const [isDarkTheme, setIsDarkTheme] = useState(isDarkModeInitial);
+  useEffect(() => {
+    setIsDarkTheme(isDarkModeInitial);
+  }, [isDarkModeInitial])
+
   return (
-    <div className="h-full relative" style={{
-      backgroundColor: props.backgroundColor || undefined
-    }}>
+    <div
+      className={`h-full relative rounded-md p-6`}
+      style={{
+        backgroundColor: props.backgroundColor || (
+          isDarkTheme ? '#2B303B' : '#FFFFFF'
+        ),
+        color: props.textColor || (
+          isDarkTheme ? '#A7ADBA' : '#212936'
+        )
+      }}
+    >
       <button
-        className="btn btn-circle absolute h-10 aspect-square right-2 top-2 flex justify-center items-center rounded-full shadow-lg border"
+        className={"btn btn-circle absolute h-10 aspect-square right-2 top-2 flex justify-center items-center rounded-full shadow-lg border"}
         onClick={() => {
           setIsDarkTheme((prev) => !prev);
         }}
@@ -625,6 +650,45 @@ const ColorPreview: React.FC<{
             <BiMoon />
         }
       </button>
+      <div className="flex flex-col gap-4">
+        <h3
+          className="text-xl font-bold"
+          style={{
+            color: props.primaryColor || undefined
+          }}
+        >
+          {props.projectTitle}
+        </h3>
+        <h3
+          className=""
+          style={{
+            color: props.textColor || undefined
+          }}
+        >
+          {`${props.projectDescription?.substring(0, 100) || "This is a test description"} ${props.projectDescription?.length && props.projectDescription?.length > 100 ? "..." : ""}`}
+        </h3>
+
+        <StaticRatingComponent
+          rating={3}
+          primaryColor={props.primaryColor}
+          isDark={isDarkTheme}
+        />
+
+        <Input
+          isDisabled
+          name="Preview"
+          value="This is a preview"
+          placeholder="This is a preview"
+          labelColor={isDarkTheme ? '#21252D' : '#E5E6E6'}
+          borderColor={
+            isDarkTheme ? '#252932' : '#F2F2F2'
+          }
+          internalColor={props.backgroundColor ?
+            props.backgroundColor :
+            isDarkTheme ? '#252932' : '#F2F2F2'
+          }
+        />
+      </div>
     </div>
   )
 };
@@ -1153,17 +1217,6 @@ const copyToClipboard = async (text: string) => {
   await navigator.clipboard.writeText(text)
   toast('Copied to the clipboard!')
 }
-
-/*
-const copyFileToClipboard = async (blob: Blob) => {
-  await navigator.clipboard.write([
-    new ClipboardItem({
-      [blob.type]: blob
-    })
-  ])
-  toast('Copied to the clipboard')
-}
-*/
 
 const downloadFile = (fileName: string, blob: Blob) => {
   const url = window.URL.createObjectURL(

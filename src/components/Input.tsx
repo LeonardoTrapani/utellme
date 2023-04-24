@@ -4,7 +4,7 @@ const Input: React.FC<{
   name: string;
   placeholder: string;
   optional?: boolean;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   value?: string;
   isError?: boolean;
   isDisabled?: boolean;
@@ -20,6 +20,9 @@ const Input: React.FC<{
   isGhost?: boolean;
   autoResize?: boolean;
   initialLength?: number;
+  internalColor?: string | undefined | null;
+  labelColor?: string;
+  borderColor?: string;
 }> = (props) => {
   const [currentLength, setCurrentLength] = React.useState(0);
   return (
@@ -36,9 +39,15 @@ const Input: React.FC<{
         }
         {props.optional && <label className="text-end text-sm italic text-gray-500 mr-2 select-none">optional</label>}
       </div>
-      <label className={!props.labelDisabled ? "input-group" : ""}>
+      <label
+        className={!props.labelDisabled ? "input-group" : ""}
+      >
         {
-          !props.labelDisabled && <span>{props.name}</span>
+          !props.labelDisabled && <span
+            style={{
+              backgroundColor: props.labelColor || undefined
+            }}
+          >{props.name}</span>
         }
         <input
           id={props.id}
@@ -52,16 +61,20 @@ const Input: React.FC<{
               props.onSubmit(e);
             }
           }}
-          className={`
-            input ${!props.borderHidden || !props.isGhost ? 'input-bordered' : ''} placeholder:text-gray-500 w-full ${props.isError ? "input-error" : ""} ${props.maxLength && (props.maxLength <= currentLength) ? "input-warning" : ""} ${props.inputClassName || ""} ${props.isGhost ? 'font-bold input-ghost b-0 outline-none outline-0 focus:outline-0 b-none bg-red p-0 m-0' : ''}
-          `}
+          className={`input ${!props.borderHidden || !props.isGhost ? 'input-bordered' : ''} placeholder:text-gray-500 w-full ${props.isError ? "input-error" : ""} ${props.maxLength && (props.maxLength <= currentLength) ? "input-warning" : ""} ${props.inputClassName || ""} ${props.isGhost ? 'font-bold input-ghost b-0 outline-none outline-0 focus:outline-0 b-none bg-red p-0 m-0' : ''}`}
           onChange={(e) => {
-            props.onChange(e.target.value);
-            setCurrentLength(e.target.value.length);
+            if (props.onChange) {
+              props.onChange(e.target.value);
+              setCurrentLength(e.target.value.length);
+            }
           }}
           value={props.value}
           disabled={props.isDisabled}
           maxLength={props.maxLength}
+          style={{
+            backgroundColor: props.internalColor || undefined,
+            borderColor: props.borderColor || undefined,
+          }}
         />
       </label>
     </div>
@@ -81,6 +94,7 @@ export const TextArea: React.FC<{
   bordered?: boolean;
   onSubmit?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   isGhost?: boolean;
+  internalColor?: string | undefined | null;
 }> = (props) => {
   const textAreaElement = (document && props.autoAdjustHeight) ? document.getElementById(props.id || "") as HTMLTextAreaElement : null;
   const descriptionTextAreaRef = useRef<HTMLTextAreaElement>(textAreaElement);
@@ -115,6 +129,9 @@ export const TextArea: React.FC<{
         if (e.key === "Enter" && props.onSubmit) {
           props.onSubmit(e);
         }
+      }}
+      style={{
+        backgroundColor: props.internalColor || undefined,
       }}
       id={props.id}
     />
