@@ -3,7 +3,20 @@
 @tailwind utilities;
 
 @layer utilities {
-  .alternate div:nth-child(2n + n) > div:first-child {
-    @apply bg-gray-100
+  .reset-color-input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+  }
+  .reset-color-input::--webkit-color-swatch {
+    border-radius: 50%;
+    border: none;
+  }
+  .reset-color-input::--moz-color-swatch {
+    border-radius: 50%;
+    border: none;
   }
 }

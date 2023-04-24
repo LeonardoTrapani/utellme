@@ -6,7 +6,7 @@ import { authOptions } from "~/server/auth";
 import { signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useEffect, useRef, useState } from "react";
-import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiSortUp, BiSortDown, BiSortAlt2, BiColorFill } from "react-icons/bi"
+import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiSortUp, BiSortDown, BiSortAlt2, BiColorFill, BiReset } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs";
 import { FiSettings } from "react-icons/fi";
 import type { Feedback, OrderBy, Project } from "@prisma/client";
@@ -25,6 +25,7 @@ import { SwitchComponent } from "~/components/SwitchComponent";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import Modal, { ModalActionButton } from "~/components/Modal";
+import { ChromePicker } from "react-color";
 
 const Home: NextPage = () => {
   const { status: sessionStatus } = useSession();
@@ -391,9 +392,59 @@ const ColorProjectModalBody: React.FC<{
   setProjectTextColorValue: (value: string | undefined) => void;
 }> = (props) => {
   return (
-    <div></div>
+    <div className="flex flex-col gap-4">
+      <input disabled className="hidden" /> {/*necessary to avoid bugs of text color input automatically focusing*/}
+      <PickColorRow
+        text="Text Color"
+        currentColor={props.projectTextColorValue}
+        onColorChange={(value) => {
+          props.setProjectTextColorValue(value)
+        }}
+      />
+      <PickColorRow
+        text="Background Color"
+        currentColor={props.projectBackgroundColorValue}
+        onColorChange={(value) => {
+          props.setProjectBackgroundColorValue(value)
+        }}
+      />
+      <div className="divider" />
+      <div className="border rounded-lg aspect-video">
+        <button className="h-full w-full btn btn-ghost">show preview</button>
+      </div>
+    </div>
   )
 };
+
+const PickColorRow: React.FC<{
+  text: string;
+  currentColor: string | undefined;
+  onColorChange: (color: string) => void;
+}> = (props) => {
+  return (
+    <div className="flex gap-2 justify-between items-center">
+      <p className="font-semibold">{props.text}</p>
+      <div className="flex items-center gap-2">
+        <div className="dropdown dropdown-end">
+          <label
+            className="block red-50 rounded-full w-9 h-9 border"
+            tabIndex={0}
+            style={{
+              backgroundColor: props.currentColor
+            }}
+          />
+          <div tabIndex={0} className="dropdown-content shadow">
+            <ChromePicker />
+          </div>
+        </div>
+        <button>
+          <BiReset size={24} className="text-gray-500" />
+        </button>
+      </div>
+    </div >
+
+  )
+}
 
 const EditProjectModal: React.FC<{
   resetModalState: () => void;
