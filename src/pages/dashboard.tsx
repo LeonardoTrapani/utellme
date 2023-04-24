@@ -832,7 +832,12 @@ const ProjectMainContent: React.FC<{
     <>
       <div className="mb-3 flex">
         <div className="grow">
-          <h1 className="text-3xl font-bold">{projectsData[props.selectedProjectIndex]?.name}</h1>
+          <h1
+            className="text-3xl font-bold"
+            style={{
+              color: projectsData[props.selectedProjectIndex]?.titleColor || ""
+            }}
+          >{projectsData[props.selectedProjectIndex]?.name}</h1>
           {
             <DescriptionOrAddDescriptionComponent
               projectDescription={projectsData[props.selectedProjectIndex]?.description}
