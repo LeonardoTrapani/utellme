@@ -468,15 +468,18 @@ const ColorProjectModalBody: React.FC<{
       >
         {isAdvancedOpen ? 'close advanced options' : 'open advanced options'}
       </button>
-      <div className="divider" />
-      <div className="border rounded-lg">
-        <ColorPreview
-          projectTitle={props.projectName}
-          projectDescription={props.projectDescription}
-          textColor={props.projectTextColorValue}
-          backgroundColor={props.projectBackgroundColorValue}
-          primaryColor={props.projectPrimaryColorValue}
-        />
+      <div className="divider my-0" />
+      <div>
+        <h4 className="text-center mb-1 text-lg font-semibold uppercase">Preview</h4>
+        <div className="border rounded-lg">
+          <ColorPreview
+            projectTitle={props.projectName}
+            projectDescription={props.projectDescription}
+            textColor={props.projectTextColorValue}
+            backgroundColor={props.projectBackgroundColorValue}
+            primaryColor={props.projectPrimaryColorValue}
+          />
+        </div>
       </div>
     </div>
   )
