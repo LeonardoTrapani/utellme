@@ -609,7 +609,7 @@ const ColorPreview: React.FC<{
 }> = (props) => {
   const [isDarkTheme, setIsDarkTheme] = useState(false);
   return (
-    <div className="h-full relative" style={{
+    <div className="h-full relative rounded-lg" style={{
       backgroundColor: props.backgroundColor || undefined
     }}>
       <button
