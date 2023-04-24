@@ -101,6 +101,7 @@ const Home: NextPage = () => {
 
   const setSelectedProjectIndex = (i: number) => {
     setSelectedProjectIndexState(i);
+    setHasUpdatedProjectData(false);
     closeDrawer()
   }
 
@@ -118,17 +119,18 @@ const Home: NextPage = () => {
   const [projectBackgroundColorValue, setProjectBackgroundColorValue] = useState<string | null>(null)
   const [projectPrimaryColorValue, setProjectPrimaryColorValue] = useState<string | null>(null)
 
+  const [hasUpdatedProjectData, setHasUpdatedProjectData] = useState(false);
   useEffect(() => {
+    if (hasUpdatedProjectData || !projects?.[selectedProjectIndex]) return;
     setProjectTextColorValue(projects?.[selectedProjectIndex]?.textColor || null);
     setProjectBackgroundColorValue(projects?.[selectedProjectIndex]?.backgroundColor || null);
     setProjectPrimaryColorValue(projects?.[selectedProjectIndex]?.primaryColor || null);
-  }, [projects, selectedProjectIndex])
-
-  useEffect(() => {
     setEditProjectNameValue(projects?.[selectedProjectIndex]?.name || '');
     setEditProjectDescriptionValue(projects?.[selectedProjectIndex]?.description || '');
     setEditProjectMessageValue(projects?.[selectedProjectIndex]?.message || '');
-  }, [projects, selectedProjectIndex])
+
+    setHasUpdatedProjectData(true);
+  }, [hasUpdatedProjectData, projects, selectedProjectIndex])
 
   const resetEditModalState = () => {
     setEditProjectNameHasError(false);
@@ -1150,20 +1152,6 @@ const downloadFile = (fileName: string, blob: Blob) => {
   // Clean up and remove the link
   link.parentNode?.removeChild(link);
 }
-
-/*
-const onShareLink = (projectId: string, projectName: string | undefined) => {
-  const projectLink = getProjectLink(projectId);
-  if (navigator.share) {
-    void navigator.share({
-      title: `What do you think about ${projectName || "this project"}?`,
-      url: projectLink,
-    })
-  } else {
-    onCopyLink(projectId)
-  }
-}
-*/
 
 const getProjectUrl = (projectId: string) => {
   return `${window.location.origin}/newfeedback/${projectId}`
