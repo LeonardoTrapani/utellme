@@ -6,7 +6,7 @@ import { authOptions } from "~/server/auth";
 import { signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useEffect, useRef, useState } from "react";
-import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiSortUp, BiSortDown, BiSortAlt2, BiCartAdd } from "react-icons/bi"
+import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiSortUp, BiSortDown, BiSortAlt2 } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs";
 import { FiSettings } from "react-icons/fi";
 import type { Feedback, OrderBy, Project } from "@prisma/client";
@@ -72,6 +72,7 @@ const Home: NextPage = () => {
         [
           { propertyName: "newName", propertyMessage: "New Name" },
           { propertyName: "newDescription", propertyMessage: "New Description" },
+          { propertyName: "newMessage", propertyMessage: "New Message" },
           { propertyName: "projectId", propertyMessage: "Project ID" }
         ]
       )
@@ -90,16 +91,22 @@ const Home: NextPage = () => {
 
   const [editProjectNameValue, setEditProjectNameValue] = useState('');
   const [editProjectDescriptionValue, setEditProjectDescriptionValue] = useState('');
+  const [editProjectMessageValue, setEditProjectMessageValue] = useState('');
   const [editProjectNameHasError, setEditProjectNameHasError] = useState(false);
 
   useEffect(() => {
     setEditProjectNameValue(projects?.[selectedProjectIndex]?.name || '');
     setEditProjectDescriptionValue(projects?.[selectedProjectIndex]?.description || '');
+    setEditProjectMessageValue(projects?.[selectedProjectIndex]?.message || '');
   }, [projects, selectedProjectIndex])
 
   const resetEditModalState = () => {
     setEditProjectNameHasError(false);
+    setEditProjectNameValue(projects?.[selectedProjectIndex]?.name || '');
+    setEditProjectDescriptionValue(projects?.[selectedProjectIndex]?.description || '');
+    setEditProjectMessageValue(projects?.[selectedProjectIndex]?.message || '');
   }
+
   const resetDeleteModalState = () => {
     setDeleteModalHasError(false);
     setDeleteModalInputValue('');
@@ -124,6 +131,7 @@ const Home: NextPage = () => {
       projectId: currentProjectId,
       newName: editProjectNameValue,
       newDescription: editProjectDescriptionValue,
+      newMessage: editProjectMessageValue,
     });
     const element = document.getElementById('edit-project-modal') as HTMLInputElement;
     element.checked = false;
@@ -167,6 +175,7 @@ const Home: NextPage = () => {
                 <EditProjectModal
                   projectName={projects?.[selectedProjectIndex]?.name || 'Project name'}
                   projectDescription={projects?.[selectedProjectIndex]?.description || 'Project description'}
+                  projectMessage={projects?.[selectedProjectIndex]?.message || 'Project message'}
                   resetModalState={resetEditModalState}
                   setDescriptionInputValue={setEditProjectDescriptionValue}
                   setNameInputValue={setEditProjectNameValue}
@@ -175,6 +184,8 @@ const Home: NextPage = () => {
                   onEdit={projectEditHandler}
                   editProjectNameHasError={editProjectNameHasError}
                   setNameInputHasError={(value) => { setEditProjectNameHasError(value) }}
+                  setMessageInputValue={(value) => { setEditProjectMessageValue(value) }}
+                  messageInputValue={editProjectMessageValue}
                 />
                 <InfoProjectModal projectId={projects?.[selectedProjectIndex]?.id} />
               </>
@@ -330,6 +341,7 @@ const EditProjectModal: React.FC<{
   resetModalState: () => void;
   projectDescription: string;
   projectName: string;
+  projectMessage: string;
   setDescriptionInputValue: (value: string) => void;
   setNameInputValue: (value: string) => void;
   descriptionInputValue: string;
@@ -337,6 +349,8 @@ const EditProjectModal: React.FC<{
   onEdit: () => void;
   editProjectNameHasError: boolean;
   setNameInputHasError: (hasError: boolean) => void;
+  setMessageInputValue: (value: string) => void;
+  messageInputValue: string;
 }> = (props) => {
   const editHandler = () => {
     if (props.nameInputValue.length < 1) {
@@ -369,6 +383,15 @@ const EditProjectModal: React.FC<{
               onChange={(e) => props.setDescriptionInputValue(e.target.value)}
               rows={6}
               value={props.descriptionInputValue}
+            />
+            <Input
+              name="Message"
+              placeholder="Tell me your feedback about"
+              onChange={(value) => {
+                props.setMessageInputValue(value);
+              }}
+              value={props.messageInputValue}
+              maxLength={75}
             />
           </div>
           <div className="modal-action">
