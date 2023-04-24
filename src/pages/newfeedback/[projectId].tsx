@@ -90,10 +90,6 @@ const NewFeedbackPage: NextPage = () => {
   useEffect(() => {
     if (!document) return;
     const htmlElement = document.getElementsByTagName("html")[0] as HTMLElement;
-    console.log(htmlElement)
-    if (project?.textColor) {
-      htmlElement.style.color = project.textColor;
-    }
     if (project?.backgroundColor) {
       htmlElement.style.backgroundColor = project.backgroundColor;
     }
@@ -102,7 +98,6 @@ const NewFeedbackPage: NextPage = () => {
     return () => {
       if (!document) return;
       const htmlElement = document.getElementsByTagName("html")[0] as HTMLElement;
-      htmlElement.style.color = "";
       htmlElement.style.backgroundColor = "";
     }
   }, [])
@@ -245,7 +240,12 @@ const GetFeedbackTitle: React.FC<{
   publicProjectInfo: PublicProjectInfoType;
 }> = (props) => {
   return (
-    <div className="grid">
+    <div
+      className="grid"
+      style={{
+        color: props.publicProjectInfo?.textColor || "",
+      }}
+    >
       <div>
         {
           props.publicProjectInfo?.message &&
@@ -271,7 +271,9 @@ const FeedbackCompletedPage: React.FC<{
         className={
           `${props.publicProjectInfo?.textColor || props.publicProjectInfo?.backgroundColor ? '' : 'text-primary'} font-semibold`
         }>
-        Thank you </span>for the feedback!</h1>
+        <span style={{
+          color: props.publicProjectInfo?.textColor || undefined
+        }}>Thank you </span></span>for the feedback!</h1>
       <div className="text-center">
         <h3>powered by</h3>
         <UTellMeComponentButton hasText />
