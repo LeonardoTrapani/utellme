@@ -29,6 +29,9 @@ export const projectsRouter = createTRPCRouter({
         name: true,
         description: true,
         id: true,
+        textColor: true,
+        backgroundColor: true,
+        message: true,
       }
     })
   }),
@@ -94,6 +97,9 @@ export const projectsRouter = createTRPCRouter({
         description: true,
         createdAt: true,
         averageRating: true,
+        textColor: true,
+        backgroundColor: true,
+        message: true,
       }
     });
     return getInfoResult;
