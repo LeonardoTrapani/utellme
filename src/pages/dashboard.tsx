@@ -6,7 +6,7 @@ import { authOptions } from "~/server/auth";
 import { signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useEffect, useRef, useState } from "react";
-import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiSortUp, BiSortDown, BiSortAlt2, BiColorFill, BiReset } from "react-icons/bi"
+import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiSortUp, BiSortDown, BiSortAlt2, BiColorFill, BiReset, BiSun, BiMoon } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs";
 import { FiSettings } from "react-icons/fi";
 import type { Feedback, OrderBy, Project } from "@prisma/client";
@@ -101,7 +101,8 @@ const Home: NextPage = () => {
 
   const setSelectedProjectIndex = (i: number) => {
     setSelectedProjectIndexState(i);
-    closeDrawer()
+    setHasUpdatedProjectData(false);
+    closeDrawer();
   }
 
   const [selectedProjectIndex, setSelectedProjectIndexState] = useState(0);
@@ -118,17 +119,19 @@ const Home: NextPage = () => {
   const [projectBackgroundColorValue, setProjectBackgroundColorValue] = useState<string | null>(null)
   const [projectPrimaryColorValue, setProjectPrimaryColorValue] = useState<string | null>(null)
 
+  const [hasUpdatedProjectData, setHasUpdatedProjectData] = useState(false);
+
   useEffect(() => {
+    if (hasUpdatedProjectData || !projects || !projects[selectedProjectIndex]) return;
     setProjectTextColorValue(projects?.[selectedProjectIndex]?.textColor || null);
     setProjectBackgroundColorValue(projects?.[selectedProjectIndex]?.backgroundColor || null);
     setProjectPrimaryColorValue(projects?.[selectedProjectIndex]?.primaryColor || null);
-  }, [projects, selectedProjectIndex])
-
-  useEffect(() => {
     setEditProjectNameValue(projects?.[selectedProjectIndex]?.name || '');
     setEditProjectDescriptionValue(projects?.[selectedProjectIndex]?.description || '');
     setEditProjectMessageValue(projects?.[selectedProjectIndex]?.message || '');
-  }, [projects, selectedProjectIndex])
+
+    setHasUpdatedProjectData(true);
+  }, [hasUpdatedProjectData, projects, selectedProjectIndex])
 
   const resetEditModalState = () => {
     setEditProjectNameHasError(false);
@@ -245,7 +248,7 @@ const Home: NextPage = () => {
                 >
                   <ColorProjectModalBody
                     projectBackgroundColorValue={projectBackgroundColorValue}
-                    projectTitleColorValue={projectPrimaryColorValue}
+                    projectPrimaryColorValue={projectPrimaryColorValue}
                     projectTextColorValue={projectTextColorValue}
                     setProjectBackgroundColorValue={(value) => setProjectBackgroundColorValue(value)}
                     setProjectTitleColorValue={(value) => setProjectPrimaryColorValue(value)}
@@ -356,8 +359,8 @@ const DeleteProjectModal: React.FC<{
 
   return (
     <>
-      <input type="checkbox" id="delete-project-modal" className="modal-toggle" />
-      <label htmlFor="delete-project-modal" className="modal cursor-pointer">
+      <input type="checkbox" id="delete-project-modal" className="modal-toggle overflow-x-hidden" />
+      <label htmlFor="delete-project-modal" className="modal cursor-pointer overflow-x-hidden">
         <label className="modal-box relative">
           <h3 className="text-lg font-bold">Are you sure you want to delete this project?</h3>
           <p className="py-4">This action cannot be undone. You will lose all <span>{props.projectTitle || "your project"}</span>&apos;s feedback forever</p>
@@ -406,18 +409,19 @@ const DeleteProjectModal: React.FC<{
 const ColorProjectModalBody: React.FC<{
   projectBackgroundColorValue: string | null;
   projectTextColorValue: string | null;
-  projectTitleColorValue: string | null;
+  projectPrimaryColorValue: string | null;
   setProjectBackgroundColorValue: (value: string | null) => void;
   setProjectTextColorValue: (value: string | null) => void;
   setProjectTitleColorValue: (value: string | null) => void;
 }> = (props) => {
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 overflow-x-hidden">
       <input disabled className="hidden" /> {/*necessary to avoid bugs of text color input automatically focusing*/}
       <PickColorRow
         text="Primary Color"
-        currentColor={props.projectTitleColorValue}
+        currentColor={props.projectPrimaryColorValue}
         onColorChange={(value) => {
           props.setProjectTitleColorValue(value)
         }}
@@ -428,7 +432,7 @@ const ColorProjectModalBody: React.FC<{
       {
         isAdvancedOpen &&
         <>
-          <p className="text-sm text-gray-500">Double check the preview in both themes to make sure that all the content is visible in all cases</p>
+          <p className="text-sm text-gray-500">Double check the preview of both themes to make sure that all the content is visible in all cases</p>
           <PickColorRow
             text="Text Color"
             currentColor={props.projectTextColorValue}
@@ -452,7 +456,7 @@ const ColorProjectModalBody: React.FC<{
         </>
       }
       <button
-        className="text-end link text-sm"
+        className="text-center link text-sm"
         onClick={() => {
           setIsAdvancedOpen((prev) => !prev)
         }}
@@ -461,7 +465,11 @@ const ColorProjectModalBody: React.FC<{
       </button>
       <div className="divider" />
       <div className="border rounded-lg aspect-video">
-        <button className="h-full w-full btn btn-ghost">show preview</button>
+        <ColorPreview
+          textColor={props.projectTextColorValue}
+          backgroundColor={props.projectBackgroundColorValue}
+          primaryColor={props.projectPrimaryColorValue}
+        />
       </div>
     </div>
   )
@@ -593,6 +601,33 @@ const EditProjectModal: React.FC<{
     </>
   )
 }
+
+const ColorPreview: React.FC<{
+  primaryColor: string | null | undefined;
+  backgroundColor: string | null | undefined;
+  textColor: string | null | undefined;
+}> = (props) => {
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
+  return (
+    <div className="h-full relative" style={{
+      backgroundColor: props.backgroundColor || undefined
+    }}>
+      <button
+        className="btn btn-circle absolute h-10 aspect-square right-2 top-2 flex justify-center items-center rounded-full shadow-lg border"
+        onClick={() => {
+          setIsDarkTheme((prev) => !prev);
+        }}
+      >
+        {
+          isDarkTheme ?
+            <BiSun />
+            :
+            <BiMoon />
+        }
+      </button>
+    </div>
+  )
+};
 
 const InfoProjectModal: React.FC<{
   projectId: string | undefined;
