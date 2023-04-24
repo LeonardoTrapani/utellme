@@ -878,6 +878,7 @@ const ProjectMainContent: React.FC<{
                     feedbacksData={feedbacksData}
                     sortingMethod={projectsData[props.selectedProjectIndex]?.orderBy}
                     shouldSort={isFeedbacksFetching && !!feedbacksData}
+                    primaryColor={projectsData[props.selectedProjectIndex]?.titleColor}
                   />
                   :
                   <NoFeedbackComponent
@@ -896,13 +897,18 @@ const FeedbackList: React.FC<{
   feedbacksData: Feedback[] | undefined;
   sortingMethod: OrderBy | undefined;
   shouldSort: boolean;
+  primaryColor: string | null | undefined;
 }> = (props) => {
   return (
     <div className="overflow-y-auto">
       <ul className="gap-2 grid md:grid-cols-2 grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4 mb-2 lg:mb-0">
         {
           props.feedbacksData?.map((feedback) => {
-            return <FeedbackComponent key={feedback.id} feedback={feedback} />
+            return <FeedbackComponent
+              key={feedback.id}
+              feedback={feedback}
+              primaryColor={props.primaryColor}
+            />
           })
         }
       </ul>
@@ -1484,7 +1490,10 @@ const ProjectComponent: React.FC<{
   return (
     <li key={props.project.id}>
       <a
-        className={`${props.isActive ? "active bg-yellow-500" : ""}`}
+        className={`${props.isActive ? "active bg-primary" : ""}`}
+        style={{
+          backgroundColor: props.isActive ? props.project.titleColor || "" : ""
+        }}
         onClick={() => props.onPress(props.index)}
       >
         {props.project.name}
@@ -1493,7 +1502,10 @@ const ProjectComponent: React.FC<{
   )
 }
 
-const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
+const FeedbackComponent: React.FC<{
+  feedback: Feedback,
+  primaryColor: string | null | undefined;
+}> = (props) => {
   const [isShowMore, setIsShowMore] = useState(false);
   const linesLimit = 6;
   return (
@@ -1501,7 +1513,10 @@ const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
       <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between shadow-sm">
         <div>
           <div className="flex justify-between items-start">
-            <StaticRatingComponent rating={props.feedback.rating} />
+            <StaticRatingComponent
+              rating={props.feedback.rating}
+              primaryColor={props.primaryColor}
+            />
             <p className="text-gray-500 leading-3">{timeSinceNow(props.feedback.createdAt)}</p>
           </div>
           {

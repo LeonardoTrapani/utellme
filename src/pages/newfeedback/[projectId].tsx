@@ -202,6 +202,7 @@ const MainGetFeedbackContent: React.FC<{
       <div className="divider mt-2 mb-2" />
       <div className={`h-10 items-center w-min m-auto rounded-xl mb-2 ${props.ratingHasError ? "border-error border-2" : ""}`}>
         <SelectRatingComponent
+          ratingColor={props.publicProjectInfo?.titleColor || undefined}
           rating={props.currentRating}
           onRatingChange={(rating) => {
             props.setRating(rating);
