@@ -416,7 +416,7 @@ const ColorProjectModalBody: React.FC<{
     <div className="flex flex-col gap-4">
       <input disabled className="hidden" /> {/*necessary to avoid bugs of text color input automatically focusing*/}
       <PickColorRow
-        text="Title Color"
+        text="Primary Color"
         currentColor={props.projectTitleColorValue}
         onColorChange={(value) => {
           props.setProjectTitleColorValue(value)
