@@ -211,10 +211,14 @@ const MainGetFeedbackContent: React.FC<{
       </div>
       <form>
         <div className="form-control gap-4">
-          <textarea placeholder={textAreaPlaceHolder}
+          <textarea
+            placeholder={textAreaPlaceHolder}
             className={`mt-2 textarea textarea-bordered textarea-md w-full placeholder:text-gray-500 ${props.contentHasError ? "border-red-400 textarea-error" : ""}}`}
             onChange={(e) => props.setFeedbackContent(e.target.value)}
             rows={4}
+            style={{
+              backgroundColor: props.publicProjectInfo?.backgroundColor || undefined,
+            }}
           />
           <div className="grid gap-4 md:grid-cols-2">
             <Input
@@ -222,6 +226,7 @@ const MainGetFeedbackContent: React.FC<{
               placeholder={`My opinion about ${props.publicProjectInfo?.name || "this project"}`}
               onChange={props.setFeedbackTitle}
               optional
+              internalColor={props.publicProjectInfo?.backgroundColor}
               maxLength={50}
             />
             <Input
@@ -229,6 +234,7 @@ const MainGetFeedbackContent: React.FC<{
               placeholder={"My Name"}
               onChange={props.setFeedbackAuthor}
               optional
+              internalColor={props.publicProjectInfo?.backgroundColor}
               maxLength={35}
             />
           </div>

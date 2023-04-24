@@ -102,7 +102,7 @@ const SingleRatingComponent: React.FC<{
   return (
     <a
       className={`
-        ${`${active ? 'text-primary' : 'text-gray-400 dark:text-current '} select-none`} 
+        ${`${active ? 'text-primary' : 'text-gray-400 dark:text-base-content'} select-none`} 
         cursor-pointer ${props.isBig ? 'text-4xl' : ''} self-center
         `
       }
@@ -117,3 +117,4 @@ const SingleRatingComponent: React.FC<{
     </a >
   )
 }
+//TODO: not put dark:text-current but the color of the text

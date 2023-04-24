@@ -436,7 +436,8 @@ const ColorProjectModalBody: React.FC<{
       {
         isAdvancedOpen &&
         <>
-          <p className="text-sm text-gray-500">Double check the preview of both themes to make sure that all the content is visible in all cases</p>
+          <p className="text-sm text-gray-500">We don&apos;t suggest changing this settings. Double check the preview of both themes to make sure that all the content is visible in all cases</p>
+
           <PickColorRow
             text="Text Color"
             currentColor={props.projectTextColorValue}
@@ -468,7 +469,7 @@ const ColorProjectModalBody: React.FC<{
         {isAdvancedOpen ? 'close advanced options' : 'open advanced options'}
       </button>
       <div className="divider" />
-      <div className="border rounded-lg aspect-video">
+      <div className="border rounded-lg">
         <ColorPreview
           projectTitle={props.projectName}
           projectDescription={props.projectDescription}
@@ -618,7 +619,8 @@ const ColorPreview: React.FC<{
   const [isDarkTheme, setIsDarkTheme] = useState(false);
   return (
     <div className="h-full relative rounded-lg p-6" style={{
-      backgroundColor: props.backgroundColor || undefined
+      backgroundColor: props.backgroundColor || undefined,
+      color: props.textColor || undefined
     }}>
       <button
         className="btn btn-circle absolute h-10 aspect-square right-2 top-2 flex justify-center items-center rounded-full shadow-lg border"
@@ -654,6 +656,13 @@ const ColorPreview: React.FC<{
         <StaticRatingComponent
           rating={3}
           primaryColor={props.primaryColor}
+        />
+
+        <Input
+          isDisabled
+          name="Preview"
+          placeholder="This is a preview"
+          internalColor={props.backgroundColor}
         />
       </div>
     </div>

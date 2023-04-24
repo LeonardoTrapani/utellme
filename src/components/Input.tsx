@@ -4,7 +4,7 @@ const Input: React.FC<{
   name: string;
   placeholder: string;
   optional?: boolean;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   value?: string;
   isError?: boolean;
   isDisabled?: boolean;
@@ -20,6 +20,7 @@ const Input: React.FC<{
   isGhost?: boolean;
   autoResize?: boolean;
   initialLength?: number;
+  internalColor?: string | undefined | null;
 }> = (props) => {
   const [currentLength, setCurrentLength] = React.useState(0);
   return (
@@ -62,6 +63,9 @@ const Input: React.FC<{
           value={props.value}
           disabled={props.isDisabled}
           maxLength={props.maxLength}
+          style={{
+            backgroundColor: props.internalColor || undefined,
+          }}
         />
       </label>
     </div>
@@ -81,6 +85,7 @@ export const TextArea: React.FC<{
   bordered?: boolean;
   onSubmit?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   isGhost?: boolean;
+  internalColor?: string | undefined | null;
 }> = (props) => {
   const textAreaElement = (document && props.autoAdjustHeight) ? document.getElementById(props.id || "") as HTMLTextAreaElement : null;
   const descriptionTextAreaRef = useRef<HTMLTextAreaElement>(textAreaElement);
@@ -115,6 +120,9 @@ export const TextArea: React.FC<{
         if (e.key === "Enter" && props.onSubmit) {
           props.onSubmit(e);
         }
+      }}
+      style={{
+        backgroundColor: props.internalColor || undefined,
       }}
       id={props.id}
     />
