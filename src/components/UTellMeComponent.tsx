@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useIsDarkMode } from "~/utils/hooks";
+import { isDarkMode } from "~/utils/hooks";
 
 export const UTellMeComponentButton: React.FC<{
   isBig?: boolean;
@@ -27,7 +27,7 @@ export const UTellMeComponent: React.FC<{
   isMedium?: boolean;
   hasText?: boolean;
 }> = (props) => {
-  const isDarkThemeVar = useIsDarkMode();
+  const isDarkThemeVar = isDarkMode();
   return (
     <div className="flex items-center">
       {

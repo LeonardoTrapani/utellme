@@ -2,23 +2,11 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState, useLayoutEffect, useEffect } from "react";
 
-export const useIsDarkMode = () => {
-  const [darkMode, setDarkMode] = useState(false);
-
-  const modeMe = (e: MediaQueryListEvent) => {
-    setDarkMode(!!e.matches);
-  };
-
-  useEffect(() => {
-    const matchMedia = window.matchMedia("(prefers-color-scheme: dark)");
-
-    setDarkMode(matchMedia.matches);
-    matchMedia.addEventListener("change", modeMe);
-
-    return () => matchMedia.removeEventListener("change", modeMe);
-  }, []);
-
-  return darkMode;
+export const isDarkMode = () => {
+  if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    return true;
+  }
+  return false;
 }
 
 export const useWindowSize = () => {

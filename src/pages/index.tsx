@@ -5,7 +5,7 @@ import { authOptions } from "~/server/auth";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import Image from "next/image";
-import { useIsDarkMode, useWindowSize } from "~/utils/hooks";
+import { isDarkMode, useWindowSize } from "~/utils/hooks";
 import { UTellMeComponentButton } from "~/components/UTellMeComponent";
 import { BiMenu } from "react-icons/bi";
 
@@ -50,9 +50,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 const Header: React.FC<{
   onHeaderOpen: () => void;
 }> = (props) => {
-  const isDarkMode = useIsDarkMode();
+  const isDarkModeVar = isDarkMode();
   return (
-    <div className={`z-10 fixed w-full bg-gradient-to-b ${isDarkMode ? 'from-[#2B303B] via-[#2B303B]' : 'from-[#FFFFFF] via-[#FFFFFF]'}`}>
+    <div className={`z-10 fixed w-full bg-gradient-to-b ${isDarkModeVar ? 'from-[#2B303B] via-[#2B303B]' : 'from-[#FFFFFF] via-[#FFFFFF]'}`}>
       <header className="relative py-4 md:py-6">
         <div className="px-10 mx-auto max-w-7xl from-blue-500 to-transparent sm:px-6 md:px-8 flex justify-between">
           <UTellMeComponentButton hasText />
@@ -162,12 +162,12 @@ const Steps = () => {
 }
 
 const YourPov = () => {
-  const isDarkMode = useIsDarkMode();
+  const isDarkModeVar = isDarkMode();
   return (
     <StepsRowContainer>
       <StepsRow i={1} title="Create an account">
         {
-          !isDarkMode ?
+          !isDarkModeVar ?
             <div className="relative">
               <Image
                 height={0}
@@ -192,7 +192,7 @@ const YourPov = () => {
       <StepsRow i={2} title="Create a project">
         {
 
-          !isDarkMode ?
+          !isDarkModeVar ?
             <div>
               <Image
                 src="/assets/create-project-illustration.svg"
@@ -238,12 +238,12 @@ const YourPov = () => {
   )
 }
 const YourCustomerPov = () => {
-  const isDarkMode = useIsDarkMode();
+  const isDarkModeVar = isDarkMode();
   return (
     <StepsRowContainer>
       <StepsRow i={1} title="Scan the QR-Code">
         {
-          !isDarkMode ?
+          !isDarkModeVar ?
             <Image
               src="/assets/scan qr illustration.svg"
               alt="utellme scan qr illustration"
