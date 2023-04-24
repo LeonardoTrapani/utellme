@@ -247,6 +247,8 @@ const Home: NextPage = () => {
                   }}
                 >
                   <ColorProjectModalBody
+                    projectDescription={projects?.[selectedProjectIndex]?.description}
+                    projectName={projects?.[selectedProjectIndex]?.name}
                     projectBackgroundColorValue={projectBackgroundColorValue}
                     projectPrimaryColorValue={projectPrimaryColorValue}
                     projectTextColorValue={projectTextColorValue}
@@ -407,6 +409,8 @@ const DeleteProjectModal: React.FC<{
 }
 
 const ColorProjectModalBody: React.FC<{
+  projectName: string | null | undefined;
+  projectDescription: string | null | undefined;
   projectBackgroundColorValue: string | null;
   projectTextColorValue: string | null;
   projectPrimaryColorValue: string | null;
@@ -466,6 +470,8 @@ const ColorProjectModalBody: React.FC<{
       <div className="divider" />
       <div className="border rounded-lg aspect-video">
         <ColorPreview
+          projectTitle={props.projectName}
+          projectDescription={props.projectDescription}
           textColor={props.projectTextColorValue}
           backgroundColor={props.projectBackgroundColorValue}
           primaryColor={props.projectPrimaryColorValue}
@@ -603,13 +609,15 @@ const EditProjectModal: React.FC<{
 }
 
 const ColorPreview: React.FC<{
+  projectTitle: string | null | undefined;
+  projectDescription: string | null | undefined;
   primaryColor: string | null | undefined;
   backgroundColor: string | null | undefined;
   textColor: string | null | undefined;
 }> = (props) => {
   const [isDarkTheme, setIsDarkTheme] = useState(false);
   return (
-    <div className="h-full relative rounded-lg" style={{
+    <div className="h-full relative rounded-lg p-6" style={{
       backgroundColor: props.backgroundColor || undefined
     }}>
       <button
@@ -625,6 +633,29 @@ const ColorPreview: React.FC<{
             <BiMoon />
         }
       </button>
+      <div className="flex flex-col gap-4">
+        <h3
+          className="text-xl font-bold"
+          style={{
+            color: props.primaryColor || undefined
+          }}
+        >
+          {props.projectTitle}
+        </h3>
+        <h3
+          className=""
+          style={{
+            color: props.textColor || undefined
+          }}
+        >
+          {`${props.projectDescription?.substring(0, 100) || "This is a test description"} ${props.projectDescription?.length && props.projectDescription?.length > 100 ? "..." : ""}`}
+        </h3>
+
+        <StaticRatingComponent
+          rating={3}
+          primaryColor={props.primaryColor}
+        />
+      </div>
     </div>
   )
 };
@@ -1153,17 +1184,6 @@ const copyToClipboard = async (text: string) => {
   await navigator.clipboard.writeText(text)
   toast('Copied to the clipboard!')
 }
-
-/*
-const copyFileToClipboard = async (blob: Blob) => {
-  await navigator.clipboard.write([
-    new ClipboardItem({
-      [blob.type]: blob
-    })
-  ])
-  toast('Copied to the clipboard')
-}
-*/
 
 const downloadFile = (fileName: string, blob: Blob) => {
   const url = window.URL.createObjectURL(

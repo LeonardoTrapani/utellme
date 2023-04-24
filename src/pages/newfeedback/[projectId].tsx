@@ -277,7 +277,7 @@ const FeedbackCompletedPage: React.FC<{
     <div className="flex h-screen justify-center items-center flex-col gap-10">
       <h1 className="text-2xl"><span
         className={`font-semibold`}>
-        <span style={{
+        <span className="text-primary" style={{
           color: props.publicProjectInfo?.primaryColor || undefined
         }}>Thank you </span></span>for the feedback!</h1>
       <div className="text-center">
