@@ -24,9 +24,8 @@ import { countLines, timeSinceNow, toastTrpcError } from "~/utils/functions";
 import { SwitchComponent } from "~/components/SwitchComponent";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import Modal, { ModalActionButton } from "~/components/Modal";
-import { ChromePicker } from "react-color";
 import Image from "next/image";
+import Modal, { ModalActionButton } from "~/components/Modal";
 
 const Home: NextPage = () => {
   const { status: sessionStatus } = useSession();
@@ -81,7 +80,7 @@ const Home: NextPage = () => {
     }
   })
 
-  const { mutate: editColorProject, isLoading: isColorProjectLoading } = api.projects.edit.useMutation({
+  const { mutate: colorProject, isLoading: isColorProjectLoading } = api.projects.edit.useMutation({
     onSuccess: () => {
       void refetchProjects();
     },
@@ -398,27 +397,11 @@ const ColorProjectModalBody: React.FC<{
       <PickColorRow
         text="Text Color"
         currentColor={props.projectTextColorValue}
-        onReset={() => {
-          props.setProjectTextColorValue(undefined);
-        }}
-        onColorChange={(value) => {
-          props.setProjectTextColorValue(value)
-        }}
       />
       <PickColorRow
         text="Background Color"
         currentColor={props.projectBackgroundColorValue}
-        onColorChange={(value) => {
-          props.setProjectBackgroundColorValue(value)
-        }}
-        onReset={() => {
-          props.setProjectBackgroundColorValue(undefined);
-        }}
       />
-      <div className="divider" />
-      <div className="border rounded-lg aspect-video">
-        <button className="h-full w-full btn btn-ghost">show preview</button>
-      </div>
     </div>
   )
 };
@@ -426,49 +409,34 @@ const ColorProjectModalBody: React.FC<{
 const PickColorRow: React.FC<{
   text: string;
   currentColor: string | undefined;
-  onColorChange: (color: string) => void;
-  onReset: () => void;
 }> = (props) => {
   return (
     <div className="flex gap-2 justify-between items-center">
       <p className="font-semibold">{props.text}</p>
       <div className="flex items-center gap-2">
-        <div className="dropdown dropdown-end">
-
-          <label
-            className="block red-50 rounded-full w-9 h-9 border cursor-pointer hover:scale-110 transition-all"
-            tabIndex={0}
-            style={{
-              backgroundColor: props.currentColor
-            }}
-          >
-            {
-              !props.currentColor ?
-                <Image
-                  src="/assets/transparent.png"
-                  alt="transparent background"
-                  height={36}
-                  width={36}
-                  className="block red-50 rounded-full w-9 h-9 border"
-                /> : <></>
-            }
-          </label>
-          <div tabIndex={0} className="dropdown-content shadow">
-            <ChromePicker
-              onChange={(color) => {
-                props.onColorChange(color.hex);
+        {
+          props.currentColor ?
+            <input
+              type="color"
+              value={props.currentColor}
+              className="reset-color-input p-0 m-0 h-10 w-10"
+              onChange={(e) => {
+                console.log(e.currentTarget.value)
               }}
-              color={props.currentColor}
             />
-          </div>
-        </div>
-        <button onClick={() => {
-          props.onReset();
-        }}>
+            :
+            <Image
+              src="/assets/transparent.jpg"
+              alt="transparent color"
+              width={40}
+              height={40}
+            />
+        }
+        <button>
           <BiReset size={24} className="text-gray-500" />
         </button>
       </div>
-    </div >
+    </div>
 
   )
 }
