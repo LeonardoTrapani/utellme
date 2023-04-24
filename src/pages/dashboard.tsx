@@ -15,7 +15,7 @@ import LoadingIndicator from "~/components/LoadingIndicator";
 import Avatar from "~/components/Avatar";
 
 import { BiLogOut } from "react-icons/bi";
-import { useWindowSize } from "~/utils/hooks";
+import { useIsDarkMode, useWindowSize } from "~/utils/hooks";
 import { toast } from "react-hot-toast";
 import QRCode from 'qrcode'
 import Input from "~/components/Input";
@@ -616,7 +616,12 @@ const ColorPreview: React.FC<{
   backgroundColor: string | null | undefined;
   textColor: string | null | undefined;
 }> = (props) => {
-  const [isDarkTheme, setIsDarkTheme] = useState(false);
+  const isDarkModeInitial = useIsDarkMode()
+  const [isDarkTheme, setIsDarkTheme] = useState(isDarkModeInitial);
+  useEffect(() => {
+    setIsDarkTheme(isDarkModeInitial);
+  }, [isDarkModeInitial])
+
   return (
     <div
       className={`h-full relative rounded-md p-6`}
