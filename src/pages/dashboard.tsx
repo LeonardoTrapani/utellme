@@ -6,7 +6,7 @@ import { authOptions } from "~/server/auth";
 import { signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useEffect, useRef, useState } from "react";
-import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiSortUp, BiSortDown, BiSortAlt2 } from "react-icons/bi"
+import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiSortUp, BiSortDown, BiSortAlt2, BiColorFill } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs";
 import { FiSettings } from "react-icons/fi";
 import type { Feedback, OrderBy, Project } from "@prisma/client";
@@ -24,7 +24,7 @@ import { countLines, timeSinceNow, toastTrpcError } from "~/utils/functions";
 import { SwitchComponent } from "~/components/SwitchComponent";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import { ModalActionButton } from "~/components/Modal";
+import Modal, { ModalActionButton } from "~/components/Modal";
 
 const Home: NextPage = () => {
   const { status: sessionStatus } = useSession();
@@ -79,6 +79,21 @@ const Home: NextPage = () => {
     }
   })
 
+  const { mutate: colorProject, isLoading: isColorProjectLoading } = api.projects.edit.useMutation({
+    onSuccess: () => {
+      void refetchProjects();
+    },
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong editing the project.",
+        e.data?.zodError?.fieldErrors,
+        [
+          { propertyName: "projectId", propertyMessage: "Project ID" }
+        ]
+      )
+    }
+  })
+
   const setSelectedProjectIndex = (i: number) => {
     setSelectedProjectIndexState(i);
     closeDrawer()
@@ -93,6 +108,14 @@ const Home: NextPage = () => {
   const [editProjectDescriptionValue, setEditProjectDescriptionValue] = useState('');
   const [editProjectMessageValue, setEditProjectMessageValue] = useState('');
   const [editProjectNameHasError, setEditProjectNameHasError] = useState(false);
+
+  const [projectTextColorValue, setProjectTextColorValue] = useState<string | undefined>(undefined)
+  const [projectBackgroundColorValue, setProjectBackgroundColorValue] = useState<string | undefined>(undefined)
+
+  useEffect(() => {
+    setProjectTextColorValue(projects?.[selectedProjectIndex]?.textColor || undefined);
+    setProjectBackgroundColorValue(projects?.[selectedProjectIndex]?.backgroundColor || undefined);
+  }, [projects, selectedProjectIndex])
 
   useEffect(() => {
     setEditProjectNameValue(projects?.[selectedProjectIndex]?.name || '');
@@ -160,6 +183,7 @@ const Home: NextPage = () => {
               onRefetchProjects={() => void refetchProjects()}
               isDeleteProjectLoading={isDeleteProjectLoading}
               isEditProjectLoading={isEditProjectLoading}
+              isColorProjectLoading={isColorProjectLoading}
             />
             {
               <>
@@ -187,6 +211,28 @@ const Home: NextPage = () => {
                   setMessageInputValue={(value) => { setEditProjectMessageValue(value) }}
                   messageInputValue={editProjectMessageValue}
                 />
+                <Modal
+                  id="color-project-modal"
+                  cancelButton={{
+                    text: "cancel",
+                    modalId: "color-project-modal",
+                  }}
+                  confirmButton={{
+                    onClick: () => {
+                      //
+                    },
+                    text: "confirm",
+                    modalId: "color-project-modal",
+                    isPrimary: true,
+                  }}
+                >
+                  <ColorProjectModalBody
+                    projectBackgroundColorValue={projectBackgroundColorValue}
+                    projectTextColorValue={projectTextColorValue}
+                    setProjectBackgroundColorValue={(value) => setProjectBackgroundColorValue(value)}
+                    setProjectTextColorValue={(value) => setProjectTextColorValue(value)}
+                  />
+                </Modal>
                 <InfoProjectModal projectId={projects?.[selectedProjectIndex]?.id} />
               </>
             }
@@ -215,6 +261,7 @@ const MainPageContent: React.FC<{
   onRefetchProjects: () => void;
   isEditProjectLoading: boolean;
   isDeleteProjectLoading: boolean;
+  isColorProjectLoading: boolean;
 }> = (props) => {
   const onProjectPress = (i: number) => {
     props.setSelectedProjectIndex(i);
@@ -241,6 +288,7 @@ const MainPageContent: React.FC<{
           currentSort={props.projectsData[props.selectedProjectIndex]?.orderBy}
           areThereProjects={props.projectsData.length > 0}
           isEditProjectLoading={props.isEditProjectLoading}
+          isColorProjectLoading={props.isColorProjectLoading}
           isDeleteProjectLoading={props.isDeleteProjectLoading}
         />
       }
@@ -249,6 +297,7 @@ const MainPageContent: React.FC<{
         projectsData={props.projectsData}
         onRefetchProjects={props.onRefetchProjects}
         isEditProjectLoading={props.isEditProjectLoading}
+        isColorProjectLoading={props.isColorProjectLoading}
         isDeleteProjectLoading={props.isDeleteProjectLoading}
       />
     </ProjectDrawerContainer>
@@ -319,23 +368,32 @@ const DeleteProjectModal: React.FC<{
             <ModalActionButton
               modalId="delete-project-modal"
               onClick={props.resetModalState}
-            >
-              No
-            </ModalActionButton>
+              text="cancel"
+            />
             <ModalActionButton
               modalId="delete-project-modal"
               isRed
               onClick={() => deleteHandler()}
               disableClose
-            >
-              Confirm
-            </ModalActionButton>
+              text="confirm"
+            />
           </div>
         </label>
       </label>
     </>
   )
 }
+
+const ColorProjectModalBody: React.FC<{
+  projectBackgroundColorValue: string | undefined;
+  projectTextColorValue: string | undefined;
+  setProjectBackgroundColorValue: (value: string | undefined) => void;
+  setProjectTextColorValue: (value: string | undefined) => void;
+}> = (props) => {
+  return (
+    <div></div>
+  )
+};
 
 const EditProjectModal: React.FC<{
   resetModalState: () => void;
@@ -398,17 +456,15 @@ const EditProjectModal: React.FC<{
             <ModalActionButton
               modalId="edit-project-modal"
               onClick={props.resetModalState}
-            >
-              No
-            </ModalActionButton>
+              text="Cancel"
+            />
             <ModalActionButton
               modalId="edit-project-modal"
               isPrimary
               onClick={() => editHandler()}
               disableClose
-            >
-              Confirm
-            </ModalActionButton>
+              text="confirm"
+            />
           </div>
         </label>
       </label>
@@ -594,6 +650,7 @@ const ProjectMainContent: React.FC<{
   onRefetchProjects: () => void;
   isEditProjectLoading: boolean;
   isDeleteProjectLoading: boolean;
+  isColorProjectLoading: boolean;
 }> = (props) => {
   const projectsData = props.projectsData;
   const { mutate: editDescription, isLoading: isEditDescriptionLoading } = api.projects.edit.useMutation({
@@ -655,6 +712,7 @@ const ProjectMainContent: React.FC<{
             projectName={projectsData[props.selectedProjectIndex]?.name}
             isDeleteProjectLoading={props.isDeleteProjectLoading}
             isEditProjectLoading={props.isEditProjectLoading}
+            isColorProjectLoading={props.isColorProjectLoading}
           />
           :
           <></>
@@ -686,6 +744,7 @@ const ProjectMainContent: React.FC<{
               projectName={projectsData[props.selectedProjectIndex]?.name}
               isEditProjectLoading={props.isEditProjectLoading}
               isDeleteProjectLoading={props.isDeleteProjectLoading}
+              isColorProjectLoading={props.isColorProjectLoading}
             />
             :
             <></>
@@ -1011,6 +1070,7 @@ const ActionIconsComponent: React.FC<{
   projectName: string | undefined;
   currentSort: OrderBy | undefined;
   isDeleteProjectLoading: boolean;
+  isColorProjectLoading: boolean;
   isEditProjectLoading: boolean;
 }> = (props) => {
   const [windowWidth] = useWindowSize()
@@ -1060,6 +1120,16 @@ const ActionIconsComponent: React.FC<{
                 currentSort={props.currentSort}
                 projectId={props.projectId}
               />
+            </SingleActionIcon>
+            <SingleActionIcon
+              tooltipName="Customize colors"
+            >
+              {
+                props.isColorProjectLoading ? <LoadingIndicator isSmall showInstantly /> :
+                  <label htmlFor="color-project-modal" className="cursor-pointer">
+                    <BiColorFill size={26} />
+                  </label>
+              }
             </SingleActionIcon>
             <SingleActionIcon
               tooltipName="Edit Project"

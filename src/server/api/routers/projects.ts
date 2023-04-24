@@ -62,6 +62,8 @@ export const projectsRouter = createTRPCRouter({
       "ratingAsc"
     ]).nullish(),
     projectId: z.string().trim().min(1),
+    textColor: z.string().regex(/^#[0-9a-f]{6}$/i).nullish(),
+    backgroundColor: z.string().regex(/^#[0-9a-f]{6}$/i).nullish(),
   })).mutation(async ({ ctx, input }) => {
     return await ctx.prisma.project.updateMany({
       data: {
@@ -69,6 +71,8 @@ export const projectsRouter = createTRPCRouter({
         description: input.newDescription,
         message: input.newMessage,
         orderBy: input.newOrderBy || undefined,
+        textColor: input.textColor,
+        backgroundColor: input.backgroundColor,
       },
       where: {
         id: input.projectId,
