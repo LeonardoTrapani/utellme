@@ -119,9 +119,9 @@ const Home: NextPage = () => {
   const [projectPrimaryColorValue, setProjectPrimaryColorValue] = useState<string | null>(null)
 
   useEffect(() => {
-    setProjectTextColorValue(projects?.[selectedProjectIndex]?.primaryColor || null);
+    setProjectTextColorValue(projects?.[selectedProjectIndex]?.textColor || null);
     setProjectBackgroundColorValue(projects?.[selectedProjectIndex]?.backgroundColor || null);
-    setProjectPrimaryColorValue(projects?.[selectedProjectIndex]?.textColor || null);
+    setProjectPrimaryColorValue(projects?.[selectedProjectIndex]?.primaryColor || null);
   }, [projects, selectedProjectIndex])
 
   useEffect(() => {
@@ -411,6 +411,7 @@ const ColorProjectModalBody: React.FC<{
   setProjectTextColorValue: (value: string | null) => void;
   setProjectTitleColorValue: (value: string | null) => void;
 }> = (props) => {
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   return (
     <div className="flex flex-col gap-4">
       <input disabled className="hidden" /> {/*necessary to avoid bugs of text color input automatically focusing*/}
@@ -424,26 +425,40 @@ const ColorProjectModalBody: React.FC<{
           props.setProjectTitleColorValue(null);
         }}
       />
-      <PickColorRow
-        text="Text Color"
-        currentColor={props.projectTextColorValue}
-        onReset={() => {
-          props.setProjectTextColorValue(null);
+      {
+        isAdvancedOpen &&
+        <>
+          <p className="text-sm text-gray-500">Double check the preview in both themes to make sure that all the content is visible in all cases</p>
+          <PickColorRow
+            text="Text Color"
+            currentColor={props.projectTextColorValue}
+            onReset={() => {
+              props.setProjectTextColorValue(null);
+            }}
+            onColorChange={(value) => {
+              props.setProjectTextColorValue(value)
+            }}
+          />
+          <PickColorRow
+            text="Background Color"
+            currentColor={props.projectBackgroundColorValue}
+            onColorChange={(value) => {
+              props.setProjectBackgroundColorValue(value)
+            }}
+            onReset={() => {
+              props.setProjectBackgroundColorValue(null);
+            }}
+          />
+        </>
+      }
+      <button
+        className="text-end link text-sm"
+        onClick={() => {
+          setIsAdvancedOpen((prev) => !prev)
         }}
-        onColorChange={(value) => {
-          props.setProjectTextColorValue(value)
-        }}
-      />
-      <PickColorRow
-        text="Background Color"
-        currentColor={props.projectBackgroundColorValue}
-        onColorChange={(value) => {
-          props.setProjectBackgroundColorValue(value)
-        }}
-        onReset={() => {
-          props.setProjectBackgroundColorValue(null);
-        }}
-      />
+      >
+        {isAdvancedOpen ? 'close advanced options' : 'open advanced options'}
+      </button>
       <div className="divider" />
       <div className="border rounded-lg aspect-video">
         <button className="h-full w-full btn btn-ghost">show preview</button>
