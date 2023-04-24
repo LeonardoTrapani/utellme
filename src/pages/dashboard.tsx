@@ -92,7 +92,7 @@ const Home: NextPage = () => {
         [
           { propertyName: "projectId", propertyMessage: "Project ID" },
           { propertyName: "newTextColor", propertyMessage: "New Text Color" },
-          { propertyName: "newTitleColor", propertyMessage: "New Title Color" },
+          { propertyName: "newPrimaryColor", propertyMessage: "New Primary Color" },
           { propertyName: "newBackgroundColor", propertyMessage: "New Background Color" },
         ]
       )
@@ -116,12 +116,12 @@ const Home: NextPage = () => {
 
   const [projectTextColorValue, setProjectTextColorValue] = useState<string | null>(null)
   const [projectBackgroundColorValue, setProjectBackgroundColorValue] = useState<string | null>(null)
-  const [projectTitleColorValue, setProjectTitleColorValue] = useState<string | null>(null)
+  const [projectPrimaryColorValue, setProjectPrimaryColorValue] = useState<string | null>(null)
 
   useEffect(() => {
-    setProjectTextColorValue(projects?.[selectedProjectIndex]?.textColor || null);
+    setProjectTextColorValue(projects?.[selectedProjectIndex]?.primaryColor || null);
     setProjectBackgroundColorValue(projects?.[selectedProjectIndex]?.backgroundColor || null);
-    setProjectTitleColorValue(projects?.[selectedProjectIndex]?.titleColor || null);
+    setProjectPrimaryColorValue(projects?.[selectedProjectIndex]?.textColor || null);
   }, [projects, selectedProjectIndex])
 
   useEffect(() => {
@@ -175,7 +175,7 @@ const Home: NextPage = () => {
       projectId: projectId,
       newBackgroundColor: projectBackgroundColorValue,
       newTextColor: projectTextColorValue,
-      newTitleColor: projectTitleColorValue,
+      newPrimaryColor: projectPrimaryColorValue,
     })
   }
 
@@ -245,10 +245,10 @@ const Home: NextPage = () => {
                 >
                   <ColorProjectModalBody
                     projectBackgroundColorValue={projectBackgroundColorValue}
-                    projectTitleColorValue={projectTitleColorValue}
+                    projectTitleColorValue={projectPrimaryColorValue}
                     projectTextColorValue={projectTextColorValue}
                     setProjectBackgroundColorValue={(value) => setProjectBackgroundColorValue(value)}
-                    setProjectTitleColorValue={(value) => setProjectTitleColorValue(value)}
+                    setProjectTitleColorValue={(value) => setProjectPrimaryColorValue(value)}
                     setProjectTextColorValue={(value) => setProjectTextColorValue(value)}
                   />
                 </Modal>
@@ -835,7 +835,7 @@ const ProjectMainContent: React.FC<{
           <h1
             className="text-3xl font-bold"
             style={{
-              color: projectsData[props.selectedProjectIndex]?.titleColor || ""
+              color: projectsData[props.selectedProjectIndex]?.primaryColor || ""
             }}
           >{projectsData[props.selectedProjectIndex]?.name}</h1>
           {
@@ -878,7 +878,7 @@ const ProjectMainContent: React.FC<{
                     feedbacksData={feedbacksData}
                     sortingMethod={projectsData[props.selectedProjectIndex]?.orderBy}
                     shouldSort={isFeedbacksFetching && !!feedbacksData}
-                    primaryColor={projectsData[props.selectedProjectIndex]?.titleColor}
+                    primaryColor={projectsData[props.selectedProjectIndex]?.primaryColor}
                   />
                   :
                   <NoFeedbackComponent
@@ -1492,7 +1492,7 @@ const ProjectComponent: React.FC<{
       <a
         className={`${props.isActive ? "active bg-primary" : ""}`}
         style={{
-          backgroundColor: props.isActive ? props.project.titleColor || "" : ""
+          backgroundColor: props.isActive ? props.project.primaryColor || "" : ""
         }}
         onClick={() => props.onPress(props.index)}
       >

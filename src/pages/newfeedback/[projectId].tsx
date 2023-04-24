@@ -157,7 +157,7 @@ type PublicProjectInfoType = {
   message: string | null;
   backgroundColor: string | null;
   textColor: string | null;
-  titleColor: string | null;
+  primaryColor: string | null;
 } | null | undefined
 
 const MainGetFeedbackContent: React.FC<{
@@ -202,7 +202,7 @@ const MainGetFeedbackContent: React.FC<{
       <div className="divider mt-2 mb-2" />
       <div className={`h-10 items-center w-min m-auto rounded-xl mb-2 ${props.ratingHasError ? "border-error border-2" : ""}`}>
         <SelectRatingComponent
-          ratingColor={props.publicProjectInfo?.titleColor || undefined}
+          ratingColor={props.publicProjectInfo?.primaryColor || undefined}
           rating={props.currentRating}
           onRatingChange={(rating) => {
             props.setRating(rating);
@@ -257,7 +257,7 @@ const GetFeedbackTitle: React.FC<{
         <h1
           className="text-4xl font-bold"
           style={{
-            color: props.publicProjectInfo?.titleColor || "",
+            color: props.publicProjectInfo?.primaryColor || "",
           }}
         >{props.publicProjectInfo?.name || "my project"}</h1>
         {
@@ -278,7 +278,7 @@ const FeedbackCompletedPage: React.FC<{
       <h1 className="text-2xl"><span
         className={`font-semibold`}>
         <span style={{
-          color: props.publicProjectInfo?.titleColor || undefined
+          color: props.publicProjectInfo?.primaryColor || undefined
         }}>Thank you </span></span>for the feedback!</h1>
       <div className="text-center">
         <h3>powered by</h3>
