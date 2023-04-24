@@ -111,12 +111,12 @@ const Home: NextPage = () => {
   const [editProjectMessageValue, setEditProjectMessageValue] = useState('');
   const [editProjectNameHasError, setEditProjectNameHasError] = useState(false);
 
-  const [projectTextColorValue, setProjectTextColorValue] = useState<string | undefined>(undefined)
-  const [projectBackgroundColorValue, setProjectBackgroundColorValue] = useState<string | undefined>(undefined)
+  const [projectTextColorValue, setProjectTextColorValue] = useState<string | null>(null)
+  const [projectBackgroundColorValue, setProjectBackgroundColorValue] = useState<string | null>(null)
 
   useEffect(() => {
-    setProjectTextColorValue(projects?.[selectedProjectIndex]?.textColor || undefined);
-    setProjectBackgroundColorValue(projects?.[selectedProjectIndex]?.backgroundColor || undefined);
+    setProjectTextColorValue(projects?.[selectedProjectIndex]?.textColor || null);
+    setProjectBackgroundColorValue(projects?.[selectedProjectIndex]?.backgroundColor || null);
   }, [projects, selectedProjectIndex])
 
   useEffect(() => {
@@ -396,10 +396,10 @@ const DeleteProjectModal: React.FC<{
 }
 
 const ColorProjectModalBody: React.FC<{
-  projectBackgroundColorValue: string | undefined;
-  projectTextColorValue: string | undefined;
-  setProjectBackgroundColorValue: (value: string | undefined) => void;
-  setProjectTextColorValue: (value: string | undefined) => void;
+  projectBackgroundColorValue: string | null;
+  projectTextColorValue: string | null;
+  setProjectBackgroundColorValue: (value: string | null) => void;
+  setProjectTextColorValue: (value: string | null) => void;
 }> = (props) => {
   return (
     <div className="flex flex-col gap-4">
@@ -408,7 +408,7 @@ const ColorProjectModalBody: React.FC<{
         text="Text Color"
         currentColor={props.projectTextColorValue}
         onReset={() => {
-          props.setProjectTextColorValue(undefined);
+          props.setProjectTextColorValue(null);
         }}
         onColorChange={(value) => {
           props.setProjectTextColorValue(value)
@@ -421,7 +421,7 @@ const ColorProjectModalBody: React.FC<{
           props.setProjectBackgroundColorValue(value)
         }}
         onReset={() => {
-          props.setProjectBackgroundColorValue(undefined);
+          props.setProjectBackgroundColorValue(null);
         }}
       />
       <div className="divider" />
@@ -434,7 +434,7 @@ const ColorProjectModalBody: React.FC<{
 
 const PickColorRow: React.FC<{
   text: string;
-  currentColor: string | undefined;
+  currentColor: string | null;
   onColorChange: (color: string) => void;
   onReset: () => void;
 }> = (props) => {
@@ -448,7 +448,7 @@ const PickColorRow: React.FC<{
             className="block red-50 rounded-full w-9 h-9 border cursor-pointer hover:scale-110 transition-all"
             tabIndex={0}
             style={{
-              backgroundColor: props.currentColor
+              backgroundColor: props.currentColor || undefined
             }}
           >
             {
@@ -467,7 +467,7 @@ const PickColorRow: React.FC<{
               onChange={(color) => {
                 props.onColorChange(color.hex);
               }}
-              color={props.currentColor}
+              color={props.currentColor || undefined}
             />
           </div>
         </div>
