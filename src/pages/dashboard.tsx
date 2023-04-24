@@ -90,7 +90,10 @@ const Home: NextPage = () => {
         "Something went wrong editing the project.",
         e.data?.zodError?.fieldErrors,
         [
-          { propertyName: "projectId", propertyMessage: "Project ID" }
+          { propertyName: "projectId", propertyMessage: "Project ID" },
+          { propertyName: "newTextColor", propertyMessage: "New Text Color" },
+          { propertyName: "newTitleColor", propertyMessage: "New Title Color" },
+          { propertyName: "newBackgroundColor", propertyMessage: "New Background Color" },
         ]
       )
     }
@@ -113,10 +116,12 @@ const Home: NextPage = () => {
 
   const [projectTextColorValue, setProjectTextColorValue] = useState<string | null>(null)
   const [projectBackgroundColorValue, setProjectBackgroundColorValue] = useState<string | null>(null)
+  const [projectTitleColorValue, setProjectTitleColorValue] = useState<string | null>(null)
 
   useEffect(() => {
     setProjectTextColorValue(projects?.[selectedProjectIndex]?.textColor || null);
     setProjectBackgroundColorValue(projects?.[selectedProjectIndex]?.backgroundColor || null);
+    setProjectTitleColorValue(projects?.[selectedProjectIndex]?.titleColor || null);
   }, [projects, selectedProjectIndex])
 
   useEffect(() => {
@@ -168,8 +173,9 @@ const Home: NextPage = () => {
 
     void editColorProject({
       projectId: projectId,
-      backgroundColor: projectBackgroundColorValue,
-      textColor: projectTextColorValue,
+      newBackgroundColor: projectBackgroundColorValue,
+      newTextColor: projectTextColorValue,
+      newTitleColor: projectTitleColorValue,
     })
   }
 
@@ -239,8 +245,10 @@ const Home: NextPage = () => {
                 >
                   <ColorProjectModalBody
                     projectBackgroundColorValue={projectBackgroundColorValue}
+                    projectTitleColorValue={projectTitleColorValue}
                     projectTextColorValue={projectTextColorValue}
                     setProjectBackgroundColorValue={(value) => setProjectBackgroundColorValue(value)}
+                    setProjectTitleColorValue={(value) => setProjectTitleColorValue(value)}
                     setProjectTextColorValue={(value) => setProjectTextColorValue(value)}
                   />
                 </Modal>
@@ -398,12 +406,24 @@ const DeleteProjectModal: React.FC<{
 const ColorProjectModalBody: React.FC<{
   projectBackgroundColorValue: string | null;
   projectTextColorValue: string | null;
+  projectTitleColorValue: string | null;
   setProjectBackgroundColorValue: (value: string | null) => void;
   setProjectTextColorValue: (value: string | null) => void;
+  setProjectTitleColorValue: (value: string | null) => void;
 }> = (props) => {
   return (
     <div className="flex flex-col gap-4">
       <input disabled className="hidden" /> {/*necessary to avoid bugs of text color input automatically focusing*/}
+      <PickColorRow
+        text="Title Color"
+        currentColor={props.projectTitleColorValue}
+        onColorChange={(value) => {
+          props.setProjectTitleColorValue(value)
+        }}
+        onReset={() => {
+          props.setProjectTitleColorValue(null);
+        }}
+      />
       <PickColorRow
         text="Text Color"
         currentColor={props.projectTextColorValue}
