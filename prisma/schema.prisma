@@ -26,6 +26,10 @@ model Project {
   id                 String     @id @default(cuid())
   name               String     @db.VarChar(75)
   description        String?
+  message            String?
+  backgroundColor    String?
+  textColor          String?
+  primaryColor       String?
   userId             String
   user               User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   feedbacks          Feedback[]

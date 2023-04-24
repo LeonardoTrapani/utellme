@@ -87,13 +87,34 @@ const NewFeedbackPage: NextPage = () => {
     }
   }, [projectDoesNotExist])
 
+  useEffect(() => {
+    if (!document) return;
+    const htmlElement = document.getElementsByTagName("html")[0] as HTMLElement;
+    if (project?.backgroundColor) {
+      htmlElement.style.backgroundColor = project.backgroundColor;
+    }
+    if (project?.textColor) {
+      htmlElement.style.color = project.textColor;
+    }
+  }, [project])
+  useEffect(() => {
+    return () => {
+      if (!document) return;
+      const htmlElement = document.getElementsByTagName("html")[0] as HTMLElement;
+      htmlElement.style.backgroundColor = "";
+      htmlElement.style.color = "";
+    }
+  }, [])
+
   return (
     <>
       <Head>
         <title>{project?.name || "uTellMe"}</title>
         <meta name="description" content={`Give feedback to ${project?.name || "my prject"} with uTellMe`} />
       </Head>
-      <main>
+      <main
+        className="min-h-screen"
+      >
         {
           isProjectLoading || isCreateFeedbackLoading ?
             <div className="flex items-center justify-center h-screen">
@@ -103,8 +124,7 @@ const NewFeedbackPage: NextPage = () => {
               (
                 !hasGivenFeedback ?
                   <MainGetFeedbackContent
-                    projectName={project?.name}
-                    projectDescription={project?.description}
+                    publicProjectInfo={project}
                     currentRating={rating}
                     setRating={(rating) => {
                       setRating(rating);
@@ -120,7 +140,9 @@ const NewFeedbackPage: NextPage = () => {
                     contentHasError={contentHasError}
                     ratingHasError={ratingHasError}
                   /> :
-                  <FeedbackCompletedPage />
+                  <FeedbackCompletedPage
+                    publicProjectInfo={project}
+                  />
               )
         }
       </main >
@@ -128,9 +150,18 @@ const NewFeedbackPage: NextPage = () => {
   )
 }
 
+type PublicProjectInfoType = {
+  id: string;
+  name: string;
+  description: string | null;
+  message: string | null;
+  backgroundColor: string | null;
+  textColor: string | null;
+  primaryColor: string | null;
+} | null | undefined
+
 const MainGetFeedbackContent: React.FC<{
-  projectName: string | undefined;
-  projectDescription: string | null | undefined;
+  publicProjectInfo: PublicProjectInfoType;
   currentRating: number | undefined;
   onSubmitFeedback: () => void;
   setRating: (rating: number) => void;
@@ -142,7 +173,7 @@ const MainGetFeedbackContent: React.FC<{
 }> = (props) => {
   const [textAreaPlaceHolder, setTextAreaPlaceHolder] = useState("This is my feedback about this project");
   useEffect(() => {
-    const projectName = props.projectName || "this project";
+    const projectName = props.publicProjectInfo?.name || "this project";
     if (!props.currentRating) {
       setTextAreaPlaceHolder(`What did I like about ${projectName}? What can be improved?`);
     }
@@ -161,20 +192,22 @@ const MainGetFeedbackContent: React.FC<{
     if (props.currentRating === 5) {
       setTextAreaPlaceHolder(`I loved ${projectName} because...`);
     }
-  }, [props.currentRating, props.projectName]);
+  }, [props.currentRating, props.publicProjectInfo?.name]);
 
   return (
-    <div className="max-w-xl md:max-w-3xl m-auto my-4 p-4 rounded-xl">
-      <GetFeedbackTitle projectName={props.projectName} projectDescription={props.projectDescription} />
+    <div
+      className="max-w-xl md:max-w-3xl m-auto p-4 rounded-xl"
+    >
+      <GetFeedbackTitle publicProjectInfo={props.publicProjectInfo} />
       <div className="divider mt-2 mb-2" />
       <div className={`h-10 items-center w-min m-auto rounded-xl mb-2 ${props.ratingHasError ? "border-error border-2" : ""}`}>
         <SelectRatingComponent
+          ratingColor={props.publicProjectInfo?.primaryColor || undefined}
           rating={props.currentRating}
           onRatingChange={(rating) => {
             props.setRating(rating);
           }}
         />
-        {/*props.ratingHasError && <span className="text-error text-center align-middle">please select a rating</span>*/}
       </div>
       <form>
         <div className="form-control gap-4">
@@ -186,7 +219,7 @@ const MainGetFeedbackContent: React.FC<{
           <div className="grid gap-4 md:grid-cols-2">
             <Input
               name="Title"
-              placeholder={`My opinion about ${props.projectName || "this project"}`}
+              placeholder={`My opinion about ${props.publicProjectInfo?.name || "this project"}`}
               onChange={props.setFeedbackTitle}
               optional
               maxLength={50}
@@ -204,23 +237,32 @@ const MainGetFeedbackContent: React.FC<{
           <button className="btn" type="button" onClick={props.onSubmitFeedback}>submit feedback</button>
         </div>
       </form>
-    </div>
+    </div >
 
   )
 }
 
 const GetFeedbackTitle: React.FC<{
-  projectName: string | undefined;
-  projectDescription: string | undefined | null;
+  publicProjectInfo: PublicProjectInfoType;
 }> = (props) => {
   return (
-    <div className="grid">
+    <div
+      className="grid"
+    >
       <div>
-        <h3 className="text-xl"><span className="text-primary">Tell me&nbsp;</span>your feedback about</h3>
-        <h1 className="text-4xl font-bold">{props.projectName || "my project"}</h1>
         {
-          props.projectDescription &&
-          <p className="italic max-h-40 overflow-auto">{props.projectDescription}</p>
+          props.publicProjectInfo?.message &&
+          <p className="italic max-h-40 overflow-auto">{props.publicProjectInfo.message}</p>
+        }
+        <h1
+          className="text-4xl font-bold"
+          style={{
+            color: props.publicProjectInfo?.primaryColor || "",
+          }}
+        >{props.publicProjectInfo?.name || "my project"}</h1>
+        {
+          props.publicProjectInfo?.description &&
+          <p className="italic max-h-40 overflow-auto">{props.publicProjectInfo.description}</p>
         }
       </div>
     </div>
@@ -228,13 +270,19 @@ const GetFeedbackTitle: React.FC<{
 }
 
 
-const FeedbackCompletedPage = () => {
+const FeedbackCompletedPage: React.FC<{
+  publicProjectInfo: PublicProjectInfoType;
+}> = (props) => {
   return (
     <div className="flex h-screen justify-center items-center flex-col gap-10">
-      <h1 className="text-2xl"><span className="text-primary font-semibold">Thank you </span>for the feedback!</h1>
+      <h1 className="text-2xl"><span
+        className={`font-semibold`}>
+        <span style={{
+          color: props.publicProjectInfo?.primaryColor || undefined
+        }}>Thank you </span></span>for the feedback!</h1>
       <div className="text-center">
         <h3>powered by</h3>
-        <UTellMeComponentButton hasText/>
+        <UTellMeComponentButton hasText />
       </div>
     </div>
   )

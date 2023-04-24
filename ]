@@ -24,9 +24,8 @@ import { countLines, timeSinceNow, toastTrpcError } from "~/utils/functions";
 import { SwitchComponent } from "~/components/SwitchComponent";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import Modal, { ModalActionButton } from "~/components/Modal";
-import { ChromePicker } from "react-color";
 import Image from "next/image";
+import Modal, { ModalActionButton } from "~/components/Modal";
 
 const Home: NextPage = () => {
   const { status: sessionStatus } = useSession();
@@ -81,7 +80,7 @@ const Home: NextPage = () => {
     }
   })
 
-  const { mutate: editColorProject, isLoading: isColorProjectLoading } = api.projects.edit.useMutation({
+  const { mutate: colorProject, isLoading: isColorProjectLoading } = api.projects.edit.useMutation({
     onSuccess: () => {
       void refetchProjects();
     },
@@ -90,10 +89,7 @@ const Home: NextPage = () => {
         "Something went wrong editing the project.",
         e.data?.zodError?.fieldErrors,
         [
-          { propertyName: "projectId", propertyMessage: "Project ID" },
-          { propertyName: "newTextColor", propertyMessage: "New Text Color" },
-          { propertyName: "newPrimaryColor", propertyMessage: "New Primary Color" },
-          { propertyName: "newBackgroundColor", propertyMessage: "New Background Color" },
+          { propertyName: "projectId", propertyMessage: "Project ID" }
         ]
       )
     }
@@ -114,14 +110,12 @@ const Home: NextPage = () => {
   const [editProjectMessageValue, setEditProjectMessageValue] = useState('');
   const [editProjectNameHasError, setEditProjectNameHasError] = useState(false);
 
-  const [projectTextColorValue, setProjectTextColorValue] = useState<string | null>(null)
-  const [projectBackgroundColorValue, setProjectBackgroundColorValue] = useState<string | null>(null)
-  const [projectPrimaryColorValue, setProjectPrimaryColorValue] = useState<string | null>(null)
+  const [projectTextColorValue, setProjectTextColorValue] = useState<string | undefined>(undefined)
+  const [projectBackgroundColorValue, setProjectBackgroundColorValue] = useState<string | undefined>(undefined)
 
   useEffect(() => {
-    setProjectTextColorValue(projects?.[selectedProjectIndex]?.textColor || null);
-    setProjectBackgroundColorValue(projects?.[selectedProjectIndex]?.backgroundColor || null);
-    setProjectPrimaryColorValue(projects?.[selectedProjectIndex]?.primaryColor || null);
+    setProjectTextColorValue(projects?.[selectedProjectIndex]?.textColor || undefined);
+    setProjectBackgroundColorValue(projects?.[selectedProjectIndex]?.backgroundColor || undefined);
   }, [projects, selectedProjectIndex])
 
   useEffect(() => {
@@ -165,18 +159,6 @@ const Home: NextPage = () => {
     });
     const element = document.getElementById('edit-project-modal') as HTMLInputElement;
     element.checked = false;
-  }
-
-  const handleEditColorProject = () => {
-    const projectId = projects?.[selectedProjectIndex]?.id;
-    if (!projectId) return;
-
-    void editColorProject({
-      projectId: projectId,
-      newBackgroundColor: projectBackgroundColorValue,
-      newTextColor: projectTextColorValue,
-      newPrimaryColor: projectPrimaryColorValue,
-    })
   }
 
   return (
@@ -237,7 +219,9 @@ const Home: NextPage = () => {
                     modalId: "color-project-modal",
                   }}
                   confirmButton={{
-                    onClick: handleEditColorProject,
+                    onClick: () => {
+                      //
+                    },
                     text: "confirm",
                     modalId: "color-project-modal",
                     isPrimary: true,
@@ -245,10 +229,8 @@ const Home: NextPage = () => {
                 >
                   <ColorProjectModalBody
                     projectBackgroundColorValue={projectBackgroundColorValue}
-                    projectTitleColorValue={projectPrimaryColorValue}
                     projectTextColorValue={projectTextColorValue}
                     setProjectBackgroundColorValue={(value) => setProjectBackgroundColorValue(value)}
-                    setProjectTitleColorValue={(value) => setProjectPrimaryColorValue(value)}
                     setProjectTextColorValue={(value) => setProjectTextColorValue(value)}
                   />
                 </Modal>
@@ -404,115 +386,57 @@ const DeleteProjectModal: React.FC<{
 }
 
 const ColorProjectModalBody: React.FC<{
-  projectBackgroundColorValue: string | null;
-  projectTextColorValue: string | null;
-  projectTitleColorValue: string | null;
-  setProjectBackgroundColorValue: (value: string | null) => void;
-  setProjectTextColorValue: (value: string | null) => void;
-  setProjectTitleColorValue: (value: string | null) => void;
+  projectBackgroundColorValue: string | undefined;
+  projectTextColorValue: string | undefined;
+  setProjectBackgroundColorValue: (value: string | undefined) => void;
+  setProjectTextColorValue: (value: string | undefined) => void;
 }> = (props) => {
-  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   return (
     <div className="flex flex-col gap-4">
       <input disabled className="hidden" /> {/*necessary to avoid bugs of text color input automatically focusing*/}
       <PickColorRow
-        text="Title Color"
-        currentColor={props.projectTitleColorValue}
-        onColorChange={(value) => {
-          props.setProjectTitleColorValue(value)
-        }}
-        onReset={() => {
-          props.setProjectTitleColorValue(null);
-        }}
+        text="Text Color"
+        currentColor={props.projectTextColorValue}
       />
-      {
-        isAdvancedOpen &&
-        <>
-          <p className="text-sm text-gray-500">Double check the preview in both themes to make sure that all the content is visible in all cases</p>
-          <PickColorRow
-            text="Text Color"
-            currentColor={props.projectTextColorValue}
-            onReset={() => {
-              props.setProjectTextColorValue(null);
-            }}
-            onColorChange={(value) => {
-              props.setProjectTextColorValue(value)
-            }}
-          />
-          <PickColorRow
-            text="Background Color"
-            currentColor={props.projectBackgroundColorValue}
-            onColorChange={(value) => {
-              props.setProjectBackgroundColorValue(value)
-            }}
-            onReset={() => {
-              props.setProjectBackgroundColorValue(null);
-            }}
-          />
-        </>
-      }
-      <button
-        className="text-end link text-sm"
-        onClick={() => {
-          setIsAdvancedOpen((prev) => !prev)
-        }}
-      >
-        {isAdvancedOpen ? 'close advanced options' : 'open advanced options'}
-      </button>
-      <div className="divider" />
-      <div className="border rounded-lg aspect-video">
-        <button className="h-full w-full btn btn-ghost">show preview</button>
-      </div>
+      <PickColorRow
+        text="Background Color"
+        currentColor={props.projectBackgroundColorValue}
+      />
     </div>
   )
 };
 
 const PickColorRow: React.FC<{
   text: string;
-  currentColor: string | null;
-  onColorChange: (color: string) => void;
-  onReset: () => void;
+  currentColor: string | undefined;
 }> = (props) => {
   return (
     <div className="flex gap-2 justify-between items-center">
       <p className="font-semibold">{props.text}</p>
       <div className="flex items-center gap-2">
-        <div className="dropdown dropdown-end">
-
-          <label
-            className="block red-50 rounded-full w-9 h-9 border cursor-pointer hover:scale-110 transition-all"
-            tabIndex={0}
-            style={{
-              backgroundColor: props.currentColor || undefined
-            }}
-          >
-            {
-              !props.currentColor ?
-                <Image
-                  src="/assets/transparent.png"
-                  alt="transparent background"
-                  height={36}
-                  width={36}
-                  className="block red-50 rounded-full w-9 h-9 border"
-                /> : <></>
-            }
-          </label>
-          <div tabIndex={0} className="dropdown-content shadow">
-            <ChromePicker
-              onChange={(color) => {
-                props.onColorChange(color.hex);
+        {
+          props.currentColor ?
+            <input
+              type="color"
+              value={props.currentColor}
+              className="reset-color-input p-0 m-0 h-10 w-10"
+              onChange={(e) => {
+                console.log(e.currentTarget.value)
               }}
-              color={props.currentColor || undefined}
             />
-          </div>
-        </div>
-        <button onClick={() => {
-          props.onReset();
-        }}>
+            :
+            <Image
+              src="/assets/transparent.jpg"
+              alt="transparent color"
+              width={40}
+              height={40}
+            />
+        }
+        <button>
           <BiReset size={24} className="text-gray-500" />
         </button>
       </div>
-    </div >
+    </div>
 
   )
 }
@@ -847,12 +771,7 @@ const ProjectMainContent: React.FC<{
     <>
       <div className="mb-3 flex">
         <div className="grow">
-          <h1
-            className="text-3xl font-bold"
-            style={{
-              color: projectsData[props.selectedProjectIndex]?.primaryColor || ""
-            }}
-          >{projectsData[props.selectedProjectIndex]?.name}</h1>
+          <h1 className="text-3xl font-bold">{projectsData[props.selectedProjectIndex]?.name}</h1>
           {
             <DescriptionOrAddDescriptionComponent
               projectDescription={projectsData[props.selectedProjectIndex]?.description}
@@ -893,7 +812,6 @@ const ProjectMainContent: React.FC<{
                     feedbacksData={feedbacksData}
                     sortingMethod={projectsData[props.selectedProjectIndex]?.orderBy}
                     shouldSort={isFeedbacksFetching && !!feedbacksData}
-                    primaryColor={projectsData[props.selectedProjectIndex]?.primaryColor}
                   />
                   :
                   <NoFeedbackComponent
@@ -912,18 +830,13 @@ const FeedbackList: React.FC<{
   feedbacksData: Feedback[] | undefined;
   sortingMethod: OrderBy | undefined;
   shouldSort: boolean;
-  primaryColor: string | null | undefined;
 }> = (props) => {
   return (
     <div className="overflow-y-auto">
       <ul className="gap-2 grid md:grid-cols-2 grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4 mb-2 lg:mb-0">
         {
           props.feedbacksData?.map((feedback) => {
-            return <FeedbackComponent
-              key={feedback.id}
-              feedback={feedback}
-              primaryColor={props.primaryColor}
-            />
+            return <FeedbackComponent key={feedback.id} feedback={feedback} />
           })
         }
       </ul>
@@ -1505,10 +1418,7 @@ const ProjectComponent: React.FC<{
   return (
     <li key={props.project.id}>
       <a
-        className={`${props.isActive ? "active bg-primary" : ""}`}
-        style={{
-          backgroundColor: props.isActive ? props.project.primaryColor || "" : ""
-        }}
+        className={`${props.isActive ? "active bg-yellow-500" : ""}`}
         onClick={() => props.onPress(props.index)}
       >
         {props.project.name}
@@ -1517,10 +1427,7 @@ const ProjectComponent: React.FC<{
   )
 }
 
-const FeedbackComponent: React.FC<{
-  feedback: Feedback,
-  primaryColor: string | null | undefined;
-}> = (props) => {
+const FeedbackComponent: React.FC<{ feedback: Feedback }> = (props) => {
   const [isShowMore, setIsShowMore] = useState(false);
   const linesLimit = 6;
   return (
@@ -1528,10 +1435,7 @@ const FeedbackComponent: React.FC<{
       <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between shadow-sm">
         <div>
           <div className="flex justify-between items-start">
-            <StaticRatingComponent
-              rating={props.feedback.rating}
-              primaryColor={props.primaryColor}
-            />
+            <StaticRatingComponent rating={props.feedback.rating} />
             <p className="text-gray-500 leading-3">{timeSinceNow(props.feedback.createdAt)}</p>
           </div>
           {

@@ -2,7 +2,7 @@ import React from "react";
 
 export type ModalButtonProps = {
   modalId: string;
-  children: React.ReactNode;
+  text: string;
   isRed?: boolean;
   onClick?: () => void;
   disableClose?: boolean;
@@ -59,7 +59,7 @@ export const ModalActionButton: React.FC<ModalButtonProps> = (props) => {
     <a onClick={props.onClick}>
       <label htmlFor={!props.disableClose ? props.modalId : 'you are not closing'}
         className={`btn ${props.isPrimary ? 'btn-primary' : ''} ${props.isRed ? 'btn-error' : ''}`}>
-        {props.children}
+        {props.text}
       </label>
     </a>
   )

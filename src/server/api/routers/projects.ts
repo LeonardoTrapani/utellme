@@ -29,6 +29,10 @@ export const projectsRouter = createTRPCRouter({
         name: true,
         description: true,
         id: true,
+        primaryColor: true,
+        textColor: true,
+        backgroundColor: true,
+        message: true,
       }
     })
   }),
@@ -36,12 +40,14 @@ export const projectsRouter = createTRPCRouter({
   create: protectedProcedure.input(z.object({
     name: z.string().trim().min(1).max(75),
     description: z.string().trim().min(1).nullish(),
+    message: z.string().trim().min(1).nullish(),
   })).mutation(async ({ ctx, input }) => {
     return await ctx.prisma.project.create({
       data: {
         userId: ctx.session.user.id,
         name: input.name,
         description: input.description,
+        message: input.message,
       }
     })
   }),
@@ -49,6 +55,7 @@ export const projectsRouter = createTRPCRouter({
   edit: protectedProcedure.input(z.object({
     newName: z.string().trim().min(1).max(75).nullish(),
     newDescription: z.string().trim().nullish(),
+    newMessage: z.string().trim().max(75).nullish(),
     newOrderBy: z.enum([
       "createdAtDesc",
       "createdAtAsc",
@@ -56,12 +63,19 @@ export const projectsRouter = createTRPCRouter({
       "ratingAsc"
     ]).nullish(),
     projectId: z.string().trim().min(1),
+    newTextColor: z.string().regex(/^#[0-9a-f]{6}$/i).nullish(),
+    newBackgroundColor: z.string().regex(/^#[0-9a-f]{6}$/i).nullish(),
+    newPrimaryColor: z.string().regex(/^#[0-9a-f]{6}$/i).nullish(),
   })).mutation(async ({ ctx, input }) => {
     return await ctx.prisma.project.updateMany({
       data: {
         name: input.newName || undefined,
         description: input.newDescription,
+        message: input.newMessage,
         orderBy: input.newOrderBy || undefined,
+        textColor: input.newTextColor,
+        backgroundColor: input.newBackgroundColor,
+        primaryColor: input.newPrimaryColor,
       },
       where: {
         id: input.projectId,
@@ -94,6 +108,10 @@ export const projectsRouter = createTRPCRouter({
         description: true,
         createdAt: true,
         averageRating: true,
+        textColor: true,
+        primaryColor: true,
+        backgroundColor: true,
+        message: true,
       }
     });
     return getInfoResult;
