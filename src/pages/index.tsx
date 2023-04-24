@@ -343,8 +343,8 @@ const FAQ = () => {
             answer="The main problem in getting feedback is actually getting it. If you are asking too many questions, you are going to lose your customer. We want to make it as easy as possible for your user to give you feedback, so that he gives sincere feedback without getting annoyed."
           />
           <FaqQuestion
-            question="Who is going to see the feedback I recieve?"
-            answer="You are going to be able to see all the feedback you recieve in your dashboard. No one else is going to be able to see it. The goal of UTellMe is to get feedback to improve, not to show others what your users think about your project."
+            question="Who is going to see the feedback I receive?"
+            answer="You are going to be able to see all the feedback you receive in your dashboard. No one else is going to be able to see it. The goal of UTellMe is to get feedback to improve, not to show others what your users think about your project."
           />
           <FaqQuestion
             question="Can I use UTellMe on mobile?"
