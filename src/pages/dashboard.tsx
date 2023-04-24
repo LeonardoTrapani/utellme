@@ -162,6 +162,17 @@ const Home: NextPage = () => {
     element.checked = false;
   }
 
+  const handleEditColorProject = () => {
+    const projectId = projects?.[selectedProjectIndex]?.id;
+    if (!projectId) return;
+
+    void editColorProject({
+      projectId: projectId,
+      backgroundColor: projectBackgroundColorValue,
+      textColor: projectTextColorValue,
+    })
+  }
+
   return (
     <>
       <Head>
@@ -220,9 +231,7 @@ const Home: NextPage = () => {
                     modalId: "color-project-modal",
                   }}
                   confirmButton={{
-                    onClick: () => {
-                      //
-                    },
+                    onClick: handleEditColorProject,
                     text: "confirm",
                     modalId: "color-project-modal",
                     isPrimary: true,
