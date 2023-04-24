@@ -1322,12 +1322,6 @@ const ActionIconsComponent: React.FC<{
                 <BiInfoCircle size={26} />
               </label>
             </SingleActionIcon>
-            <SingleActionIcon tooltipName="sort">
-              <DropdownSort
-                currentSort={props.currentSort}
-                projectId={props.projectId}
-              />
-            </SingleActionIcon>
             <SingleActionIcon
               tooltipName="Customize colors"
             >
@@ -1358,6 +1352,12 @@ const ActionIconsComponent: React.FC<{
                   </label>
               }
             </DeleteProjectActionIcon>
+            <SingleActionIcon tooltipName="sort">
+              <DropdownSort
+                currentSort={props.currentSort}
+                projectId={props.projectId}
+              />
+            </SingleActionIcon>
           </>
         )
       }
