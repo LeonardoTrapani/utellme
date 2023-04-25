@@ -34,7 +34,7 @@ const IndexSettings = () => {
     <>
       <Head>
         <title>Settings</title>
-        <meta name="description" content="uTellMe settings" />
+        <meta name="description" content="UTellMe settings" />
       </Head>
       {
         status === "loading" ?
