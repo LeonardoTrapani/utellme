@@ -113,7 +113,7 @@ const NewFeedbackPage: NextPage = () => {
       : (
         project.message
           ?
-          `${project.message}: ${project.name}`
+          `${project.message} ${project.name}`
           :
           `Tell me your opinion about ${project.name}`
       )
