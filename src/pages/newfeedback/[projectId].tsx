@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import Input from "~/components/Input";
 import LoadingIndicator from "~/components/LoadingIndicator";
@@ -106,11 +106,24 @@ const NewFeedbackPage: NextPage = () => {
     }
   }, [])
 
+  const projectDescription = useMemo(() => (
+    !project
+      ?
+      'project not found'
+      : (
+        project.message
+          ?
+          `${project.message}: ${project.name}`
+          :
+          `Tell me your opinion about ${project.name}`
+      )
+  ), [project]);
+
   return (
     <>
       <Head>
-        <title>{project?.name || "uTellMe"}</title>
-        <meta name="description" content={`Give feedback to ${project?.name || "my prject"} with uTellMe`} />
+        <title>{project?.name || "UTellMe"}</title>
+        <meta name="description" content={projectDescription} />
       </Head>
       <main
         className="min-h-screen"
@@ -258,7 +271,7 @@ const GetFeedbackTitle: React.FC<{
       <div>
         {
           props.publicProjectInfo?.message &&
-          <p className="italic max-h-40 overflow-auto">{props.publicProjectInfo.message}</p>
+          <p className="italic max-h-40 overflow-auto leading-5">{props.publicProjectInfo.message}</p>
         }
         <h1
           className="text-4xl font-bold"

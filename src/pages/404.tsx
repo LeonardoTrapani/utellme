@@ -6,8 +6,8 @@ const NotFoundRoute: React.FC = () => {
   return (
     <>
       <Head>
-        <title>uTellMe</title>
-        <meta name="description" content="get free quick and easy feedback with uTellMe" />
+        <title>Page not Found</title>
+        <meta name="description" content="This page of UTellMe wasn't found" />
       </Head>
 
       <NotFoundPage />
