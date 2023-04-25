@@ -1,6 +1,5 @@
 import React from "react";
 import Document, { Html, Head, Main, NextScript } from "next/document";
-import Script from "next/script";
 import Link from "next/link";
 
 export default class MyDocument extends Document {
@@ -30,17 +29,6 @@ export default class MyDocument extends Document {
       </Html>
     );
   }
-}
-
-export const GoogleAdsense: React.FC = () => {
-  return (
-    <Script
-      async
-      data-ad-client="ca-pub-6958470270834145"
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6958470270834145"
-      crossOrigin="anonymous"
-    />
-  )
 }
 
 export const FaviconScripts = () => {
