@@ -197,7 +197,7 @@ const MainGetFeedbackContent: React.FC<{
       setTextAreaPlaceHolder(`I didn't like ${projectName} because...`);
     }
     if (props.currentRating === 3) {
-      setTextAreaPlaceHolder(`I was indifferent ${projectName} because...`);
+      setTextAreaPlaceHolder(`I was indifferent about ${projectName} because...`);
     }
     if (props.currentRating === 4) {
       setTextAreaPlaceHolder(`I liked ${projectName} because...`);
