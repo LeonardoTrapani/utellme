@@ -131,7 +131,7 @@ const NewFeedbackPage: NextPage = () => {
         {
           isProjectLoading || isCreateFeedbackLoading ?
             <div className="flex items-center justify-center h-screen">
-              <LoadingIndicator />
+              <LoadingIndicator color={project?.primaryColor || undefined} />
             </div> :
             (projectDoesNotExist) ? <NotFoundPage /> :
               (

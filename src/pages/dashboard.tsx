@@ -314,6 +314,7 @@ const MainPageContent: React.FC<{
           isEditProjectLoading={props.isEditProjectLoading}
           isColorProjectLoading={props.isColorProjectLoading}
           isDeleteProjectLoading={props.isDeleteProjectLoading}
+          projectPrimaryColor={props.projectsData[props.selectedProjectIndex]?.primaryColor}
         />
       }
       <ProjectMainContent
@@ -706,7 +707,7 @@ const InfoProjectModal: React.FC<{
       <label htmlFor="info-project-modal" className="modal cursor-pointer">
         <label className="modal-box relative">
           {isProjectInfoLoading || !projectInfo ? (
-            <LoadingIndicator />
+            <LoadingIndicator color={projectInfo?.primaryColor || undefined} />
           ) : (
             <div>
               <h2 className="text-xl font-bold">{projectInfo.name}</h2>
@@ -934,6 +935,7 @@ const ProjectMainContent: React.FC<{
             isDeleteProjectLoading={props.isDeleteProjectLoading}
             isEditProjectLoading={props.isEditProjectLoading}
             isColorProjectLoading={props.isColorProjectLoading}
+            projectPrimaryColor={projectsData[props.selectedProjectIndex]?.primaryColor}
           />
           :
           <></>
@@ -957,6 +959,7 @@ const ProjectMainContent: React.FC<{
               projectDescription={projectsData[props.selectedProjectIndex]?.description}
               editDescription={editDescriptionHandler}
               isEditDescriptionLoading={isEditDescriptionLoading}
+              projectColor={projectsData[props.selectedProjectIndex]?.primaryColor}
             />
           }
         </div>
@@ -971,6 +974,7 @@ const ProjectMainContent: React.FC<{
               isEditProjectLoading={props.isEditProjectLoading}
               isDeleteProjectLoading={props.isDeleteProjectLoading}
               isColorProjectLoading={props.isColorProjectLoading}
+              projectPrimaryColor={props.projectsData?.[props.selectedProjectIndex]?.primaryColor}
             />
             :
             <></>
@@ -981,7 +985,7 @@ const ProjectMainContent: React.FC<{
           (
             isFeedbackDataLoading ?
               <div className="h-full w-full flex justify-center items-center">
-                <LoadingIndicator />
+                <LoadingIndicator color={projectsData[props.selectedProjectIndex]?.primaryColor || undefined} />
               </div>
               :
               (
@@ -1035,6 +1039,7 @@ const DescriptionOrAddDescriptionComponent: React.FC<{
   projectDescription: string | null | undefined;
   editDescription: (value: string) => void;
   isEditDescriptionLoading: boolean;
+  projectColor: string | undefined | null;
 }> = (props) => {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [value, setValue] = useState(props.projectDescription || "");
@@ -1064,7 +1069,7 @@ const DescriptionOrAddDescriptionComponent: React.FC<{
 
   if (props.isEditDescriptionLoading) {
     return (
-      <LoadingIndicator isSmall showInstantly />
+      <LoadingIndicator isSmall showInstantly color={props.projectColor || undefined} />
     )
   }
 
@@ -1279,6 +1284,7 @@ const ActionIconsComponent: React.FC<{
   isDeleteProjectLoading: boolean;
   isColorProjectLoading: boolean;
   isEditProjectLoading: boolean;
+  projectPrimaryColor: string | null | undefined;
 }> = (props) => {
   const [windowWidth] = useWindowSize()
   const isSmall = (windowWidth || 0) < 768;
@@ -1326,7 +1332,12 @@ const ActionIconsComponent: React.FC<{
               tooltipName="Customize colors"
             >
               {
-                props.isColorProjectLoading ? <LoadingIndicator isSmall showInstantly /> :
+                props.isColorProjectLoading ?
+                  <LoadingIndicator
+                    isSmall
+                    showInstantly
+                    color={props.projectPrimaryColor || undefined}
+                  /> :
                   <label htmlFor="color-project-modal" className="cursor-pointer">
                     <BiColorFill size={26} />
                   </label>
@@ -1336,7 +1347,13 @@ const ActionIconsComponent: React.FC<{
               tooltipName="Edit Project"
             >
               {
-                props.isEditProjectLoading ? <LoadingIndicator isSmall showInstantly /> :
+                props.isEditProjectLoading ?
+                  <LoadingIndicator
+                    isSmall
+                    showInstantly
+                    color={props.projectPrimaryColor || undefined}
+                  />
+                  :
                   <label htmlFor="edit-project-modal" className="cursor-pointer">
                     <BiEdit size={26} />
                   </label>
@@ -1346,7 +1363,9 @@ const ActionIconsComponent: React.FC<{
               tooltipName="Delete Project"
             >
               {
-                props.isDeleteProjectLoading ? <LoadingIndicator isSmall showInstantly /> :
+                props.isDeleteProjectLoading ?
+                  <LoadingIndicator isSmall showInstantly color={props.projectPrimaryColor || undefined} />
+                  :
                   <label htmlFor="delete-project-modal" className="cursor-pointer">
                     <BiTrash size={26} />
                   </label>
@@ -1356,6 +1375,7 @@ const ActionIconsComponent: React.FC<{
               <DropdownSort
                 currentSort={props.currentSort}
                 projectId={props.projectId}
+                projectPrimaryColor={props.projectPrimaryColor}
               />
             </SingleActionIcon>
           </>
@@ -1373,13 +1393,18 @@ const ActionIconsComponent: React.FC<{
 const DropdownSort: React.FC<{
   currentSort: OrderBy | undefined;
   projectId: string | undefined;
+  projectPrimaryColor: string | null | undefined;
 }> = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   return (
     <div className="dropdown dropdown-end flex">
       <label tabIndex={0} className="cursor-pointer">
         {
-          isLoading ? <LoadingIndicator isSmall showInstantly /> :
+          isLoading ? <LoadingIndicator
+            isSmall
+            showInstantly
+            color={props.projectPrimaryColor || undefined}
+          /> :
             <BiSortAlt2 size={26} />
         }
       </label>
@@ -1528,7 +1553,10 @@ const ProjectDrawerContainer: React.FC<{
           {
             (isNewProjectsLoading) ?
               <div className="flex justify-center">
-                <LoadingIndicator showInstantly />
+                <LoadingIndicator
+                  showInstantly
+                  color={props.projectsData?.[props.selectedProjectIndex]?.primaryColor || undefined}
+                />
               </div>
               :
               props.projectsData?.map((project, i) => {
