@@ -15,7 +15,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <>
-      <GoogleAdsense />
       <Analytics />
       <Toaster toastOptions={{
         style: {
