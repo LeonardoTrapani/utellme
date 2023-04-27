@@ -185,7 +185,7 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>uTellMe</title>
+        <title>UTellMe</title>
         <meta name="description" content="get free quick and easy feedback with uTellMe" />
       </Head>
       <main>
