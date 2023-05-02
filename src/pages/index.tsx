@@ -96,7 +96,7 @@ const LandingDrawer: React.FC<{
 
 const Hero = () => {
   const el = useRef(null);
-  const content = ["business", "speech", "idea", "product"]
+  const content = ["business", "speech", "idea", "product", "event", "lesson", "job"]
   useTyped(el, content)
 
   return (
@@ -332,12 +332,8 @@ const FAQ = () => {
         <h2 className="text-4xl font-bold text-center mb-6">FAQ</h2>
         <ul className="flex flex-col gap-1">
           <FaqQuestion
-            question="How much is it going to cost?"
-            answer="Nothing! Our service is completely free."
-          />
-          <FaqQuestion
             question="What type of projects is UTellMe good for?"
-            answer="UTellMe is good for any type of project: work, speeches, school expositions, freelance jobs, local businesses etc."
+            answer="UTellMe is good for any type of project: work, speeches, school expositions, freelance jobs, local businesses, lessons etc."
           />
           <FaqQuestion
             question="What do I need feedback for?"
@@ -358,6 +354,10 @@ const FAQ = () => {
           <FaqQuestion
             question="How can I share my projects to get feedback?"
             answer="You can use a link or a QR-Code that you can take from your project's dashboard."
+          />
+          <FaqQuestion
+            question="Can I match my brand?"
+            answer="Yes! You can use your Logo, select custom messages and edit the primary color, the text color and the background color for both themes!"
           />
         </ul>
       </div>
