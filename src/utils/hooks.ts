@@ -1,6 +1,26 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState, useLayoutEffect, useEffect } from "react";
+import { useState, useLayoutEffect, useEffect, type MutableRefObject } from "react";
+import Typed from "typed.js";
+
+export const useTyped = (el: MutableRefObject<null>, words: string[]) => {
+  useEffect(() => {
+    const options = {
+      strings: words,
+      typeSpeed: 60,
+      loop: true,
+      backSpeed: 60,
+      backDelay: 1500,
+      shuffle: true,
+    }
+
+    const typed = new Typed(el.current, options)
+
+    return () => {
+      typed.destroy();
+    }
+  }, [el, words])
+}
 
 export const useIsDarkMode = () => {
   const [darkMode, setDarkMode] = useState(false);

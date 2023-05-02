@@ -1,16 +1,17 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Head from "next/head"
 import type { GetServerSidePropsContext } from "next/types";
 import { authOptions } from "~/server/auth";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import Image from "next/image";
-import { useIsDarkMode, useWindowSize } from "~/utils/hooks";
+import { useIsDarkMode, useTyped, useWindowSize } from "~/utils/hooks";
 import { UTellMeComponentButton } from "~/components/UTellMeComponent";
 import { BiMenu } from "react-icons/bi";
 
 const Index: React.FC = () => {
   const [isDrawerOpened, setIsDrawerOpened] = useState(false);
+
   return (
     <>
       <Head>
@@ -94,6 +95,10 @@ const LandingDrawer: React.FC<{
 }
 
 const Hero = () => {
+  const el = useRef(null);
+  const content = ["business", "speech", "idea", "product"]
+  useTyped(el, content)
+
   return (
     <>
       <section className="md:pt-10">
@@ -101,7 +106,7 @@ const Hero = () => {
           <div className="grid max-w-md grid-cols-1 mx-auto md:max-w-full md:items-center md:grid-cols-2 gap-y-12 md:gap-x-16">
             <div className="text-center md:text-left">
               <div className="">
-                <h1 className="text-4xl font-bold sm:text-4xl md:text-5xl">Get <span className="text-primary">Feedback</span><br />in Seconds</h1>
+                <h1 className="text-4xl font-bold sm:text-4xl md:text-5xl">Get <span className="text-primary">Instant</span><br />Feedback for <br />your <span ref={el} className="underline">{content.map((word, i) => { return (`${word}${i === content.length - 1 ? '' : ', '}`) })}</span></h1>
                 <p className="py-6">No one would spend more than one minute giving feedback. Don&apos;t waste the time of your collegues, friends or family and <span className="text-primary font-semibold">actually</span> get feedback with <span className="text-primary font-semibold">UTellMe</span>.</p>
               </div>
               <div>
