@@ -1,16 +1,17 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Head from "next/head"
 import type { GetServerSidePropsContext } from "next/types";
 import { authOptions } from "~/server/auth";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import Image from "next/image";
-import { useIsDarkMode, useWindowSize } from "~/utils/hooks";
+import { useIsDarkMode, useTyped } from "~/utils/hooks";
 import { UTellMeComponentButton } from "~/components/UTellMeComponent";
-import { BiMenu } from "react-icons/bi";
+import { BiMenu, BiPencil, BiQr, BiStar } from "react-icons/bi";
 
 const Index: React.FC = () => {
   const [isDrawerOpened, setIsDrawerOpened] = useState(false);
+
   return (
     <>
       <Head>
@@ -94,6 +95,10 @@ const LandingDrawer: React.FC<{
 }
 
 const Hero = () => {
+  const el = useRef(null);
+  const content = ["business", "speech", "idea", "product", "event", "lesson", "job"]
+  useTyped(el, content)
+
   return (
     <>
       <section className="md:pt-10">
@@ -101,7 +106,7 @@ const Hero = () => {
           <div className="grid max-w-md grid-cols-1 mx-auto md:max-w-full md:items-center md:grid-cols-2 gap-y-12 md:gap-x-16">
             <div className="text-center md:text-left">
               <div className="">
-                <h1 className="text-4xl font-bold sm:text-4xl md:text-5xl">Get <span className="text-primary">Feedback</span><br />in Seconds</h1>
+                <h1 className="text-4xl font-bold sm:text-4xl md:text-5xl">Get <span className="text-primary">Instant</span><br />Feedback for <br />your <span ref={el}>{content.map((word, i) => { return (`${word}${i === content.length - 1 ? '' : ', '}`) })}</span></h1>
                 <p className="py-6">No one would spend more than one minute giving feedback. Don&apos;t waste the time of your collegues, friends or family and <span className="text-primary font-semibold">actually</span> get feedback with <span className="text-primary font-semibold">UTellMe</span>.</p>
               </div>
               <div>
@@ -127,212 +132,62 @@ const Hero = () => {
 
 const ActionButton = () => {
   return (
-    <Link href="/auth/signin" className="btn btn-primary">Start getting feedback</Link>
+    <Link href="/auth/signin" className="btn btn-primary">Start receiving feedback</Link>
   )
 }
 
 const Steps = () => {
-  const [isCustomerSide, setIsCustomerSide] = useState(true);
   return (
-    <section className="max-w-5xl m-auto">
-      <div className="text-center flex flex-col justify-center items-center gap-2">
-        <p className="text-2xl font-semibold">It takes one minute for both</p>
-        <div className="btn-group mb-4">
-          <button
-            className={`btn ${isCustomerSide ? 'btn-active' : ''}`}
-            onClick={() => {
-              setIsCustomerSide(true);
-            }}
-          >
-            your customer
-          </button>
-          <button
-            className={`btn ${!isCustomerSide ? 'btn-active' : ''}`}
-            onClick={() => {
-              setIsCustomerSide(false);
-            }}
-          >
-            you
-          </button>
-        </div>
-        {isCustomerSide ? <YourCustomerPov /> : <YourPov />}
+    <div className="flex flex-col gap-4">
+      <h3 className="text-xl font-semibold text-center">How does it work</h3>
+      <div className="flex justify-center">
+        <p className="text-center mx-4 max-w-lg text-md">No questionaries or long questions. Just get the general opinions. This lets you actually get feedback, and doesn&apos;t annoy your customers.</p>
       </div>
-    </section>
-  )
-}
-
-const YourPov = () => {
-  const isDarkModeVar = useIsDarkMode();
-  return (
-    <StepsRowContainer>
-      <StepsRow i={1} title="Create an account">
-        {
-          !isDarkModeVar ?
-            <div className="relative">
-              <Image
-                height={0}
-                width={0}
-                className="w-full px-10"
-                src="/assets/login illustration.svg"
-                alt="utellme login illustration"
-              />
-            </div>
-            :
-            <div className="relative">
-              <Image
-                height={0}
-                width={0}
-                className="w-full px-10"
-                src="/assets/login illustration-dark.svg"
-                alt="utellme login illustration"
-              />
-            </div>
-        }
-      </StepsRow>
-      <StepsRow i={2} title="Create a project">
-        {
-
-          !isDarkModeVar ?
-            <div>
-              <Image
-                src="/assets/create-project-illustration.svg"
-                alt="utellme create project illustration"
-                width={0}
-                height={0}
-                className="w-full px-10"
-              />
-            </div>
-            :
-            <div>
-              <Image
-                src="/assets/create-project-illustration-dark.svg"
-                alt="utellme create project illustration"
-                width={0}
-                height={0}
-                className="w-full px-10"
-              />
-            </div>
-        }
-      </StepsRow>
-      <StepsRow i={3} title="Share the link / QR-Code">
-        <Image
-          src="/assets/utellme-mockup-03.png"
-          alt="utellme main screen when you can share the link or the qr code"
-          height={0}
-          width={0}
-          sizes="100vh"
-          className="w-64"
-        />
-      </StepsRow>
-      <StepsRow i={4} title="View your feedback">
-        <Image
-          src="/assets/utellme-mockup-01.png"
-          alt="utellme view feedback page"
-          height={0}
-          width={0}
-          sizes="100vh"
-          className="w-64"
-        />
-      </StepsRow>
-    </StepsRowContainer>
-  )
-}
-const YourCustomerPov = () => {
-  const isDarkModeVar = useIsDarkMode();
-  return (
-    <StepsRowContainer>
-      <StepsRow i={1} title="Scan the QR-Code">
-        {
-          !isDarkModeVar ?
-            <Image
-              src="/assets/scan qr illustration.svg"
-              alt="utellme scan qr illustration"
-              height={0}
-              width={0}
-              className="w-full px-10"
-            />
-            :
-            <Image
-              src="/assets/scan qr illustration-dark.svg"
-              alt="utellme scan qr illustration"
-              height={0}
-              width={0}
-              className="w-full px-10"
-            />
-        }
-      </StepsRow>
-      <StepsRow i={2} title="Write the feedback">
-        <Image
-          src="/assets/utellme-mockup-02.png"
-          alt="give feedback from utellme mockup"
-          className="w-64 h-auto"
-          height={0}
-          width={0}
-          sizes="100vh"
-        />
-      </StepsRow>
-    </StepsRowContainer>
-  )
-}
-
-const StepsRowContainer: React.FC<{
-  children: React.ReactNode
-}> = (props) => {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-      {props.children}
+      <div className="flex flex-col md:flex-row justify-center items-center max-w-3xl m-auto gap-3 md:gap-7" id="faq">
+        <Step i={1} text="Scan the QR-Code" bold>
+          <BiQr size={26} style={{
+            color: '#1F2937'
+          }} />
+        </Step>
+        <Step i={2} text="Write the feedback" bold >
+          <BiPencil size={26} style={{
+            color: '#1F2937'
+          }} />
+        </Step>
+        <Step i={3} text="Submit the opinion" bold>
+          <BiStar size={26} style={{
+            color: '#1F2937'
+          }} />
+        </Step>
+      </div>
     </div>
   )
-}
-const StepsRow: React.FC<{
-  title: string;
-  children: React.ReactNode;
+};
+const Step: React.FC<{
   i: number;
+  text: string;
+  children: React.ReactNode;
+  bold?: boolean
 }> = (props) => {
-  const isOdd = props.i % 2 !== 0;
-  const [windowWidth] = useWindowSize()
-  const isSmall = (windowWidth || 0) < 768;
-  const invert = isOdd && !isSmall;
   return (
-    <>
-      {
-        invert &&
-        <div className="relative m-auto">
-          {props.children}
-        </div>
-      }
-      <div className="flex items-center gap-2 m-auto flex-1">
-        <div
-          className="font-bold text-3xl md:text-4xl bg-primary w-11 md:w-14 aspect-square flex justify-center items-center rounded-full">
-          <p className="text-slate-200">
-            {props.i}
-          </p>
-        </div>
-        <h3 className="font-semibold text-2xl md:text-3xl lg:text-3xl text-center">{props.title}</h3>
+    <div className="flex text-center m-auto items-center gap-2">
+      <div className="bg-primary rounded-full p-2">
+        {props.children}
       </div>
-      {
-        !invert &&
-        <div className="relative m-auto">
-          {props.children}
-        </div>
-      }
-    </>
+      <p className={`${props.bold ? 'font-semibold' : ''}`}>{props.text}</p>
+    </div>
   )
 }
 
 const FAQ = () => {
   return (
-    <section className="px-6" id="faq">
+    <section className="px-6">
       <div className="max-w-4xl m-auto">
         <h2 className="text-4xl font-bold text-center mb-6">FAQ</h2>
         <ul className="flex flex-col gap-1">
           <FaqQuestion
-            question="How much is it going to cost?"
-            answer="Nothing! Our service is completely free."
-          />
-          <FaqQuestion
             question="What type of projects is UTellMe good for?"
-            answer="UTellMe is good for any type of project: work, speeches, school expositions, freelance jobs, local businesses etc."
+            answer="UTellMe is good for any type of project: work, speeches, school expositions, freelance jobs, local businesses, lessons etc."
           />
           <FaqQuestion
             question="What do I need feedback for?"
@@ -353,6 +208,10 @@ const FAQ = () => {
           <FaqQuestion
             question="How can I share my projects to get feedback?"
             answer="You can use a link or a QR-Code that you can take from your project's dashboard."
+          />
+          <FaqQuestion
+            question="Can I match my brand?"
+            answer="Yes! You can use your Logo, select custom messages and edit the primary color, the text color and the background color for both themes!"
           />
         </ul>
       </div>
