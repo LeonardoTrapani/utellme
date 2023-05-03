@@ -7,7 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useIsDarkMode, useTyped } from "~/utils/hooks";
 import { UTellMeComponentButton } from "~/components/UTellMeComponent";
-import { BiMenu } from "react-icons/bi";
+import { BiMenu, BiPencil, BiQr, BiStar } from "react-icons/bi";
 
 const Index: React.FC = () => {
   const [isDrawerOpened, setIsDrawerOpened] = useState(false);
@@ -132,18 +132,33 @@ const Hero = () => {
 
 const ActionButton = () => {
   return (
-    <Link href="/auth/signin" className="btn btn-primary">Start getting feedback</Link>
+    <Link href="/auth/signin" className="btn btn-primary">Start receiving feedback</Link>
   )
 }
 
 const Steps = () => {
   return (
-    <div>
-      <h3 className="text-xl font-semibold text-center">It takes one minute</h3>
-      <div className="grid grid-cols-3">
-        <Step i={1} text="Scan the QR-Code" />
-        <Step i={2} text="Write the feedback" />
-        <Step i={3} text="Submit" />
+    <div className="flex flex-col gap-4">
+      <h3 className="text-xl font-semibold text-center">How does it work</h3>
+      <div className="flex justify-center">
+        <p className="text-center mx-4 max-w-lg text-md">No questionaries or long questions. Just get the general opinions. This lets you actually get feedback, and doesn&apos;t annoy your customers.</p>
+      </div>
+      <div className="flex flex-col md:flex-row justify-center items-center max-w-3xl m-auto gap-3 md:gap-7" id="faq">
+        <Step i={1} text="Scan the QR-Code" bold>
+          <BiQr size={26} style={{
+            color: '#1F2937'
+          }} />
+        </Step>
+        <Step i={2} text="Write the feedback" bold >
+          <BiPencil size={26} style={{
+            color: '#1F2937'
+          }} />
+        </Step>
+        <Step i={3} text="Submit the opinion" bold>
+          <BiStar size={26} style={{
+            color: '#1F2937'
+          }} />
+        </Step>
       </div>
     </div>
   )
@@ -151,18 +166,22 @@ const Steps = () => {
 const Step: React.FC<{
   i: number;
   text: string;
+  children: React.ReactNode;
+  bold?: boolean
 }> = (props) => {
   return (
-    <div className="flex text-center m-auto">
-      <p>{props.i}</p>
-      <p>{props.text}</p>
+    <div className="flex text-center m-auto items-center gap-2">
+      <div className="bg-primary rounded-full p-2">
+        {props.children}
+      </div>
+      <p className={`${props.bold ? 'font-semibold' : ''}`}>{props.text}</p>
     </div>
   )
 }
 
 const FAQ = () => {
   return (
-    <section className="px-6" id="faq">
+    <section className="px-6">
       <div className="max-w-4xl m-auto">
         <h2 className="text-4xl font-bold text-center mb-6">FAQ</h2>
         <ul className="flex flex-col gap-1">
