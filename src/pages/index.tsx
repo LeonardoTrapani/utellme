@@ -5,7 +5,7 @@ import { authOptions } from "~/server/auth";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import Image from "next/image";
-import { useIsDarkMode, useTyped, useWindowSize } from "~/utils/hooks";
+import { useIsDarkMode, useTyped } from "~/utils/hooks";
 import { UTellMeComponentButton } from "~/components/UTellMeComponent";
 import { BiMenu } from "react-icons/bi";
 
@@ -137,191 +137,26 @@ const ActionButton = () => {
 }
 
 const Steps = () => {
-  const [isCustomerSide, setIsCustomerSide] = useState(true);
   return (
-    <section className="max-w-5xl m-auto">
-      <div className="text-center flex flex-col justify-center items-center gap-2">
-        <p className="text-2xl font-semibold">It takes one minute for both</p>
-        <div className="btn-group mb-4">
-          <button
-            className={`btn ${isCustomerSide ? 'btn-active' : ''}`}
-            onClick={() => {
-              setIsCustomerSide(true);
-            }}
-          >
-            your customer
-          </button>
-          <button
-            className={`btn ${!isCustomerSide ? 'btn-active' : ''}`}
-            onClick={() => {
-              setIsCustomerSide(false);
-            }}
-          >
-            you
-          </button>
-        </div>
-        {isCustomerSide ? <YourCustomerPov /> : <YourPov />}
+    <div>
+      <h3 className="text-xl font-semibold text-center">It takes one minute</h3>
+      <div className="grid grid-cols-3">
+        <Step i={1} text="Scan the QR-Code" />
+        <Step i={2} text="Write the feedback" />
+        <Step i={3} text="Submit" />
       </div>
-    </section>
-  )
-}
-
-const YourPov = () => {
-  const isDarkModeVar = useIsDarkMode();
-  return (
-    <StepsRowContainer>
-      <StepsRow i={1} title="Create an account">
-        {
-          !isDarkModeVar ?
-            <div className="relative">
-              <Image
-                height={0}
-                width={0}
-                className="w-full px-10"
-                src="/assets/login illustration.svg"
-                alt="utellme login illustration"
-              />
-            </div>
-            :
-            <div className="relative">
-              <Image
-                height={0}
-                width={0}
-                className="w-full px-10"
-                src="/assets/login illustration-dark.svg"
-                alt="utellme login illustration"
-              />
-            </div>
-        }
-      </StepsRow>
-      <StepsRow i={2} title="Create a project">
-        {
-
-          !isDarkModeVar ?
-            <div>
-              <Image
-                src="/assets/create-project-illustration.svg"
-                alt="utellme create project illustration"
-                width={0}
-                height={0}
-                className="w-full px-10"
-              />
-            </div>
-            :
-            <div>
-              <Image
-                src="/assets/create-project-illustration-dark.svg"
-                alt="utellme create project illustration"
-                width={0}
-                height={0}
-                className="w-full px-10"
-              />
-            </div>
-        }
-      </StepsRow>
-      <StepsRow i={3} title="Share the link / QR-Code">
-        <Image
-          src="/assets/utellme-mockup-03.png"
-          alt="utellme main screen when you can share the link or the qr code"
-          height={0}
-          width={0}
-          sizes="100vh"
-          className="w-64"
-        />
-      </StepsRow>
-      <StepsRow i={4} title="View your feedback">
-        <Image
-          src="/assets/utellme-mockup-01.png"
-          alt="utellme view feedback page"
-          height={0}
-          width={0}
-          sizes="100vh"
-          className="w-64"
-        />
-      </StepsRow>
-    </StepsRowContainer>
-  )
-}
-const YourCustomerPov = () => {
-  const isDarkModeVar = useIsDarkMode();
-  return (
-    <StepsRowContainer>
-      <StepsRow i={1} title="Scan the QR-Code">
-        {
-          !isDarkModeVar ?
-            <Image
-              src="/assets/scan qr illustration.svg"
-              alt="utellme scan qr illustration"
-              height={0}
-              width={0}
-              className="w-full px-10"
-            />
-            :
-            <Image
-              src="/assets/scan qr illustration-dark.svg"
-              alt="utellme scan qr illustration"
-              height={0}
-              width={0}
-              className="w-full px-10"
-            />
-        }
-      </StepsRow>
-      <StepsRow i={2} title="Write the feedback">
-        <Image
-          src="/assets/utellme-mockup-02.png"
-          alt="give feedback from utellme mockup"
-          className="w-64 h-auto"
-          height={0}
-          width={0}
-          sizes="100vh"
-        />
-      </StepsRow>
-    </StepsRowContainer>
-  )
-}
-
-const StepsRowContainer: React.FC<{
-  children: React.ReactNode
-}> = (props) => {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-      {props.children}
     </div>
   )
-}
-const StepsRow: React.FC<{
-  title: string;
-  children: React.ReactNode;
+};
+const Step: React.FC<{
   i: number;
+  text: string;
 }> = (props) => {
-  const isOdd = props.i % 2 !== 0;
-  const [windowWidth] = useWindowSize()
-  const isSmall = (windowWidth || 0) < 768;
-  const invert = isOdd && !isSmall;
   return (
-    <>
-      {
-        invert &&
-        <div className="relative m-auto">
-          {props.children}
-        </div>
-      }
-      <div className="flex items-center gap-2 m-auto flex-1">
-        <div
-          className="font-bold text-3xl md:text-4xl bg-primary w-11 md:w-14 aspect-square flex justify-center items-center rounded-full">
-          <p className="text-slate-200">
-            {props.i}
-          </p>
-        </div>
-        <h3 className="font-semibold text-2xl md:text-3xl lg:text-3xl text-center">{props.title}</h3>
-      </div>
-      {
-        !invert &&
-        <div className="relative m-auto">
-          {props.children}
-        </div>
-      }
-    </>
+    <div className="flex text-center m-auto">
+      <p>{props.i}</p>
+      <p>{props.text}</p>
+    </div>
   )
 }
 
