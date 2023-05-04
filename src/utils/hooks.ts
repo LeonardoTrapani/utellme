@@ -10,8 +10,7 @@ export const useTyped = (el: MutableRefObject<null>, words: string[]) => {
       typeSpeed: 60,
       loop: true,
       backSpeed: 60,
-      backDelay: 1500,
-      shuffle: true,
+      backDelay: 1650,
     }
 
     const typed = new Typed(el.current, options)
