@@ -1607,7 +1607,7 @@ const ProjectComponent: React.FC<{
   return (
     <li key={props.project.id}>
       <a
-        className={`${props.isActive ? "active bg-primary" : ""}`}
+        className={`${props.isActive ? "active bg-primary font-semibold" : "font-medium"}`}
         style={{
           backgroundColor: props.isActive ? props.project.primaryColor || "" : ""
         }}
@@ -1627,7 +1627,7 @@ const FeedbackComponent: React.FC<{
   const linesLimit = 6;
   return (
     <li key={props.feedback.id}>
-      <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between shadow-sm">
+      <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between shadow-sm dark:bg-base-300">
         <div>
           <div className="flex justify-between items-start">
             <StaticRatingComponent
