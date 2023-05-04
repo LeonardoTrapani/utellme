@@ -53,7 +53,7 @@ const Header: React.FC<{
 }> = (props) => {
   const isDarkModeVar = useIsDarkMode();
   return (
-    <div className={`z-10 fixed w-full bg-gradient-to-b ${isDarkModeVar ? 'from-[#2B303B] via-[#2B303B]' : 'from-[#FFFFFF] via-[#FFFFFF]'}`}>
+    <div className={`z-10 fixed w-full bg-gradient-to-b ${isDarkModeVar ? 'from-[#212121] via-[#212121]' : 'from-[#FFFFFF] via-[#FFFFFF]'}`}>
       <header className="relative py-4 md:py-6">
         <div className="px-10 mx-auto max-w-7xl from-blue-500 to-transparent sm:px-6 md:px-8 flex justify-between">
           <UTellMeComponentButton hasText />

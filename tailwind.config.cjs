@@ -15,7 +15,7 @@ const config = {
           "primary": "#eab308",
         },
         dark: {
-          ...require("daisyui/src/colors/themes")["[data-theme=dark]"],
+          ...require("daisyui/src/colors/themes")["[data-theme=halloween]"],
           "primary": "#eab308",
         },
       }
