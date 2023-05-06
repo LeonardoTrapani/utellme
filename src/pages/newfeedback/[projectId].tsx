@@ -1,6 +1,5 @@
-import type { NextPage } from "next";
+import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import Input from "~/components/Input";
@@ -10,8 +9,38 @@ import { SelectRatingComponent, } from "~/components/RatingComponent";
 import { UTellMeComponentButton } from "~/components/UTellMeComponent";
 import { api } from "~/utils/api";
 import { toastTrpcError } from "~/utils/functions";
+import { createServerSideHelpers } from '@trpc/react-query/server';
+import { appRouter } from "~/server/api/root";
+import superjson from 'superjson';
+import { prisma } from "~/server/db";
 
-const NewFeedbackPage: NextPage = () => {
+export async function getServerSideProps(
+  context: GetServerSidePropsContext<{ projectId: string }>,
+) {
+  const helpers = createServerSideHelpers({
+    router: appRouter,
+    ctx: {
+      prisma: prisma,
+      session: null
+    },
+    transformer: superjson, // optional - adds superjson serialization
+  });
+  const projectId = context.params?.projectId;
+  // check if post exists - `prefetch` doesn't change its behavior
+  // based on the result of the query (including throws), so if we
+  // want to change the logic here in gSSP, we need to use `fetch`.
+  const projectPublicInfo = await helpers.projects.getPublicInfo.fetch({ projectId: projectId ?? "-1" })
+
+  return {
+    props: {
+      trpcState: helpers.dehydrate(),
+      notFound: !projectPublicInfo,
+      projectId: projectId ?? "-1"
+    },
+  };
+}
+
+const NewFeedbackPage = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [hasGivenFeedback, setHasGivenFeedback] = React.useState(false);
 
   const [rating, setRating] = React.useState<number | undefined>(undefined);
@@ -22,14 +51,11 @@ const NewFeedbackPage: NextPage = () => {
   const [contentHasError, setContentHasError] = React.useState(false);
   const [ratingHasError, setRatingHasError] = React.useState(false);
 
-  const router = useRouter();
-  const projectId = Array.isArray(router.query.projectId) ? router.query.projectId[0] : router.query.projectId;
-
   const { data: project, isLoading: isProjectLoading } =
     api.projects.getPublicInfo.useQuery({
-      projectId: projectId || "-1"
+      projectId: props.projectId
     }, {
-      enabled: !!projectId,
+      enabled: !!props.projectId,
       onError: (e) => {
         toastTrpcError(
           "Something went wrong fetching the project.",
@@ -80,7 +106,7 @@ const NewFeedbackPage: NextPage = () => {
     })
   }
 
-  const projectDoesNotExist = !isProjectLoading && !project;
+  const projectDoesNotExist = props.notFound;
   useEffect(() => {
     if (projectDoesNotExist) {
       toast.error('Project not found... is the link wrong?')

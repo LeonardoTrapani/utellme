@@ -51,9 +51,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 const Header: React.FC<{
   onHeaderOpen: () => void;
 }> = (props) => {
-  const isDarkModeVar = useIsDarkMode();
   return (
-    <div className={`z-10 fixed w-full bg-gradient-to-b ${isDarkModeVar ? 'from-[#1A1A1A] via-[#1A1A1A]' : 'from-[#FFFFFF] via-[#FFFFFF]'}`}>
+    <div className={`z-10 fixed w-full bg-gradient-to-b dark:from-base-300 dark:via-base-300 from-white via-white`}>
       <header className="relative py-4 md:py-6">
         <div className="px-10 mx-auto max-w-7xl from-blue-500 to-transparent sm:px-6 md:px-8 flex justify-between">
           <UTellMeComponentButton hasText />
