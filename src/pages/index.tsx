@@ -95,6 +95,7 @@ const LandingDrawer: React.FC<{
 }
 
 const Hero = () => {
+  const isDark = useIsDarkMode();
   const el = useRef(null);
   const content = ["product", "business", "speech", "idea", "event", "lesson", "job"]
 
@@ -115,7 +116,7 @@ const Hero = () => {
               </div>
             </div>
             <Image
-              src="/assets/utellme-3d-mockup.png"
+              src={!isDark ? "/assets/utellme3dlight.png" : "/assets/utellme3ddark.png"}
               className="w-52 md:w-72 lg:w-80 h-auto m-auto"
               height={0}
               width={0}
