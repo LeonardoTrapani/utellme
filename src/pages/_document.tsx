@@ -6,7 +6,7 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html
-        className="bg-base-100 scroll-smooth overflow-x-hidden break-words whitespace-pre-wrap"
+        className="bg-base-100 dark:bg-base-300 scroll-smooth overflow-x-hidden break-words whitespace-pre-wrap"
       >
         <Head>
           <FaviconScripts />
