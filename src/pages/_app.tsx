@@ -7,7 +7,6 @@ import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
 import { Toaster } from "react-hot-toast";
-import Script from "next/script";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -18,8 +17,8 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <Analytics />
       <Toaster toastOptions={{
         style: {
-          background: "#252932",
-          color: "#A7ADBA",
+          background: "#1A1A1A",
+          color: "#D3D3D3",
         }
       }}
       />
@@ -29,15 +28,5 @@ const MyApp: AppType<{ session: Session | null }> = ({
     </>
   );
 };
-
-export const GoogleAdsense: React.FC = () => {
-  return (
-    <Script
-      async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6958470270834145"
-      crossOrigin="anonymous"
-    />
-  )
-}
 
 export default api.withTRPC(MyApp);

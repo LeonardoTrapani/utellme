@@ -11,7 +11,7 @@ export const UTellMeComponentButton: React.FC<{
   return (
     <Link
       className={
-        `select-none cursor-pointer btn btn-ghost px-1 m-0 rounded-xl transition-all normal-case`
+        `select-none cursor-pointer btn btn-ghost px-1 m-0 rounded-xl transition-all normal-case border-none`
       }
       href={{
         pathname: '/'

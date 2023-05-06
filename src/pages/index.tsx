@@ -53,7 +53,7 @@ const Header: React.FC<{
 }> = (props) => {
   const isDarkModeVar = useIsDarkMode();
   return (
-    <div className={`z-10 fixed w-full bg-gradient-to-b ${isDarkModeVar ? 'from-[#2B303B] via-[#2B303B]' : 'from-[#FFFFFF] via-[#FFFFFF]'}`}>
+    <div className={`z-10 fixed w-full bg-gradient-to-b ${isDarkModeVar ? 'from-[#212121] via-[#212121]' : 'from-[#FFFFFF] via-[#FFFFFF]'}`}>
       <header className="relative py-4 md:py-6">
         <div className="px-10 mx-auto max-w-7xl from-blue-500 to-transparent sm:px-6 md:px-8 flex justify-between">
           <UTellMeComponentButton hasText />
@@ -68,7 +68,7 @@ const Header: React.FC<{
             <a className="link link-hover" href="#discover-more">Discover More</a>
             <a className="link link-hover" href="#faq">Faq</a>
             <div className="divider divider-horizontal mx-0" />
-            <Link href="/auth/signin" className="btn btn-primary btn-outline">Sign in</Link>
+            <Link href="/auth/signin" className="btn btn-primary">Sign in</Link>
           </div>
         </div>
       </header>
@@ -84,7 +84,7 @@ const LandingDrawer: React.FC<{
       <div className={`p-10 md:hidden w-72 h-screen top-0 fixed z-50 bg-base-300 transition-all duration-300 ${props.isOpened ? 'left-0' : '-left-full'}`}>
         <UTellMeComponentButton hasText />
         <div className="flex flex-col py-4 gap-2">
-          <Link href="/auth/signin" className="btn btn-primary btn-sm btn-outline">Sign in</Link>
+          <Link href="/auth/signin" className="btn btn-primary btn-sm">Sign in</Link>
           <div className="divider my-0" />
           <a className="link link-hover" href="#discover-more">Discover More</a>
           <a className="link link-hover" href="#faq">Faq</a>
@@ -226,7 +226,7 @@ const FaqQuestion: React.FC<{
 }> = (props) => {
   return (
     <li>
-      <div className="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box">
+      <div className="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box dark:border-zinc-700">
         <input type="checkbox" />
         <div className="collapse-title text-lg font-medium">
           {props.question}

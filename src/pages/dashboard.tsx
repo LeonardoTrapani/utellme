@@ -437,7 +437,7 @@ const ColorProjectModalBody: React.FC<{
       {
         isAdvancedOpen &&
         <>
-          <p className="text-sm text-gray-500">We don&apos;t suggest changing this settings. Double check the preview of both themes to make sure that all the content is visible in all cases</p>
+          <p className="text-sm text-zinc-500">We don&apos;t suggest changing this settings. Double check the preview of both themes to make sure that all the content is visible in all cases</p>
 
           <PickColorRow
             text="Text Color"
@@ -472,7 +472,7 @@ const ColorProjectModalBody: React.FC<{
       <div className="divider my-0" />
       <div>
         <h4 className="text-center mb-1 text-lg font-semibold uppercase">Preview</h4>
-        <div className="border rounded-lg">
+        <div className="border rounded-lg dark:border-zinc-600">
           <ColorPreview
             projectTitle={props.projectName}
             projectDescription={props.projectDescription}
@@ -528,7 +528,7 @@ const PickColorRow: React.FC<{
         <button onClick={() => {
           props.onReset();
         }}>
-          <BiReset size={24} className="text-gray-500" />
+          <BiReset size={24} className="text-zinc-500" />
         </button>
       </div>
     </div >
@@ -578,7 +578,7 @@ const EditProjectModal: React.FC<{
             />
             <textarea
               placeholder={props.projectDescription}
-              className={`mt-2 textarea textarea-bordered textarea-md w-full placeholder:text-gray-500`}
+              className={`mt-2 textarea textarea-bordered textarea-md w-full placeholder:text-zinc-500`}
               onChange={(e) => props.setDescriptionInputValue(e.target.value)}
               rows={6}
               value={props.descriptionInputValue}
@@ -626,15 +626,25 @@ const ColorPreview: React.FC<{
     setIsDarkTheme(isDarkModeInitial);
   }, [isDarkModeInitial])
 
+  const backgroundColorDark = "#212121";
+  const backgroundColorLight = "#FFFFFF";
+  const textColorLight = "#212936";
+  const textColorDark = "#D3D3D3";
+  const labelColorDark = "#1A1A1A";
+  const labelColorLight = "#E5E6E6";
+  const inputInternalColorLight = "#D8D8DB";
+  const inputBorderColorDark = "#4A4A4A";
+  const inputBorderColorLight = "#D8D8DB";
+
   return (
     <div
-      className={`h-full relative rounded-md p-6`}
+      className={`h-full relative rounded-xl p-6`}
       style={{
         backgroundColor: props.backgroundColor || (
-          isDarkTheme ? '#2B303B' : '#FFFFFF'
+          isDarkTheme ? backgroundColorDark : backgroundColorLight
         ),
         color: props.textColor || (
-          isDarkTheme ? '#A7ADBA' : '#212936'
+          isDarkTheme ? textColorDark : textColorLight
         )
       }}
     >
@@ -680,13 +690,13 @@ const ColorPreview: React.FC<{
           name="Preview"
           value="This is a preview"
           placeholder="This is a preview"
-          labelColor={isDarkTheme ? '#21252D' : '#E5E6E6'}
+          labelColor={isDarkTheme ? labelColorDark : labelColorLight}
           borderColor={
-            isDarkTheme ? '#252932' : '#F2F2F2'
+            isDarkTheme ? inputBorderColorDark : inputBorderColorLight
           }
           internalColor={props.backgroundColor ?
             props.backgroundColor :
-            isDarkTheme ? '#252932' : '#F2F2F2'
+            isDarkTheme ? backgroundColorDark : inputInternalColorLight
           }
         />
       </div>
@@ -1079,7 +1089,7 @@ const DescriptionOrAddDescriptionComponent: React.FC<{
       className={
         `
         input input-ghost w-full p-0 m-0 outline-none 
-        b-0 outline-0 focus:outline-0 h-6 placeholder-gray-500 
+        b-0 outline-0 focus:outline-0 h-6 placeholder-zinc-500 
         italic none resize-none overflow-hidden
         `
       }
@@ -1157,7 +1167,7 @@ const ProjectInstructionsRow: React.FC<{
 }> = (props) => {
   return (
     <button
-      className="gap-1 btn"
+      className="gap-1 btn border"
       onClick={props.onPress}
     >
       {props.children}
@@ -1432,7 +1442,7 @@ const closeDropdown = () => {
 
 const OpenMenuButton = () => {
   return (
-    <div className="flex bg-base-300 rounded-full items-center justify-center pl-2 pr-1 text-center py-1">
+    <div className="flex bg-base-300 rounded-full items-center justify-center pl-2 pr-1 text-center py-1 dark:border dark:border-zinc-700">
       <p className="align-middle font-bold">MENU</p>
       <BiMenu className="text-primary" size={24} />
     </div>
@@ -1607,10 +1617,10 @@ const ProjectComponent: React.FC<{
   return (
     <li key={props.project.id}>
       <a
-        className={`${props.isActive ? "active bg-primary" : ""}`}
         style={{
           backgroundColor: props.isActive ? props.project.primaryColor || "" : ""
         }}
+        className={`${props.isActive ? "active bg-primary font-semibold" : "font-medium"}`}
         onClick={() => props.onPress(props.index)}
       >
         {props.project.name}
@@ -1627,14 +1637,14 @@ const FeedbackComponent: React.FC<{
   const linesLimit = 6;
   return (
     <li key={props.feedback.id}>
-      <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between shadow-sm">
+      <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between shadow-sm dark:bg-base-300 dark:border dark:border-zinc-700">
         <div>
           <div className="flex justify-between items-start">
             <StaticRatingComponent
               rating={props.feedback.rating}
               primaryColor={props.primaryColor}
             />
-            <p className="text-gray-500 leading-3">{timeSinceNow(props.feedback.createdAt)}</p>
+            <p className="text-zinc-500 leading-3">{timeSinceNow(props.feedback.createdAt)}</p>
           </div>
           {
             props.feedback.title ?
@@ -1651,25 +1661,25 @@ const FeedbackComponent: React.FC<{
             countLines(props.feedback.content) > linesLimit &&
             <div className="flex">
               <button
-                className="link text-sm ml-auto"
+                className="link text-sm ml-auto text-zinc-500"
                 onClick={() => {
                   setIsShowMore((prev) => !prev)
                 }}
               >
-                {isShowMore ? 'show less' : 'show more'}
+                {isShowMore ? 'less' : 'more'}
               </button>
             </div>
           }
         </div>
         {
           props.feedback.author ?
-            <p className="text-gray-500 text-right italic align-text-bottom">
+            <p className="text-zinc-500 text-right italic align-text-bottom">
               {props.feedback.author}
             </p>
             :
             <div className="flex flex-row justify-end items-center gap-1">
-              <BsIncognito className="text-gray-500" />
-              <p className="text-gray-500 text-right italic align-text-bottom">
+              <BsIncognito className="text-zinc-500" />
+              <p className="text-zinc-500 text-right italic align-text-bottom">
                 Anonymous
               </p>
             </div>

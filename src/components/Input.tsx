@@ -31,13 +31,13 @@ const Input: React.FC<{
         {
           ((props.maxLength) && (props.maxLength - currentLength < 15))
             ?
-            <label className="text-start text-sm italic text-gray-500 ml-2 select-none">
+            <label className="text-start text-sm italic text-zinc-500 ml-2 select-none">
               {currentLength}/{props.maxLength}
             </label>
             :
             <div></div>
         }
-        {props.optional && <label className="text-end text-sm italic text-gray-500 mr-2 select-none">optional</label>}
+        {props.optional && <label className="text-end text-sm italic text-zinc-500 mr-2 select-none">optional</label>}
       </div>
       <label
         className={!props.labelDisabled ? "input-group" : ""}
@@ -61,7 +61,7 @@ const Input: React.FC<{
               props.onSubmit(e);
             }
           }}
-          className={`input ${!props.borderHidden || !props.isGhost ? 'input-bordered' : ''} placeholder:text-gray-500 w-full ${props.isError ? "input-error" : ""} ${props.maxLength && (props.maxLength <= currentLength) ? "input-warning" : ""} ${props.inputClassName || ""} ${props.isGhost ? 'font-bold input-ghost b-0 outline-none outline-0 focus:outline-0 b-none bg-red p-0 m-0' : ''}`}
+          className={`input ${!props.borderHidden || !props.isGhost ? 'input-bordered' : ''} placeholder:text-zinc-500 w-full ${props.isError ? "input-error" : ""} ${props.maxLength && (props.maxLength <= currentLength) ? "input-warning" : ""} ${props.inputClassName || ""} ${props.isGhost ? 'font-bold input-ghost b-0 outline-none outline-0 focus:outline-0 b-none bg-red p-0 m-0' : ''}`}
           onChange={(e) => {
             if (props.onChange) {
               props.onChange(e.target.value);
@@ -120,7 +120,7 @@ export const TextArea: React.FC<{
   return (
     <textarea
       placeholder="Description"
-      className={`${props.autoAdjustHeight ? 'overflow-hidden' : ''} textarea ${props.bordered ? 'textarea-bordered' : ''} textarea-md w-full placeholder:text-gray-500 ${props.hasError ? "border-red-400 textarea-error" : ""} ${props.isGhost ? 'input input-ghost w-full p-0 m-0 outline-none b-0 outline-0 focus:outline-0 placeholder-gray-500 italic none resize-none overflow-hidden text-lg' : ''} ${props.className || ""} `}
+      className={`${props.autoAdjustHeight ? 'overflow-hidden' : ''} textarea ${props.bordered ? 'textarea-bordered' : ''} textarea-md w-full placeholder:text-zinc-500 ${props.hasError ? "border-red-400 textarea-error" : ""} ${props.isGhost ? 'input input-ghost w-full p-0 m-0 outline-none b-0 outline-0 focus:outline-0 placeholder-zinc-500 italic none resize-none overflow-hidden text-lg' : ''} ${props.className || ""} `}
       ref={descriptionTextAreaRef}
       onChange={(e) => { if (props.onChange) props.onChange(e.target.value) }}
       value={props.value}
