@@ -110,13 +110,13 @@ const SingleRatingComponent: React.FC<{
     <a
       className={`
         ${`${active ? 'text-primary' :
-          typeof (props.isDark !== undefined)
+          !!props.isDark
             ? props.isDark === true
               ?
-              'text-gray-400'
+              'text-content'
               :
-              'text-base-content'
-            : 'text-gray-400 dark:text-base-content'
+              'text-gray-400'
+            : 'text-gray-400 dark:text-content'
         } select-none`}
         cursor-pointer ${props.isBig ? 'text-4xl' : ''} self-center
         `

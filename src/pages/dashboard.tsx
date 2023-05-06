@@ -626,15 +626,25 @@ const ColorPreview: React.FC<{
     setIsDarkTheme(isDarkModeInitial);
   }, [isDarkModeInitial])
 
+  const backgroundColorDark = "#212121";
+  const backgroundColorLight = "#FFFFFF";
+  const textColorLight = "#212936";
+  const textColorDark = "#D3D3D3";
+  const labelColorDark = "#1A1A1A";
+  const labelColorLight = "#E5E6E6";
+  const inputInternalColorLight = "#D8D8DB";
+  const inputBorderColorDark = "#4A4A4A";
+  const inputBorderColorLight = "#D8D8DB";
+
   return (
     <div
       className={`h-full relative rounded-md p-6`}
       style={{
         backgroundColor: props.backgroundColor || (
-          isDarkTheme ? '#2B303B' : '#FFFFFF'
+          isDarkTheme ? backgroundColorDark : backgroundColorLight
         ),
         color: props.textColor || (
-          isDarkTheme ? '#A7ADBA' : '#212936'
+          isDarkTheme ? textColorDark : textColorLight
         )
       }}
     >
@@ -680,13 +690,13 @@ const ColorPreview: React.FC<{
           name="Preview"
           value="This is a preview"
           placeholder="This is a preview"
-          labelColor={isDarkTheme ? '#21252D' : '#E5E6E6'}
+          labelColor={isDarkTheme ? labelColorDark : labelColorLight}
           borderColor={
-            isDarkTheme ? '#252932' : '#F2F2F2'
+            isDarkTheme ? inputBorderColorDark : inputBorderColorLight
           }
           internalColor={props.backgroundColor ?
             props.backgroundColor :
-            isDarkTheme ? '#252932' : '#F2F2F2'
+            isDarkTheme ? backgroundColorDark : inputInternalColorLight
           }
         />
       </div>
@@ -1157,7 +1167,7 @@ const ProjectInstructionsRow: React.FC<{
 }> = (props) => {
   return (
     <button
-      className="gap-1 btn"
+      className="gap-1 btn border"
       onClick={props.onPress}
     >
       {props.children}
@@ -1432,7 +1442,7 @@ const closeDropdown = () => {
 
 const OpenMenuButton = () => {
   return (
-    <div className="flex bg-base-300 rounded-full items-center justify-center pl-2 pr-1 text-center py-1">
+    <div className="flex bg-base-300 rounded-full items-center justify-center pl-2 pr-1 text-center py-1 dark:border dark:border-gray-700">
       <p className="align-middle font-bold">MENU</p>
       <BiMenu className="text-primary" size={24} />
     </div>
@@ -1607,10 +1617,10 @@ const ProjectComponent: React.FC<{
   return (
     <li key={props.project.id}>
       <a
-        className={`${props.isActive ? "active bg-primary font-semibold" : "font-medium"}`}
         style={{
           backgroundColor: props.isActive ? props.project.primaryColor || "" : ""
         }}
+        className={`${props.isActive ? "active bg-primary font-semibold" : "font-medium"}`}
         onClick={() => props.onPress(props.index)}
       >
         {props.project.name}
@@ -1627,7 +1637,7 @@ const FeedbackComponent: React.FC<{
   const linesLimit = 6;
   return (
     <li key={props.feedback.id}>
-      <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between shadow-sm dark:bg-base-300">
+      <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between shadow-sm dark:bg-base-300 dark:border dark:border-zinc-700">
         <div>
           <div className="flex justify-between items-start">
             <StaticRatingComponent

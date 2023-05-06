@@ -18,8 +18,8 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <Analytics />
       <Toaster toastOptions={{
         style: {
-          background: "#252932",
-          color: "#A7ADBA",
+          background: "#1A1A1A",
+          color: "#D3D3D3",
         }
       }}
       />
