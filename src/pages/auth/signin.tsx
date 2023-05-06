@@ -59,7 +59,7 @@ const AuthErrorComponent: React.FC<{
 
   return (
     <div className="text-center bg-error my-4 py-2">
-      <p className="text-gray-800">{error}</p>
+      <p className="text-zinc-800">{error}</p>
     </div>
   );
 };

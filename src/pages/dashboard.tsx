@@ -437,7 +437,7 @@ const ColorProjectModalBody: React.FC<{
       {
         isAdvancedOpen &&
         <>
-          <p className="text-sm text-gray-500">We don&apos;t suggest changing this settings. Double check the preview of both themes to make sure that all the content is visible in all cases</p>
+          <p className="text-sm text-zinc-500">We don&apos;t suggest changing this settings. Double check the preview of both themes to make sure that all the content is visible in all cases</p>
 
           <PickColorRow
             text="Text Color"
@@ -528,7 +528,7 @@ const PickColorRow: React.FC<{
         <button onClick={() => {
           props.onReset();
         }}>
-          <BiReset size={24} className="text-gray-500" />
+          <BiReset size={24} className="text-zinc-500" />
         </button>
       </div>
     </div >
@@ -578,7 +578,7 @@ const EditProjectModal: React.FC<{
             />
             <textarea
               placeholder={props.projectDescription}
-              className={`mt-2 textarea textarea-bordered textarea-md w-full placeholder:text-gray-500`}
+              className={`mt-2 textarea textarea-bordered textarea-md w-full placeholder:text-zinc-500`}
               onChange={(e) => props.setDescriptionInputValue(e.target.value)}
               rows={6}
               value={props.descriptionInputValue}
@@ -1089,7 +1089,7 @@ const DescriptionOrAddDescriptionComponent: React.FC<{
       className={
         `
         input input-ghost w-full p-0 m-0 outline-none 
-        b-0 outline-0 focus:outline-0 h-6 placeholder-gray-500 
+        b-0 outline-0 focus:outline-0 h-6 placeholder-zinc-500 
         italic none resize-none overflow-hidden
         `
       }
@@ -1442,7 +1442,7 @@ const closeDropdown = () => {
 
 const OpenMenuButton = () => {
   return (
-    <div className="flex bg-base-300 rounded-full items-center justify-center pl-2 pr-1 text-center py-1 dark:border dark:border-gray-700">
+    <div className="flex bg-base-300 rounded-full items-center justify-center pl-2 pr-1 text-center py-1 dark:border dark:border-zinc-700">
       <p className="align-middle font-bold">MENU</p>
       <BiMenu className="text-primary" size={24} />
     </div>
@@ -1644,7 +1644,7 @@ const FeedbackComponent: React.FC<{
               rating={props.feedback.rating}
               primaryColor={props.primaryColor}
             />
-            <p className="text-gray-500 leading-3">{timeSinceNow(props.feedback.createdAt)}</p>
+            <p className="text-zinc-500 leading-3">{timeSinceNow(props.feedback.createdAt)}</p>
           </div>
           {
             props.feedback.title ?
@@ -1661,25 +1661,25 @@ const FeedbackComponent: React.FC<{
             countLines(props.feedback.content) > linesLimit &&
             <div className="flex">
               <button
-                className="link text-sm ml-auto"
+                className="link text-sm ml-auto text-zinc-500"
                 onClick={() => {
                   setIsShowMore((prev) => !prev)
                 }}
               >
-                {isShowMore ? 'show less' : 'show more'}
+                {isShowMore ? 'less' : 'more'}
               </button>
             </div>
           }
         </div>
         {
           props.feedback.author ?
-            <p className="text-gray-500 text-right italic align-text-bottom">
+            <p className="text-zinc-500 text-right italic align-text-bottom">
               {props.feedback.author}
             </p>
             :
             <div className="flex flex-row justify-end items-center gap-1">
-              <BsIncognito className="text-gray-500" />
-              <p className="text-gray-500 text-right italic align-text-bottom">
+              <BsIncognito className="text-zinc-500" />
+              <p className="text-zinc-500 text-right italic align-text-bottom">
                 Anonymous
               </p>
             </div>

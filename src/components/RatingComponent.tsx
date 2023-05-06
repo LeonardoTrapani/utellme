@@ -115,8 +115,8 @@ const SingleRatingComponent: React.FC<{
               ?
               'text-content'
               :
-              'text-gray-400'
-            : 'text-gray-400 dark:text-content'
+              'text-zinc-400'
+            : 'text-zinc-400 dark:text-content'
         } select-none`}
         cursor-pointer ${props.isBig ? 'text-4xl' : ''} self-center
         `

@@ -55,7 +55,7 @@ const CookiePolicy: React.FC = () => {
           <ul className="pl-4 list-disc">
             <li>
               <p>The Google AdSense service we use to serve advertising uses a DoubleClick cookie to serve more relevant ads across the web and limit the number of times that a given ad is shown to you.</p>
-              <p className="text-gray-500">For more information on Google AdSense see the official&nbsp;
+              <p className="text-zinc-500">For more information on Google AdSense see the official&nbsp;
                 <Link href="https://support.google.com/adsense/answer/3394713" className="link link-hover">
                   Google AdSense privacy FAQ
                 </Link>

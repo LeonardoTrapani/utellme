@@ -226,7 +226,7 @@ const MainGetFeedbackContent: React.FC<{
         <div className="form-control gap-4">
           <textarea
             placeholder={textAreaPlaceHolder}
-            className={`mt-2 textarea textarea-bordered textarea-md w-full placeholder:text-gray-500 ${props.contentHasError ? "border-red-400 textarea-error" : ""}}`}
+            className={`mt-2 textarea textarea-bordered textarea-md w-full placeholder:text-zinc-500 ${props.contentHasError ? "border-red-400 textarea-error" : ""}}`}
             onChange={(e) => props.setFeedbackContent(e.target.value)}
             rows={4}
             style={{
