@@ -472,7 +472,7 @@ const ColorProjectModalBody: React.FC<{
       <div className="divider my-0" />
       <div>
         <h4 className="text-center mb-1 text-lg font-semibold uppercase">Preview</h4>
-        <div className="border rounded-lg">
+        <div className="border rounded-lg dark:border-zinc-600">
           <ColorPreview
             projectTitle={props.projectName}
             projectDescription={props.projectDescription}
@@ -638,7 +638,7 @@ const ColorPreview: React.FC<{
 
   return (
     <div
-      className={`h-full relative rounded-md p-6`}
+      className={`h-full relative rounded-xl p-6`}
       style={{
         backgroundColor: props.backgroundColor || (
           isDarkTheme ? backgroundColorDark : backgroundColorLight
