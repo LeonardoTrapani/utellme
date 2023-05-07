@@ -87,13 +87,17 @@ const NewFeedbackPage = (props: InferGetServerSidePropsType<typeof getServerSide
     }
   })
 
+  const ratingRef = React.useRef<HTMLDivElement>(null);
+  const contentRef = React.useRef<HTMLTextAreaElement>(null);
   const submitFeedbackHandler = () => {
     if (!project) return;
-    if (!feedbackContent) {
-      setContentHasError(true);
-    }
     if (!rating) {
+      ratingRef?.current?.scrollIntoView({ behavior: "smooth" });
       setRatingHasError(true);
+    }
+    if (!feedbackContent) {
+      contentRef?.current?.scrollIntoView({ behavior: "smooth" });
+      setContentHasError(true);
     }
     if (!feedbackContent || !rating) return;
 
@@ -178,6 +182,8 @@ const NewFeedbackPage = (props: InferGetServerSidePropsType<typeof getServerSide
                     }}
                     contentHasError={contentHasError}
                     ratingHasError={ratingHasError}
+                    ratingRef={ratingRef}
+                    contentRef={contentRef}
                   /> :
                   <FeedbackCompletedPage
                     publicProjectInfo={project}
@@ -209,6 +215,8 @@ const MainGetFeedbackContent: React.FC<{
   setFeedbackContent: (content: string) => void;
   contentHasError: boolean;
   ratingHasError: boolean;
+  ratingRef: React.RefObject<HTMLDivElement>;
+  contentRef: React.RefObject<HTMLTextAreaElement>;
 }> = (props) => {
   const [textAreaPlaceHolder, setTextAreaPlaceHolder] = useState("This is my feedback about this project");
   useEffect(() => {
@@ -239,7 +247,7 @@ const MainGetFeedbackContent: React.FC<{
     >
       <GetFeedbackTitle publicProjectInfo={props.publicProjectInfo} />
       <div className="divider mt-2 mb-2" />
-      <div className={`h-10 items-center w-min m-auto rounded-xl mb-2 ${props.ratingHasError ? "border-error border-2" : ""}`}>
+      <div ref={props.ratingRef} className={`h-10 items-center w-min m-auto rounded-xl mb-2 ${props.ratingHasError ? "border-error border-2" : ""}`}>
         <SelectRatingComponent
           ratingColor={props.publicProjectInfo?.primaryColor || undefined}
           rating={props.currentRating}
@@ -252,6 +260,7 @@ const MainGetFeedbackContent: React.FC<{
         <div className="form-control gap-4">
           <textarea
             placeholder={textAreaPlaceHolder}
+            ref={props.contentRef}
             className={`mt-2 textarea textarea-bordered textarea-md w-full placeholder:text-zinc-500 ${props.contentHasError ? "border-red-400 textarea-error" : ""}}`}
             onChange={(e) => props.setFeedbackContent(e.target.value)}
             rows={4}
