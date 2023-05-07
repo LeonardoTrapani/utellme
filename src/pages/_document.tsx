@@ -15,20 +15,25 @@ export default class MyDocument extends Document {
           <div className="min-h-screen">
             <Main />
           </div>
-          <div className="flex justify-center items-center gap-2 mb-2 text-xs">
-            <Link className="link link-hover" href="/policies/cookies">
-              <p>Cookie Notice</p>
-            </Link>
-            <p>&#183;</p>
-            <Link href="/policies/privacy-policy" className="link link-hover">
-              <p>Privacy Policy</p>
-            </Link>
-          </div>
           <NextScript />
         </body>
       </Html>
     );
   }
+}
+
+export const Footer = () => {
+  return (
+    <div className="flex justify-center items-center gap-2 mb-2 text-xs">
+      <Link className="link link-hover" href="/policies/cookies">
+        <p>Cookie Notice</p>
+      </Link>
+      <p>&#183;</p>
+      <Link href="/policies/privacy-policy" className="link link-hover">
+        <p>Privacy Policy</p>
+      </Link>
+    </div>
+  )
 }
 
 export const FaviconScripts = () => {
