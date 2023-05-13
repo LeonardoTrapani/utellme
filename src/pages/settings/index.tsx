@@ -15,6 +15,7 @@ import { reloadSession, toastTrpcError } from "~/utils/functions";
 import { useWindowSize } from "~/utils/hooks";
 import Modal, { OpenModalButton } from "~/components/Modal";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions);
@@ -267,6 +268,25 @@ const DeleteAccountComponent: React.FC<{
 }
 
 const UTellMeMembershipComponent = () => {
+  const { mutateAsync: createCheckoutSession } = api.stripe.createCheckoutSession.useMutation({
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong creating your checkout session. Please try again later.",
+        e.data?.zodError?.fieldErrors,
+        []
+      )
+    }
+  });
+
+  const { push } = useRouter();
+  const checkoutSessionHandler = async () => {
+    console.log("AA")
+    const { checkoutUrl } = await createCheckoutSession();
+    if (checkoutUrl) {
+      void push(checkoutUrl);
+    }
+  }
+
   return (
     <div className="w-full">
       <h2 className="text-2xl font-bold">Membership</h2>
@@ -277,6 +297,7 @@ const UTellMeMembershipComponent = () => {
           Click here
         </Link> to discover more about subscriptions
       </p>
+      <button className="btn" onClick={() => void checkoutSessionHandler()}>Upgrade account</button>
     </div>
 
   )
