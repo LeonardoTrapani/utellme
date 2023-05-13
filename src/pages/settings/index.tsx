@@ -48,6 +48,7 @@ const IndexSettings = () => {
                 <h1 className="text-3xl font-bold">Settings</h1>
               </div>
               <AccountAndSigninComponent />
+              <UTellMeMembershipComponent />
               <DeleteAccountComponent modalId={deleteAccountModalId} />
             </div>
             <DeleteAccountModal modalId={deleteAccountModalId} />
@@ -255,7 +256,7 @@ const DeleteAccountComponent: React.FC<{
 }> = (props) => {
   return (
     <div className="w-full">
-      <h2 className="text-2xl text-error">Delete account</h2>
+      <h2 className="text-2xl text-error font-bold">Delete account</h2>
       <div className="divider my-0" />
       <p className="mb-4">Once you delete your account, there is no going back. Please be certain.</p>
       <OpenModalButton id={props.modalId}>
@@ -264,6 +265,23 @@ const DeleteAccountComponent: React.FC<{
     </div>
   )
 }
+
+const UTellMeMembershipComponent = () => {
+  return (
+    <div className="w-full">
+      <h2 className="text-2xl font-bold">Membership</h2>
+      <div className="divider my-0" />
+      <p className="mb-4">
+        You are currently using the free tier version of UTellMe!&nbsp;
+        <Link href={"/subscription"} className="link link-primary">
+          Click here
+        </Link> to discover more about subscriptions
+      </p>
+    </div>
+
+  )
+}
+
 export const SignoutButton: React.FC<{
   isFull?: boolean;
 }> = (props) => {
