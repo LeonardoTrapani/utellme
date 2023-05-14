@@ -1301,6 +1301,11 @@ const ActionIconsComponent: React.FC<{
   const isMedium = ((windowWidth || 0) < 1024) && ((windowWidth || 0) >= 768);
   const isBig = (windowWidth || 0) >= 1024;
 
+  const {
+    data: subscriptionStatus, isLoading: isSubscriptionStatusLoading
+  } = api.user.subscriptionStatus.useQuery();
+  const isSubscribed = subscriptionStatus === "active"
+
   return (
     <div className={
       isSmall ? 'flex flex-row justify-end items-center gap-1' :
@@ -1312,6 +1317,7 @@ const ActionIconsComponent: React.FC<{
         (
           <>
             <SingleActionIcon
+              isSubscribed={isSubscribed}
               onPress={() => {
                 void onGenerateQr(props.projectId || "-1", props.projectName || "this project");
               }}
@@ -1320,6 +1326,7 @@ const ActionIconsComponent: React.FC<{
               <BiQr size={26} />
             </SingleActionIcon>
             <SingleActionIcon
+              isSubscribed={isSubscribed}
               onPress={() => {
                 void shareOrCopyToClipboard(
                   {
@@ -1333,13 +1340,19 @@ const ActionIconsComponent: React.FC<{
             >
               <BiShareAlt size={26} />
             </SingleActionIcon>
-            <SingleActionIcon tooltipName="project info">
-              <label htmlFor="info-project-modal" className="cursor-pointer">
-                <BiInfoCircle size={26} />
-              </label>
+            <SingleActionIcon
+              tooltipName="project info"
+              needsPro
+              isSubscribed={isSubscribed}
+              modalId="info-project-modal"
+            >
+              <BiInfoCircle size={26} />
             </SingleActionIcon>
             <SingleActionIcon
               tooltipName="Customize colors"
+              isSubscribed={isSubscribed}
+              needsPro
+              modalId="color-project-modal"
             >
               {
                 props.isColorProjectLoading ?
@@ -1348,13 +1361,13 @@ const ActionIconsComponent: React.FC<{
                     showInstantly
                     color={props.projectPrimaryColor || undefined}
                   /> :
-                  <label htmlFor="color-project-modal" className="cursor-pointer">
-                    <BiColorFill size={26} />
-                  </label>
+                  <BiColorFill size={26} />
               }
             </SingleActionIcon>
             <SingleActionIcon
+              isSubscribed={isSubscribed}
               tooltipName="Edit Project"
+              modalId="edit-project-modal"
             >
               {
                 props.isEditProjectLoading ?
@@ -1364,23 +1377,20 @@ const ActionIconsComponent: React.FC<{
                     color={props.projectPrimaryColor || undefined}
                   />
                   :
-                  <label htmlFor="edit-project-modal" className="cursor-pointer">
-                    <BiEdit size={26} />
-                  </label>
+                  <BiEdit size={26} />
               }
             </SingleActionIcon>
-            <DeleteProjectActionIcon
+            <SingleActionIcon
               tooltipName="Delete Project"
+              modalId="delete-project-modal"
             >
               {
                 props.isDeleteProjectLoading ?
                   <LoadingIndicator isSmall showInstantly color={props.projectPrimaryColor || undefined} />
                   :
-                  <label htmlFor="delete-project-modal" className="cursor-pointer">
-                    <BiTrash size={26} />
-                  </label>
+                  <BiTrash size={26} />
               }
-            </DeleteProjectActionIcon>
+            </SingleActionIcon>
             <SingleActionIcon tooltipName="sort">
               <DropdownSort
                 currentSort={props.currentSort}
@@ -1455,31 +1465,40 @@ const SingleActionIcon: React.FC<{
   onPress?: () => void;
   tooltipName?: string;
   isTooltipSuccess?: boolean;
+  needsPro?: boolean;
+  isSubscribed?: boolean;
+  modalId?: string;
 }> = (props) => {
+  const isForbidden = props.needsPro && !props.isSubscribed;
   return (
     <div
       className={`${!!props.tooltipName ? ' md:tooltip md:tooltip-left' : ''} cursor-pointer`}
       data-tip={props.tooltipName?.toLowerCase()}
     >
-      <a className="cursor-pointer" onClick={props.onPress}>
-        {props.children}
-      </a>
-    </div>
-  )
-}
-
-
-const DeleteProjectActionIcon: React.FC<{
-  children: React.ReactNode;
-  tooltipName?: string;
-  isTooltipSuccess?: boolean;
-}> = (props) => {
-  return (
-    <div
-      className={`${!!props.tooltipName ? ' tooltip tooltip-left' : ''}`}
-      data-tip={props.tooltipName?.toLowerCase()}
-    >
-      {props.children}
+      {
+        isForbidden
+          ?
+          <label htmlFor="need-subscription-modal" className="cursor-pointer">
+            {props.children}
+          </label>
+          :
+          <a className="cursor-pointer" onClick={() => {
+            if (isForbidden) {
+              toast.error("TODO");
+              console.warn("TODO: NAVIGATE TO A MODAL")
+            } else {
+              props.onPress && props.onPress()
+            }
+          }
+          }>
+            {
+              props.modalId ?
+                <label htmlFor={props.modalId} className="cursor-pointer">{props.children}</label>
+                :
+                props.children
+            }
+          </a>
+      }
     </div>
   )
 }
