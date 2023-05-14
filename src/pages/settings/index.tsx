@@ -269,6 +269,7 @@ const DeleteAccountComponent: React.FC<{
 }
 
 const UTellMeMembershipComponent = () => {
+  const { data: subscriptionStatus, isLoading: isSubscriptionStatusLoading } = api.user.subscriptionStatus.useQuery();
   const { mutate: createCheckoutSession } = api.stripe.createCheckoutSession.useMutation({
     onError: (e) => {
       if (e.message) return toast.error(e.message);
@@ -313,10 +314,17 @@ const UTellMeMembershipComponent = () => {
         </Link> to discover more about subscriptions
       </p>
       <div className="btn-group">
-        <button className="btn" onClick={() => createCheckoutSession()}>Upgrade account</button>
-        <button className="btn" onClick={() => createBillingPortalSession()}>Manage Billing</button>
+        {
+          (subscriptionStatus === null && !isSubscriptionStatusLoading)
+          &&
+          <button className="btn" onClick={() => createCheckoutSession()}>
+            Upgrade account
+          </button>
+        }
+        <button className="btn" onClick={() => createBillingPortalSession()}>
+          Manage Billing
+        </button>
       </div>
-
     </div>
 
   )
