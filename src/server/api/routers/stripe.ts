@@ -3,6 +3,7 @@ import { getOrCreateStripeCustomerIdForUser } from "~/server/stripe/stripe-webho
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const stripeRouter = createTRPCRouter({
+
   createCheckoutSession: protectedProcedure.mutation(async ({ ctx }) => {
     const { stripe, session, prisma, req } = ctx;
 
@@ -14,6 +15,16 @@ export const stripeRouter = createTRPCRouter({
 
     if (!customerId) {
       throw new Error("Could not create customer");
+    }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: session.user?.id,
+      },
+    });
+
+    if (user?.stripeSubscriptionId) {
+      throw new Error("You already have a subscription. Go to the billing portal to manage your subscription.");
     }
 
     const baseUrl =
@@ -47,6 +58,7 @@ export const stripeRouter = createTRPCRouter({
 
     return { checkoutUrl: checkoutSession.url };
   }),
+
   createBillingPortalSession: protectedProcedure.mutation(async ({ ctx }) => {
     const { stripe, session, prisma, req } = ctx;
 
@@ -77,4 +89,5 @@ export const stripeRouter = createTRPCRouter({
 
     return { billingPortalUrl: stripeBillingPortalSession.url };
   }),
+
 });

@@ -16,6 +16,7 @@ import { useWindowSize } from "~/utils/hooks";
 import Modal, { OpenModalButton } from "~/components/Modal";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { toast } from "react-hot-toast";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions);
@@ -270,6 +271,8 @@ const DeleteAccountComponent: React.FC<{
 const UTellMeMembershipComponent = () => {
   const { mutate: createCheckoutSession } = api.stripe.createCheckoutSession.useMutation({
     onError: (e) => {
+      if (e.message) return toast.error(e.message);
+
       toastTrpcError(
         "Something went wrong creating your checkout session. Please try again later.",
         e.data?.zodError?.fieldErrors,

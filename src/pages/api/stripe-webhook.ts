@@ -31,7 +31,6 @@ export default async function handler(
 
     try {
       event = stripe.webhooks.constructEvent(buf, sig as string, webhookSecret);
-      console.log("EVENT TYPE", event.type)
 
       // Handle the event
       switch (event.type) {
