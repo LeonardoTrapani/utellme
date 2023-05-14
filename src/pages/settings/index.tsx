@@ -325,14 +325,15 @@ const UTellMeMembershipComponent = () => {
       <div className="btn-group">
         {
           (subscriptionStatus === null && !isSubscriptionStatusLoading)
-          &&
-          <button className="btn" onClick={() => createCheckoutSession()}>
-            Upgrade account
-          </button>
+            ?
+            <button className="btn" onClick={() => createCheckoutSession()}>
+              Upgrade account
+            </button>
+            :
+            <button className="btn" onClick={() => createBillingPortalSession()}>
+              Manage Billing
+            </button>
         }
-        <button className="btn" onClick={() => createBillingPortalSession()}>
-          Manage Billing
-        </button>
       </div>
     </div>
 
