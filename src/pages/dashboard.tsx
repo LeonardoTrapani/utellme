@@ -182,6 +182,10 @@ const Home: NextPage = () => {
     })
   }
 
+  const handleUpgradeAccount = () => {
+    console.log("TODO")
+  }
+
   return (
     <>
       <Head>
@@ -256,6 +260,24 @@ const Home: NextPage = () => {
                     setProjectTitleColorValue={(value) => setProjectPrimaryColorValue(value)}
                     setProjectTextColorValue={(value) => setProjectTextColorValue(value)}
                   />
+                </Modal>
+                <Modal
+                  id="need-subscription-modal"
+                  cancelButton={{
+                    text: "cancel",
+                    modalId: "need-subscription-modal"
+                  }}
+                  confirmButton={{
+                    text: "upgrade account",
+                    modalId: "need-subscription-modal",
+                    onClick: handleUpgradeAccount,
+                    isPrimary: true
+                  }}
+                >
+                  <h3 className="text-2xl font-semibold">Upgrade Account</h3>
+                  <div className="divider" />
+                  <p className="mb-4">You need a UTellMe Pro account to access this functionality</p>
+                  <Link href="/subscription" className="link"><p>discover more</p></Link>
                 </Modal>
                 <InfoProjectModal projectId={projects?.[selectedProjectIndex]?.id} />
               </>
@@ -1302,7 +1324,7 @@ const ActionIconsComponent: React.FC<{
   const isBig = (windowWidth || 0) >= 1024;
 
   const {
-    data: subscriptionStatus, isLoading: isSubscriptionStatusLoading
+    data: subscriptionStatus
   } = api.user.subscriptionStatus.useQuery();
   const isSubscribed = subscriptionStatus === "active"
 
