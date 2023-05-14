@@ -116,6 +116,22 @@ export const handleSubscriptionCanceled = async ({
     data: {
       stripeSubscriptionId: null,
       stripeSubscriptionStatus: null,
+      projects: {
+        updateMany: {
+          where: {
+            userId: userId,
+          },
+          data: {
+            backgroundColor: null,
+            message: null,
+            orderBy: 'createdAtDesc',
+            filterBy: 'customDate',
+            textColor: null,
+            primaryColor: null,
+            customFilterDate: null,
+          }
+        }
+      }
     },
   });
 };
