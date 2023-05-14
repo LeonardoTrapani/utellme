@@ -13,6 +13,7 @@ import { createServerSideHelpers } from '@trpc/react-query/server';
 import { appRouter } from "~/server/api/root";
 import superjson from 'superjson';
 import { prisma } from "~/server/db";
+import { stripe } from "~/server/stripe/client";
 
 export async function getServerSideProps(
   context: GetServerSidePropsContext<{ projectId: string }>,
@@ -21,7 +22,10 @@ export async function getServerSideProps(
     router: appRouter,
     ctx: {
       prisma: prisma,
-      session: null
+      session: null,
+      res: null,
+      req: null,
+      stripe: stripe
     },
     transformer: superjson, // optional - adds superjson serialization
   });

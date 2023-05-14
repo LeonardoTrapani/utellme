@@ -23,8 +23,8 @@ import { stripe } from "~/server/stripe/client";
 
 type CreateContextOptions = {
   session: Session | null;
-  req: NextApiRequest;
-  res: NextApiResponse;
+  req: NextApiRequest | null;
+  res: NextApiResponse | null;
 };
 
 /**

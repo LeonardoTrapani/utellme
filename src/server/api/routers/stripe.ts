@@ -29,8 +29,8 @@ export const stripeRouter = createTRPCRouter({
 
     const baseUrl =
       env.NODE_ENV === "development"
-        ? `http://${req.headers.host ?? "localhost:3000"}`
-        : `https://${req.headers.host ?? env.NEXTAUTH_URL}`;
+        ? `http://${req?.headers.host ?? "localhost:3000"}`
+        : `https://${req?.headers.host ?? env.NEXTAUTH_URL}`;
 
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -74,8 +74,8 @@ export const stripeRouter = createTRPCRouter({
 
     const baseUrl =
       env.NODE_ENV === "development"
-        ? `http://${req.headers.host ?? "localhost:3000"}`
-        : `https://${req.headers.host ?? env.NEXTAUTH_URL}`;
+        ? `http://${req?.headers.host ?? "localhost:3000"}`
+        : `https://${req?.headers.host ?? env.NEXTAUTH_URL}`;
 
     const stripeBillingPortalSession =
       await stripe.billingPortal.sessions.create({
