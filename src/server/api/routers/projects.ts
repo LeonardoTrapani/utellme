@@ -67,6 +67,16 @@ export const projectsRouter = createTRPCRouter({
     newBackgroundColor: z.string().regex(/^#[0-9a-f]{6}$/i).nullish(),
     newPrimaryColor: z.string().regex(/^#[0-9a-f]{6}$/i).nullish(),
   })).mutation(async ({ ctx, input }) => {
+    if (input.newMessage || input.newTextColor || input.newOrderBy || input.newPrimaryColor || input.newBackgroundColor) {
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          id: ctx.session.user.id
+        }
+      });
+      if (user?.stripeSubscriptionStatus !== "active") {
+        throw new Error("You must have an active subscription to change these settings.");
+      }
+    }
     return await ctx.prisma.project.updateMany({
       data: {
         name: input.newName || undefined,
