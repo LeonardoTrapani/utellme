@@ -268,24 +268,36 @@ const DeleteAccountComponent: React.FC<{
 }
 
 const UTellMeMembershipComponent = () => {
-  const { mutateAsync: createCheckoutSession } = api.stripe.createCheckoutSession.useMutation({
+  const { mutate: createCheckoutSession } = api.stripe.createCheckoutSession.useMutation({
     onError: (e) => {
       toastTrpcError(
         "Something went wrong creating your checkout session. Please try again later.",
         e.data?.zodError?.fieldErrors,
         []
       )
+    },
+    onSuccess: ({ checkoutUrl }) => {
+      if (checkoutUrl) {
+        void push(checkoutUrl);
+      }
+    }
+  });
+  const { mutate: createBillingPortalSession } = api.stripe.createBillingPortalSession.useMutation({
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong creating your checkout session. Please try again later.",
+        e.data?.zodError?.fieldErrors,
+        []
+      )
+    },
+    onSuccess: ({ billingPortalUrl }) => {
+      if (billingPortalUrl) {
+        void push(billingPortalUrl);
+      }
     }
   });
 
   const { push } = useRouter();
-  const checkoutSessionHandler = async () => {
-    console.log("AA")
-    const { checkoutUrl } = await createCheckoutSession();
-    if (checkoutUrl) {
-      void push(checkoutUrl);
-    }
-  }
 
   return (
     <div className="w-full">
@@ -297,7 +309,11 @@ const UTellMeMembershipComponent = () => {
           Click here
         </Link> to discover more about subscriptions
       </p>
-      <button className="btn" onClick={() => void checkoutSessionHandler()}>Upgrade account</button>
+      <div className="btn-group">
+        <button className="btn" onClick={() => createCheckoutSession()}>Upgrade account</button>
+        <button className="btn" onClick={() => createBillingPortalSession()}>Manage Billing</button>
+      </div>
+
     </div>
 
   )
