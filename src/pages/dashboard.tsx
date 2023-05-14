@@ -27,6 +27,7 @@ import Link from "next/link";
 import Modal, { ModalActionButton } from "~/components/Modal";
 import { ChromePicker } from "react-color";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
   const { status: sessionStatus } = useSession();
@@ -182,9 +183,23 @@ const Home: NextPage = () => {
     })
   }
 
-  const handleUpgradeAccount = () => {
-    console.log("TODO")
-  }
+  const { push } = useRouter();
+  const { mutate: createCheckoutSession } = api.stripe.createCheckoutSession.useMutation({
+    onError: (e) => {
+      if (e.message) return toast.error(e.message);
+
+      toastTrpcError(
+        "Something went wrong creating your checkout session. Please try again later.",
+        e.data?.zodError?.fieldErrors,
+        []
+      )
+    },
+    onSuccess: ({ checkoutUrl }) => {
+      if (checkoutUrl) {
+        void push(checkoutUrl);
+      }
+    }
+  });
 
   return (
     <>
@@ -270,7 +285,7 @@ const Home: NextPage = () => {
                   confirmButton={{
                     text: "upgrade account",
                     modalId: "need-subscription-modal",
-                    onClick: handleUpgradeAccount,
+                    onClick: () => createCheckoutSession(),
                     isPrimary: true
                   }}
                 >
