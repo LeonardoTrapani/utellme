@@ -125,7 +125,6 @@ export const handleSubscriptionCanceled = async ({
             backgroundColor: null,
             message: null,
             orderBy: 'createdAtDesc',
-            filterBy: 'customDate',
             textColor: null,
             primaryColor: null,
             customFilterDate: null,

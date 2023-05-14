@@ -38,7 +38,6 @@ model Project {
   user               User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   feedbacks          Feedback[]
   orderBy            OrderBy    @default(createdAtDesc)
-  filterBy           FilterBy[] @default([])
   customFilterDate   DateTime?
   averageRating      Float?
   createdAt          DateTime   @default(now())
@@ -50,16 +49,6 @@ enum OrderBy {
   createdAtAsc
   ratingDesc
   ratingAsc
-}
-
-enum FilterBy {
-  rating5
-  rating4
-  rating3
-  rating2
-  rating1
-  anonymous
-  customDate
 }
 
 model Feedback {
