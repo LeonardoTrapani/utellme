@@ -23,7 +23,7 @@ export const stripeRouter = createTRPCRouter({
       },
     });
 
-    if (user?.stripeSubscriptionId) {
+    if (user?.stripeSubscriptionStatus) {
       throw new Error("You already have a subscription. Go to the billing portal to manage your subscription.");
     }
 
