@@ -1383,6 +1383,7 @@ const ActionIconsComponent: React.FC<{
             <SingleActionIcon
               tooltipName="Delete Project"
               modalId="delete-project-modal"
+              isSubscribed={isSubscribed}
             >
               {
                 props.isDeleteProjectLoading ?
@@ -1391,11 +1392,17 @@ const ActionIconsComponent: React.FC<{
                   <BiTrash size={26} />
               }
             </SingleActionIcon>
-            <SingleActionIcon tooltipName="sort">
+            <SingleActionIcon
+              tooltipName="sort"
+              needsPro
+              isSubscribed={isSubscribed}
+            >
               <DropdownSort
                 currentSort={props.currentSort}
                 projectId={props.projectId}
+                needsPro
                 projectPrimaryColor={props.projectPrimaryColor}
+                isSubscribed={isSubscribed}
               />
             </SingleActionIcon>
           </>
@@ -1414,8 +1421,22 @@ const DropdownSort: React.FC<{
   currentSort: OrderBy | undefined;
   projectId: string | undefined;
   projectPrimaryColor: string | null | undefined;
+  isSubscribed: boolean;
+  needsPro?: boolean;
 }> = (props) => {
   const [isLoading, setIsLoading] = useState(false);
+
+  if (!props.isSubscribed && props.needsPro) {
+    return (
+      isLoading ? <LoadingIndicator
+        isSmall
+        showInstantly
+        color={props.projectPrimaryColor || undefined}
+      /> :
+        <BiSortAlt2 size={26} />
+    )
+  }
+
   return (
     <div className="dropdown dropdown-end flex">
       <label tabIndex={0} className="cursor-pointer">
@@ -1483,12 +1504,7 @@ const SingleActionIcon: React.FC<{
           </label>
           :
           <a className="cursor-pointer" onClick={() => {
-            if (isForbidden) {
-              toast.error("TODO");
-              console.warn("TODO: NAVIGATE TO A MODAL")
-            } else {
-              props.onPress && props.onPress()
-            }
+            props.onPress && props.onPress()
           }
           }>
             {
