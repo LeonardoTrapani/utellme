@@ -307,12 +307,21 @@ const UTellMeMembershipComponent = () => {
     <div className="w-full">
       <h2 className="text-2xl font-bold">Membership</h2>
       <div className="divider my-0" />
-      <p className="mb-4">
-        You are currently using the free tier version of UTellMe!&nbsp;
-        <Link href={"/subscription"} className="link link-primary">
-          Click here
-        </Link> to discover more about subscriptions
-      </p>
+      {
+        (!subscriptionStatus && !isSubscriptionStatusLoading) ?
+          (
+
+            <p className="mb-4">
+              You are currently using the free tier version of UTellMe!&nbsp;
+              <Link href={"/subscription"} className="link link-primary">
+                Click here
+              </Link> to discover more about subscriptions
+            </p>
+          ) :
+          (
+            <p className="mb-4">Your subscription is <span className="font-bold">{subscriptionStatus}</span></p>
+          )
+      }
       <div className="btn-group">
         {
           (subscriptionStatus === null && !isSubscriptionStatusLoading)
