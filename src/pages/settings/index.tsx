@@ -15,6 +15,8 @@ import { reloadSession, toastTrpcError } from "~/utils/functions";
 import { useWindowSize } from "~/utils/hooks";
 import Modal, { OpenModalButton } from "~/components/Modal";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { toast } from "react-hot-toast";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions);
@@ -48,6 +50,7 @@ const IndexSettings = () => {
                 <h1 className="text-3xl font-bold">Settings</h1>
               </div>
               <AccountAndSigninComponent />
+              <UTellMeMembershipComponent />
               <DeleteAccountComponent modalId={deleteAccountModalId} />
             </div>
             <DeleteAccountModal modalId={deleteAccountModalId} />
@@ -255,7 +258,7 @@ const DeleteAccountComponent: React.FC<{
 }> = (props) => {
   return (
     <div className="w-full">
-      <h2 className="text-2xl text-error">Delete account</h2>
+      <h2 className="text-2xl text-error font-bold">Delete account</h2>
       <div className="divider my-0" />
       <p className="mb-4">Once you delete your account, there is no going back. Please be certain.</p>
       <OpenModalButton id={props.modalId}>
@@ -264,6 +267,78 @@ const DeleteAccountComponent: React.FC<{
     </div>
   )
 }
+
+const UTellMeMembershipComponent = () => {
+  const { data: subscriptionStatus, isLoading: isSubscriptionStatusLoading } = api.user.subscriptionStatus.useQuery();
+  const { mutate: createCheckoutSession } = api.stripe.createCheckoutSession.useMutation({
+    onError: (e) => {
+      if (e.message) return toast.error(e.message);
+
+      toastTrpcError(
+        "Something went wrong creating your checkout session. Please try again later.",
+        e.data?.zodError?.fieldErrors,
+        []
+      )
+    },
+    onSuccess: ({ checkoutUrl }) => {
+      if (checkoutUrl) {
+        void push(checkoutUrl);
+      }
+    }
+  });
+  const { mutate: createBillingPortalSession } = api.stripe.createBillingPortalSession.useMutation({
+    onError: (e) => {
+      toastTrpcError(
+        "Something went wrong creating your checkout session. Please try again later.",
+        e.data?.zodError?.fieldErrors,
+        []
+      )
+    },
+    onSuccess: ({ billingPortalUrl }) => {
+      if (billingPortalUrl) {
+        void push(billingPortalUrl);
+      }
+    }
+  });
+
+  const { push } = useRouter();
+
+  return (
+    <div className="w-full">
+      <h2 className="text-2xl font-bold">Membership</h2>
+      <div className="divider my-0" />
+      {
+        (!subscriptionStatus && !isSubscriptionStatusLoading) ?
+          (
+
+            <p className="mb-4">
+              You are currently using the free tier version of UTellMe!&nbsp;
+              <Link href={"/subscription"} className="link link-primary">
+                Click here
+              </Link> to discover more about subscriptions
+            </p>
+          ) :
+          (
+            <p className="mb-4">Your subscription is <span className="font-bold">{subscriptionStatus}</span></p>
+          )
+      }
+      <div className="btn-group">
+        {
+          (subscriptionStatus === null && !isSubscriptionStatusLoading)
+          &&
+          <button className="btn" onClick={() => createCheckoutSession()}>
+            Upgrade account
+          </button>
+        }
+        <button className="btn" onClick={() => createBillingPortalSession()}>
+          Manage Billing
+        </button>
+      </div>
+    </div>
+
+  )
+}
+
 export const SignoutButton: React.FC<{
   isFull?: boolean;
 }> = (props) => {

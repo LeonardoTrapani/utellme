@@ -27,6 +27,7 @@ import Link from "next/link";
 import Modal, { ModalActionButton } from "~/components/Modal";
 import { ChromePicker } from "react-color";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
   const { status: sessionStatus } = useSession();
@@ -182,6 +183,27 @@ const Home: NextPage = () => {
     })
   }
 
+  const { data: subscriptionStatus } = api.user.subscriptionStatus.useQuery();
+  const isSubscribed = subscriptionStatus === "active";
+
+  const { push } = useRouter();
+  const { mutate: createCheckoutSession } = api.stripe.createCheckoutSession.useMutation({
+    onError: (e) => {
+      if (e.message) return toast.error(e.message);
+
+      toastTrpcError(
+        "Something went wrong creating your checkout session. Please try again later.",
+        e.data?.zodError?.fieldErrors,
+        []
+      )
+    },
+    onSuccess: ({ checkoutUrl }) => {
+      if (checkoutUrl) {
+        void push(checkoutUrl);
+      }
+    }
+  });
+
   return (
     <>
       <Head>
@@ -232,6 +254,7 @@ const Home: NextPage = () => {
                   setNameInputHasError={(value) => { setEditProjectNameHasError(value) }}
                   setMessageInputValue={(value) => { setEditProjectMessageValue(value) }}
                   messageInputValue={editProjectMessageValue}
+                  isSubscribed={isSubscribed}
                 />
                 <Modal
                   id="color-project-modal"
@@ -257,6 +280,27 @@ const Home: NextPage = () => {
                     setProjectTextColorValue={(value) => setProjectTextColorValue(value)}
                   />
                 </Modal>
+                {
+                  !isSubscribed &&
+                  <Modal
+                    id="need-subscription-modal"
+                    cancelButton={{
+                      text: "cancel",
+                      modalId: "need-subscription-modal"
+                    }}
+                    confirmButton={{
+                      text: "upgrade account",
+                      modalId: "need-subscription-modal",
+                      onClick: () => createCheckoutSession(),
+                      isPrimary: true
+                    }}
+                  >
+                    <h3 className="text-2xl font-semibold">Upgrade Account</h3>
+                    <div className="divider" />
+                    <p className="mb-4">You need a UTellMe Pro account to access this functionality</p>
+                    <Link href="/subscription" className="link"><p>discover more</p></Link>
+                  </Modal>
+                }
                 <InfoProjectModal projectId={projects?.[selectedProjectIndex]?.id} />
               </>
             }
@@ -550,6 +594,7 @@ const EditProjectModal: React.FC<{
   setNameInputHasError: (hasError: boolean) => void;
   setMessageInputValue: (value: string) => void;
   messageInputValue: string;
+  isSubscribed: boolean;
 }> = (props) => {
   const editHandler = () => {
     if (props.nameInputValue.length < 1) {
@@ -583,15 +628,30 @@ const EditProjectModal: React.FC<{
               rows={6}
               value={props.descriptionInputValue}
             />
-            <Input
-              name="Message"
-              placeholder="Tell me your feedback about"
-              onChange={(value) => {
-                props.setMessageInputValue(value);
-              }}
-              value={props.messageInputValue}
-              maxLength={75}
-            />
+            <button
+              disabled={props.isSubscribed}
+              onClick={() => {
+                if (props.isSubscribed) return;
+                const editModalElement = document.getElementById('edit-project-modal') as HTMLInputElement | null;
+                if (editModalElement) {
+                  editModalElement.checked = false;
+                }
+                const needSubscriptionModalElement = document.getElementById('need-subscription-modal') as HTMLInputElement | null;
+                if (needSubscriptionModalElement) {
+                  needSubscriptionModalElement.checked = true;
+                }
+              }}>
+              <Input
+                name="Message"
+                placeholder='example: "Tell me your feedback about"'
+                isDisabled={!props.isSubscribed}
+                onChange={(value) => {
+                  props.setMessageInputValue(value);
+                }}
+                value={props.messageInputValue}
+                maxLength={75}
+              />
+            </button>
           </div>
           <div className="modal-action">
             <ModalActionButton
@@ -1301,6 +1361,11 @@ const ActionIconsComponent: React.FC<{
   const isMedium = ((windowWidth || 0) < 1024) && ((windowWidth || 0) >= 768);
   const isBig = (windowWidth || 0) >= 1024;
 
+  const {
+    data: subscriptionStatus
+  } = api.user.subscriptionStatus.useQuery();
+  const isSubscribed = subscriptionStatus === "active"
+
   return (
     <div className={
       isSmall ? 'flex flex-row justify-end items-center gap-1' :
@@ -1312,6 +1377,7 @@ const ActionIconsComponent: React.FC<{
         (
           <>
             <SingleActionIcon
+              isSubscribed={isSubscribed}
               onPress={() => {
                 void onGenerateQr(props.projectId || "-1", props.projectName || "this project");
               }}
@@ -1320,6 +1386,7 @@ const ActionIconsComponent: React.FC<{
               <BiQr size={26} />
             </SingleActionIcon>
             <SingleActionIcon
+              isSubscribed={isSubscribed}
               onPress={() => {
                 void shareOrCopyToClipboard(
                   {
@@ -1333,13 +1400,19 @@ const ActionIconsComponent: React.FC<{
             >
               <BiShareAlt size={26} />
             </SingleActionIcon>
-            <SingleActionIcon tooltipName="project info">
-              <label htmlFor="info-project-modal" className="cursor-pointer">
-                <BiInfoCircle size={26} />
-              </label>
+            <SingleActionIcon
+              tooltipName="project info"
+              needsPro
+              isSubscribed={isSubscribed}
+              modalId="info-project-modal"
+            >
+              <BiInfoCircle size={26} />
             </SingleActionIcon>
             <SingleActionIcon
               tooltipName="Customize colors"
+              isSubscribed={isSubscribed}
+              needsPro
+              modalId="color-project-modal"
             >
               {
                 props.isColorProjectLoading ?
@@ -1348,13 +1421,13 @@ const ActionIconsComponent: React.FC<{
                     showInstantly
                     color={props.projectPrimaryColor || undefined}
                   /> :
-                  <label htmlFor="color-project-modal" className="cursor-pointer">
-                    <BiColorFill size={26} />
-                  </label>
+                  <BiColorFill size={26} />
               }
             </SingleActionIcon>
             <SingleActionIcon
+              isSubscribed={isSubscribed}
               tooltipName="Edit Project"
+              modalId="edit-project-modal"
             >
               {
                 props.isEditProjectLoading ?
@@ -1364,28 +1437,32 @@ const ActionIconsComponent: React.FC<{
                     color={props.projectPrimaryColor || undefined}
                   />
                   :
-                  <label htmlFor="edit-project-modal" className="cursor-pointer">
-                    <BiEdit size={26} />
-                  </label>
+                  <BiEdit size={26} />
               }
             </SingleActionIcon>
-            <DeleteProjectActionIcon
+            <SingleActionIcon
               tooltipName="Delete Project"
+              modalId="delete-project-modal"
+              isSubscribed={isSubscribed}
             >
               {
                 props.isDeleteProjectLoading ?
                   <LoadingIndicator isSmall showInstantly color={props.projectPrimaryColor || undefined} />
                   :
-                  <label htmlFor="delete-project-modal" className="cursor-pointer">
-                    <BiTrash size={26} />
-                  </label>
+                  <BiTrash size={26} />
               }
-            </DeleteProjectActionIcon>
-            <SingleActionIcon tooltipName="sort">
+            </SingleActionIcon>
+            <SingleActionIcon
+              tooltipName="sort"
+              needsPro
+              isSubscribed={isSubscribed}
+            >
               <DropdownSort
                 currentSort={props.currentSort}
                 projectId={props.projectId}
+                needsPro
                 projectPrimaryColor={props.projectPrimaryColor}
+                isSubscribed={isSubscribed}
               />
             </SingleActionIcon>
           </>
@@ -1404,8 +1481,22 @@ const DropdownSort: React.FC<{
   currentSort: OrderBy | undefined;
   projectId: string | undefined;
   projectPrimaryColor: string | null | undefined;
+  isSubscribed: boolean;
+  needsPro?: boolean;
 }> = (props) => {
   const [isLoading, setIsLoading] = useState(false);
+
+  if (!props.isSubscribed && props.needsPro) {
+    return (
+      isLoading ? <LoadingIndicator
+        isSmall
+        showInstantly
+        color={props.projectPrimaryColor || undefined}
+      /> :
+        <BiSortAlt2 size={26} />
+    )
+  }
+
   return (
     <div className="dropdown dropdown-end flex">
       <label tabIndex={0} className="cursor-pointer">
@@ -1455,31 +1546,35 @@ const SingleActionIcon: React.FC<{
   onPress?: () => void;
   tooltipName?: string;
   isTooltipSuccess?: boolean;
+  needsPro?: boolean;
+  isSubscribed?: boolean;
+  modalId?: string;
 }> = (props) => {
+  const isForbidden = props.needsPro && !props.isSubscribed;
   return (
     <div
       className={`${!!props.tooltipName ? ' md:tooltip md:tooltip-left' : ''} cursor-pointer`}
       data-tip={props.tooltipName?.toLowerCase()}
     >
-      <a className="cursor-pointer" onClick={props.onPress}>
-        {props.children}
-      </a>
-    </div>
-  )
-}
-
-
-const DeleteProjectActionIcon: React.FC<{
-  children: React.ReactNode;
-  tooltipName?: string;
-  isTooltipSuccess?: boolean;
-}> = (props) => {
-  return (
-    <div
-      className={`${!!props.tooltipName ? ' tooltip tooltip-left' : ''}`}
-      data-tip={props.tooltipName?.toLowerCase()}
-    >
-      {props.children}
+      {
+        isForbidden
+          ?
+          <label htmlFor="need-subscription-modal" className="cursor-pointer">
+            {props.children}
+          </label>
+          :
+          <a className="cursor-pointer" onClick={() => {
+            props.onPress && props.onPress()
+          }
+          }>
+            {
+              props.modalId ?
+                <label htmlFor={props.modalId} className="cursor-pointer">{props.children}</label>
+                :
+                props.children
+            }
+          </a>
+      }
     </div>
   )
 }

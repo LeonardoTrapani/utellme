@@ -11,15 +11,19 @@ generator client {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  projects      Project[]
-  accounts      Account[]
-  sessions      Session[]
-  createdAt     DateTime  @default(now())
+  id                       String                    @id @default(cuid())
+  name                     String?
+  email                    String?                   @unique
+  emailVerified            DateTime?
+  image                    String?
+  isPremium                Boolean                   @default(false)
+  projects                 Project[]
+  accounts                 Account[]
+  sessions                 Session[]
+  createdAt                DateTime                  @default(now())
+  stripeCustomerId         String?
+  stripeSubscriptionId     String?
+  stripeSubscriptionStatus StripeSubscriptionStatus?
 }
 
 model Project {
@@ -34,7 +38,6 @@ model Project {
   user               User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   feedbacks          Feedback[]
   orderBy            OrderBy    @default(createdAtDesc)
-  filterBy           FilterBy[] @default([])
   customFilterDate   DateTime?
   averageRating      Float?
   createdAt          DateTime   @default(now())
@@ -46,16 +49,6 @@ enum OrderBy {
   createdAtAsc
   ratingDesc
   ratingAsc
-}
-
-enum FilterBy {
-  rating5
-  rating4
-  rating3
-  rating2
-  rating1
-  anonymous
-  customDate
 }
 
 model Feedback {
@@ -104,4 +97,28 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+enum StripeSubscriptionStatus {
+  incomplete
+  incomplete_expired
+  trialing
+  active
+  past_due
+  canceled
+  unpaid
+  paused
+}
+
+model StripeEvent {
+  id               String   @id @unique
+  api_version      String?
+  data             Json
+  request          Json?
+  type             String
+  object           String
+  account          String?
+  created          DateTime
+  livemode         Boolean
+  pending_webhooks Int
 }

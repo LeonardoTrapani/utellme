@@ -27,6 +27,11 @@ const server = z.object({
 
   GITHUB_CLIENT_ID: z.string(),
   GITHUB_CLIENT_SECRET: z.string(),
+
+  STRIPE_PK: z.string(),
+  STRIPE_SK: z.string(),
+  STRIPE_PRICE_ID: z.string(),
+  STRIPE_WEBHOOK_SECRET: z.string(),
 });
 
 /**
@@ -55,6 +60,10 @@ const processEnv = {
   GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+  STRIPE_PRICE_ID: process.env.STRIPE_PRICE_ID,
+  STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+  STRIPE_PK: process.env.STRIPE_PK,
+  STRIPE_SK: process.env.STRIPE_SK,
 };
 
 // Don't touch the part below
