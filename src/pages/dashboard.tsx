@@ -183,6 +183,9 @@ const Home: NextPage = () => {
     })
   }
 
+  const { data: subscriptionStatus } = api.user.subscriptionStatus.useQuery();
+  const isSubscribed = subscriptionStatus === "active";
+
   const { push } = useRouter();
   const { mutate: createCheckoutSession } = api.stripe.createCheckoutSession.useMutation({
     onError: (e) => {
@@ -251,6 +254,7 @@ const Home: NextPage = () => {
                   setNameInputHasError={(value) => { setEditProjectNameHasError(value) }}
                   setMessageInputValue={(value) => { setEditProjectMessageValue(value) }}
                   messageInputValue={editProjectMessageValue}
+                  isSubscribed={isSubscribed}
                 />
                 <Modal
                   id="color-project-modal"
@@ -276,24 +280,27 @@ const Home: NextPage = () => {
                     setProjectTextColorValue={(value) => setProjectTextColorValue(value)}
                   />
                 </Modal>
-                <Modal
-                  id="need-subscription-modal"
-                  cancelButton={{
-                    text: "cancel",
-                    modalId: "need-subscription-modal"
-                  }}
-                  confirmButton={{
-                    text: "upgrade account",
-                    modalId: "need-subscription-modal",
-                    onClick: () => createCheckoutSession(),
-                    isPrimary: true
-                  }}
-                >
-                  <h3 className="text-2xl font-semibold">Upgrade Account</h3>
-                  <div className="divider" />
-                  <p className="mb-4">You need a UTellMe Pro account to access this functionality</p>
-                  <Link href="/subscription" className="link"><p>discover more</p></Link>
-                </Modal>
+                {
+                  !isSubscribed &&
+                  <Modal
+                    id="need-subscription-modal"
+                    cancelButton={{
+                      text: "cancel",
+                      modalId: "need-subscription-modal"
+                    }}
+                    confirmButton={{
+                      text: "upgrade account",
+                      modalId: "need-subscription-modal",
+                      onClick: () => createCheckoutSession(),
+                      isPrimary: true
+                    }}
+                  >
+                    <h3 className="text-2xl font-semibold">Upgrade Account</h3>
+                    <div className="divider" />
+                    <p className="mb-4">You need a UTellMe Pro account to access this functionality</p>
+                    <Link href="/subscription" className="link"><p>discover more</p></Link>
+                  </Modal>
+                }
                 <InfoProjectModal projectId={projects?.[selectedProjectIndex]?.id} />
               </>
             }
@@ -587,6 +594,7 @@ const EditProjectModal: React.FC<{
   setNameInputHasError: (hasError: boolean) => void;
   setMessageInputValue: (value: string) => void;
   messageInputValue: string;
+  isSubscribed: boolean;
 }> = (props) => {
   const editHandler = () => {
     if (props.nameInputValue.length < 1) {
@@ -620,15 +628,30 @@ const EditProjectModal: React.FC<{
               rows={6}
               value={props.descriptionInputValue}
             />
-            <Input
-              name="Message"
-              placeholder="Tell me your feedback about"
-              onChange={(value) => {
-                props.setMessageInputValue(value);
-              }}
-              value={props.messageInputValue}
-              maxLength={75}
-            />
+            <button
+              disabled={props.isSubscribed}
+              onClick={() => {
+                if (props.isSubscribed) return;
+                const editModalElement = document.getElementById('edit-project-modal') as HTMLInputElement | null;
+                if (editModalElement) {
+                  editModalElement.checked = false;
+                }
+                const needSubscriptionModalElement = document.getElementById('need-subscription-modal') as HTMLInputElement | null;
+                if (needSubscriptionModalElement) {
+                  needSubscriptionModalElement.checked = true;
+                }
+              }}>
+              <Input
+                name="Message"
+                placeholder='example: "Tell me your feedback about"'
+                isDisabled={!props.isSubscribed}
+                onChange={(value) => {
+                  props.setMessageInputValue(value);
+                }}
+                value={props.messageInputValue}
+                maxLength={75}
+              />
+            </button>
           </div>
           <div className="modal-action">
             <ModalActionButton
