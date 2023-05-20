@@ -298,7 +298,6 @@ const Home: NextPage = () => {
                     <h3 className="text-2xl font-semibold">Upgrade Account</h3>
                     <div className="divider" />
                     <p className="mb-4">You need a UTellMe Pro account to access this functionality</p>
-                    <Link href="/subscription" className="link"><p>discover more</p></Link>
                   </Modal>
                 }
                 <InfoProjectModal projectId={projects?.[selectedProjectIndex]?.id} />

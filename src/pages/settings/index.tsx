@@ -312,10 +312,7 @@ const UTellMeMembershipComponent = () => {
           (
 
             <p className="mb-4">
-              You are currently using the free tier version of UTellMe!&nbsp;
-              <Link href={"/subscription"} className="link link-primary">
-                Click here
-              </Link> to discover more about subscriptions
+              You are currently using the free tier version of UTellMe!.
             </p>
           ) :
           (
