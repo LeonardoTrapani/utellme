@@ -2,11 +2,10 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import type { GetServerSidePropsContext } from "next";
 import { authOptions } from "~/server/auth";
-
 import { signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useEffect, useRef, useState } from "react";
-import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiSortUp, BiSortDown, BiSortAlt2, BiColorFill, BiReset, BiSun, BiMoon } from "react-icons/bi"
+import { BiQr, BiShareAlt, BiCheck } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs";
 import { FiSettings } from "react-icons/fi";
 import type { Feedback, OrderBy, Project } from "@prisma/client";
@@ -15,19 +14,16 @@ import LoadingIndicator from "~/components/LoadingIndicator";
 import Avatar from "~/components/Avatar";
 
 import { BiLogOut } from "react-icons/bi";
-import { useIsDarkMode, useWindowSize } from "~/utils/hooks";
+import { useWindowSize } from "~/utils/hooks";
 import { toast } from "react-hot-toast";
-import QRCode from 'qrcode'
 import Input from "~/components/Input";
 import { UTellMeComponentButton } from "~/components/UTellMeComponent";
-import { countLines, timeSinceNow, toastTrpcError } from "~/utils/functions";
-import { SwitchComponent } from "~/components/SwitchComponent";
+import { countLines, getProjectUrl, onGenerateQr, shareOrCopyToClipboard, timeSinceNow, toastTrpcError } from "~/utils/functions";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import Modal, { ModalActionButton } from "~/components/Modal";
-import { ChromePicker } from "react-color";
-import Image from "next/image";
 import { useRouter } from "next/router";
+import DashboardModals from "~/components/DashboardModals";
+import ActionIconsComponent, { SingleActionIcon } from "~/components/DashboardActionIcons";
 
 const Home: NextPage = () => {
   const { status: sessionStatus } = useSession();
@@ -99,6 +95,13 @@ const Home: NextPage = () => {
       )
     }
   })
+
+  const closeDrawer = () => {
+    const drawer = document.getElementById('drawer') as HTMLInputElement || undefined;
+    if (drawer) {
+      drawer.checked = false;
+    }
+  }
 
   const setSelectedProjectIndex = (i: number) => {
     setSelectedProjectIndexState(i);
@@ -229,80 +232,35 @@ const Home: NextPage = () => {
               isEditProjectLoading={isEditProjectLoading}
               isColorProjectLoading={isColorProjectLoading}
             />
-            {
-              <>
-                <DeleteProjectModal
-                  onDelete={projectDeleteHandler}
-                  projectTitle={projects?.[selectedProjectIndex]?.name}
-                  modalHasError={deleteModalHasError}
-                  setModalHasError={setDeleteModalHasError}
-                  resetModalState={resetDeleteModalState}
-                  inputValue={deleteModalInputValue}
-                  setInputValue={setDeleteModalInputValue}
-                />
-                <EditProjectModal
-                  projectName={projects?.[selectedProjectIndex]?.name || 'Project name'}
-                  projectDescription={projects?.[selectedProjectIndex]?.description || 'Project description'}
-                  projectMessage={projects?.[selectedProjectIndex]?.message || 'Project message'}
-                  resetModalState={resetEditModalState}
-                  setDescriptionInputValue={setEditProjectDescriptionValue}
-                  setNameInputValue={setEditProjectNameValue}
-                  nameInputValue={editProjectNameValue}
-                  descriptionInputValue={editProjectDescriptionValue}
-                  onEdit={projectEditHandler}
-                  editProjectNameHasError={editProjectNameHasError}
-                  setNameInputHasError={(value) => { setEditProjectNameHasError(value) }}
-                  setMessageInputValue={(value) => { setEditProjectMessageValue(value) }}
-                  messageInputValue={editProjectMessageValue}
-                  isSubscribed={isSubscribed}
-                />
-                <Modal
-                  id="color-project-modal"
-                  cancelButton={{
-                    text: "cancel",
-                    modalId: "color-project-modal",
-                  }}
-                  confirmButton={{
-                    onClick: handleEditColorProject,
-                    text: "confirm",
-                    modalId: "color-project-modal",
-                    isPrimary: true,
-                  }}
-                >
-                  <ColorProjectModalBody
-                    projectDescription={projects?.[selectedProjectIndex]?.description}
-                    projectName={projects?.[selectedProjectIndex]?.name}
-                    projectBackgroundColorValue={projectBackgroundColorValue}
-                    projectPrimaryColorValue={projectPrimaryColorValue}
-                    projectTextColorValue={projectTextColorValue}
-                    setProjectBackgroundColorValue={(value) => setProjectBackgroundColorValue(value)}
-                    setProjectTitleColorValue={(value) => setProjectPrimaryColorValue(value)}
-                    setProjectTextColorValue={(value) => setProjectTextColorValue(value)}
-                  />
-                </Modal>
-                {
-                  !isSubscribed &&
-                  <Modal
-                    id="need-subscription-modal"
-                    cancelButton={{
-                      text: "cancel",
-                      modalId: "need-subscription-modal"
-                    }}
-                    confirmButton={{
-                      text: "upgrade account",
-                      modalId: "need-subscription-modal",
-                      onClick: () => createCheckoutSession(),
-                      isPrimary: true
-                    }}
-                  >
-                    <h3 className="text-2xl font-semibold">Upgrade Account</h3>
-                    <div className="divider" />
-                    <p className="mb-4">You need a UTellMe Pro account to access this functionality</p>
-                  </Modal>
-                }
-                <InfoProjectModal projectId={projects?.[selectedProjectIndex]?.id} />
-              </>
-            }
+            <DashboardModals
+              createCheckoutSession={createCheckoutSession}
+              projectBackgroundColorValue={projectBackgroundColorValue}
+              projectPrimaryColorValue={projectPrimaryColorValue}
+              projectTextColorValue={projectTextColorValue}
+              setProjectBackgroundColorValue={setProjectBackgroundColorValue}
+              setProjectPrimaryColorValue={setProjectPrimaryColorValue}
+              setProjectTextColorValue={setProjectTextColorValue}
+              handleEditColorProject={handleEditColorProject}
+              setEditProjectMessageValue={setEditProjectMessageValue}
+              setEditProjectNameHasError={setEditProjectNameHasError}
+              setEditProjectNameValue={setEditProjectNameValue}
+              editProjectNameValue={editProjectNameValue}
+              editProjectDescriptionValue={editProjectDescriptionValue}
+              projectEditHandler={projectEditHandler}
+              editProjectMessageValue={editProjectMessageValue}
+              editProjectNameHasError={editProjectNameHasError}
+              isSubscribed={isSubscribed}
+              resetEditModalState={resetEditModalState}
+              setEditProjectDescriptionValue={setEditProjectDescriptionValue}
+              deleteModalInputValue={deleteModalInputValue}
+              deleteModalHasError={deleteModalHasError}
+              setDeleteModalHasError={setDeleteModalHasError}
+              resetDeleteModalState={resetDeleteModalState}
+              setDeleteModalInputValue={setDeleteModalInputValue}
+              selectedProjectIndex={selectedProjectIndex}
+              projects={projects}
+              projectDeleteHandler={projectDeleteHandler}
+            />
           </>
         }
       </main >
@@ -340,6 +298,7 @@ const MainPageContent: React.FC<{
     return <></>
   }
 
+  const isMobile = (windowWidth || 0) < 768;
   return (
     <ProjectDrawerContainer
       projectsData={props.projectsData}
@@ -347,7 +306,7 @@ const MainPageContent: React.FC<{
       onProjectPress={onProjectPress}
     >
       {
-        (windowWidth || 0) < 768 //if we are in mobile we need the icons above the main page content 
+        isMobile //if we are in mobile we need the icons above the main page content 
         &&
         <ActionIconsComponent
           projectId={props.projectsData[props.selectedProjectIndex]?.id}
@@ -372,568 +331,7 @@ const MainPageContent: React.FC<{
   )
 }
 
-const closeDrawer = () => {
-  const drawer = document.getElementById('drawer') as HTMLInputElement || undefined;
-  if (drawer) {
-    drawer.checked = false;
-  }
-}
-
 export default Home;
-
-const DeleteProjectModal: React.FC<{
-  onDelete: () => void;
-  projectTitle: string | undefined;
-  modalHasError: boolean;
-  setModalHasError: (value: boolean) => void;
-  resetModalState: () => void;
-  inputValue: string;
-  setInputValue: (value: string) => void;
-}> = (props) => {
-
-  const deleteHandler = (updatedValue?: string) => {
-    if (!props.projectTitle) return;
-    const value = updatedValue || props.inputValue;
-    if (value.trim() === props.projectTitle.trim()) {
-      props.resetModalState()
-      props.onDelete();
-    } else {
-      props.setModalHasError(true);
-    }
-  }
-
-
-  return (
-    <>
-      <input type="checkbox" id="delete-project-modal" className="modal-toggle overflow-x-hidden" />
-      <label htmlFor="delete-project-modal" className="modal cursor-pointer overflow-x-hidden">
-        <label className="modal-box relative">
-          <h3 className="text-lg font-bold">Are you sure you want to delete this project?</h3>
-          <p className="py-4">This action cannot be undone. You will lose all <span>{props.projectTitle || "your project"}</span>&apos;s feedback forever</p>
-          <div className="divider mt-0 mb-0" />
-          <div className="form-control w-full max-w-xs">
-            <label className="label">
-              <span className={`label-text ${props.modalHasError ? 'text-error' : 'text-warning'}`}>Insert project name to confirm</span>
-            </label>
-            <input
-              type="text"
-              placeholder="Project Name"
-              autoFocus
-              className={`input input-bordered w-full input-warning ${props.modalHasError ? 'input-error' : ''}`}
-              onChange={(e) => {
-                props.setInputValue(e.currentTarget.value);
-              }}
-              value={props.inputValue}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  deleteHandler(e.currentTarget.value);
-                  e.currentTarget.value = "";
-                }
-              }}
-            />
-          </div>
-          <div className="modal-action">
-            <ModalActionButton
-              modalId="delete-project-modal"
-              onClick={props.resetModalState}
-              text="cancel"
-            />
-            <ModalActionButton
-              modalId="delete-project-modal"
-              isRed
-              onClick={() => deleteHandler()}
-              disableClose
-              text="confirm"
-            />
-          </div>
-        </label>
-      </label>
-    </>
-  )
-}
-
-const ColorProjectModalBody: React.FC<{
-  projectName: string | null | undefined;
-  projectDescription: string | null | undefined;
-  projectBackgroundColorValue: string | null;
-  projectTextColorValue: string | null;
-  projectPrimaryColorValue: string | null;
-  setProjectBackgroundColorValue: (value: string | null) => void;
-  setProjectTextColorValue: (value: string | null) => void;
-  setProjectTitleColorValue: (value: string | null) => void;
-}> = (props) => {
-  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
-
-  return (
-    <div className="flex flex-col gap-4 overflow-x-hidden">
-      <input disabled className="hidden" /> {/*necessary to avoid bugs of text color input automatically focusing*/}
-      <PickColorRow
-        text="Primary Color"
-        currentColor={props.projectPrimaryColorValue}
-        onColorChange={(value) => {
-          props.setProjectTitleColorValue(value)
-        }}
-        onReset={() => {
-          props.setProjectTitleColorValue(null);
-        }}
-      />
-      {
-        isAdvancedOpen &&
-        <>
-          <p className="text-sm text-zinc-500">We don&apos;t suggest changing this settings. Double check the preview of both themes to make sure that all the content is visible in all cases</p>
-
-          <PickColorRow
-            text="Text Color"
-            currentColor={props.projectTextColorValue}
-            onReset={() => {
-              props.setProjectTextColorValue(null);
-            }}
-            onColorChange={(value) => {
-              props.setProjectTextColorValue(value)
-            }}
-          />
-          <PickColorRow
-            text="Background Color"
-            currentColor={props.projectBackgroundColorValue}
-            onColorChange={(value) => {
-              props.setProjectBackgroundColorValue(value)
-            }}
-            onReset={() => {
-              props.setProjectBackgroundColorValue(null);
-            }}
-          />
-        </>
-      }
-      <button
-        className="text-center link text-sm"
-        onClick={() => {
-          setIsAdvancedOpen((prev) => !prev)
-        }}
-      >
-        {isAdvancedOpen ? 'close advanced options' : 'open advanced options'}
-      </button>
-      <div className="divider my-0" />
-      <div>
-        <h4 className="text-center mb-1 text-lg font-semibold uppercase">Preview</h4>
-        <div className="border rounded-lg dark:border-zinc-600">
-          <ColorPreview
-            projectTitle={props.projectName}
-            projectDescription={props.projectDescription}
-            textColor={props.projectTextColorValue}
-            backgroundColor={props.projectBackgroundColorValue}
-            primaryColor={props.projectPrimaryColorValue}
-          />
-        </div>
-      </div>
-    </div>
-  )
-};
-
-const PickColorRow: React.FC<{
-  text: string;
-  currentColor: string | null;
-  onColorChange: (color: string) => void;
-  onReset: () => void;
-}> = (props) => {
-  return (
-    <div className="flex gap-2 justify-between items-center">
-      <p className="font-semibold">{props.text}</p>
-      <div className="flex items-center gap-2">
-        <div className="dropdown dropdown-end">
-
-          <label
-            className="block red-50 rounded-full w-9 h-9 border cursor-pointer hover:scale-110 transition-all"
-            tabIndex={0}
-            style={{
-              backgroundColor: props.currentColor || undefined
-            }}
-          >
-            {
-              !props.currentColor ?
-                <Image
-                  src="/assets/transparent.png"
-                  alt="transparent background"
-                  height={36}
-                  width={36}
-                  className="block red-50 rounded-full w-9 h-9 border"
-                /> : <></>
-            }
-          </label>
-          <div tabIndex={0} className="dropdown-content shadow">
-            <ChromePicker
-              onChange={(color) => {
-                props.onColorChange(color.hex);
-              }}
-              color={props.currentColor || undefined}
-            />
-          </div>
-        </div>
-        <button onClick={() => {
-          props.onReset();
-        }}>
-          <BiReset size={24} className="text-zinc-500" />
-        </button>
-      </div>
-    </div >
-
-  )
-}
-
-const EditProjectModal: React.FC<{
-  resetModalState: () => void;
-  projectDescription: string;
-  projectName: string;
-  projectMessage: string;
-  setDescriptionInputValue: (value: string) => void;
-  setNameInputValue: (value: string) => void;
-  descriptionInputValue: string;
-  nameInputValue: string;
-  onEdit: () => void;
-  editProjectNameHasError: boolean;
-  setNameInputHasError: (hasError: boolean) => void;
-  setMessageInputValue: (value: string) => void;
-  messageInputValue: string;
-  isSubscribed: boolean;
-}> = (props) => {
-  const editHandler = () => {
-    if (props.nameInputValue.length < 1) {
-      props.setNameInputHasError(true)
-      return;
-    }
-    props.onEdit();
-  }
-
-  return (
-    <>
-      <input type="checkbox" id="edit-project-modal" className="modal-toggle" />
-      <label htmlFor="edit-project-modal" className="modal cursor-pointer">
-        <label className="modal-box relative">
-          <div className="form-control gap-4">
-            <Input
-              name="Name"
-              placeholder={props.projectName}
-              onChange={(value) => {
-                props.setNameInputHasError(false)
-                props.setNameInputValue(value);
-              }}
-              value={props.nameInputValue}
-              isError={props.editProjectNameHasError}
-              maxLength={75}
-            />
-            <textarea
-              placeholder={props.projectDescription}
-              className={`mt-2 textarea textarea-bordered textarea-md w-full placeholder:text-zinc-500`}
-              onChange={(e) => props.setDescriptionInputValue(e.target.value)}
-              rows={6}
-              value={props.descriptionInputValue}
-            />
-            <button
-              disabled={props.isSubscribed}
-              onClick={() => {
-                if (props.isSubscribed) return;
-                const editModalElement = document.getElementById('edit-project-modal') as HTMLInputElement | null;
-                if (editModalElement) {
-                  editModalElement.checked = false;
-                }
-                const needSubscriptionModalElement = document.getElementById('need-subscription-modal') as HTMLInputElement | null;
-                if (needSubscriptionModalElement) {
-                  needSubscriptionModalElement.checked = true;
-                }
-              }}>
-              <Input
-                name="Message"
-                placeholder='example: "Tell me your feedback about"'
-                isDisabled={!props.isSubscribed}
-                onChange={(value) => {
-                  props.setMessageInputValue(value);
-                }}
-                value={props.messageInputValue}
-                maxLength={75}
-              />
-            </button>
-          </div>
-          <div className="modal-action">
-            <ModalActionButton
-              modalId="edit-project-modal"
-              onClick={props.resetModalState}
-              text="Cancel"
-            />
-            <ModalActionButton
-              modalId="edit-project-modal"
-              isPrimary
-              onClick={() => editHandler()}
-              disableClose
-              text="confirm"
-            />
-          </div>
-        </label>
-      </label>
-    </>
-  )
-}
-
-const ColorPreview: React.FC<{
-  projectTitle: string | null | undefined;
-  projectDescription: string | null | undefined;
-  primaryColor: string | null | undefined;
-  backgroundColor: string | null | undefined;
-  textColor: string | null | undefined;
-}> = (props) => {
-  const isDarkModeInitial = useIsDarkMode()
-  const [isDarkTheme, setIsDarkTheme] = useState(isDarkModeInitial);
-  useEffect(() => {
-    setIsDarkTheme(isDarkModeInitial);
-  }, [isDarkModeInitial])
-
-  const backgroundColorDark = "#212121";
-  const backgroundColorLight = "#FFFFFF";
-  const textColorLight = "#212936";
-  const textColorDark = "#D3D3D3";
-  const labelColorDark = "#1A1A1A";
-  const labelColorLight = "#E5E6E6";
-  const inputInternalColorLight = "#D8D8DB";
-  const inputBorderColorDark = "#4A4A4A";
-  const inputBorderColorLight = "#D8D8DB";
-
-  return (
-    <div
-      className={`h-full relative rounded-xl p-6`}
-      style={{
-        backgroundColor: props.backgroundColor || (
-          isDarkTheme ? backgroundColorDark : backgroundColorLight
-        ),
-        color: props.textColor || (
-          isDarkTheme ? textColorDark : textColorLight
-        )
-      }}
-    >
-      <button
-        className={"btn btn-circle absolute h-10 aspect-square right-2 top-2 flex justify-center items-center rounded-full shadow-lg border"}
-        onClick={() => {
-          setIsDarkTheme((prev) => !prev);
-        }}
-      >
-        {
-          isDarkTheme ?
-            <BiSun />
-            :
-            <BiMoon />
-        }
-      </button>
-      <div className="flex flex-col gap-4">
-        <h3
-          className="text-xl font-bold"
-          style={{
-            color: props.primaryColor || undefined
-          }}
-        >
-          {props.projectTitle}
-        </h3>
-        <h3
-          className=""
-          style={{
-            color: props.textColor || undefined
-          }}
-        >
-          {`${props.projectDescription?.substring(0, 100) || "This is a test description"} ${props.projectDescription?.length && props.projectDescription?.length > 100 ? "..." : ""}`}
-        </h3>
-
-        <StaticRatingComponent
-          rating={3}
-          primaryColor={props.primaryColor}
-          isDark={isDarkTheme}
-        />
-
-        <Input
-          isDisabled
-          name="Preview"
-          value="This is a preview"
-          placeholder="This is a preview"
-          labelColor={isDarkTheme ? labelColorDark : labelColorLight}
-          borderColor={
-            isDarkTheme ? inputBorderColorDark : inputBorderColorLight
-          }
-          internalColor={props.backgroundColor ?
-            props.backgroundColor :
-            isDarkTheme ? backgroundColorDark : inputInternalColorLight
-          }
-        />
-      </div>
-    </div>
-  )
-};
-
-const InfoProjectModal: React.FC<{
-  projectId: string | undefined;
-}> = (props) => {
-  const { data: projectInfo, isLoading: isProjectInfoLoading } = api.projects.getInfo.useQuery({ projectId: props.projectId || "" }, {
-    enabled: !!props.projectId
-  });
-
-  return (
-    <>
-      <input type="checkbox" id="info-project-modal" className="modal-toggle" />
-      <label htmlFor="info-project-modal" className="modal cursor-pointer">
-        <label className="modal-box relative">
-          {isProjectInfoLoading || !projectInfo ? (
-            <LoadingIndicator color={projectInfo?.primaryColor || undefined} />
-          ) : (
-            <div>
-              <h2 className="text-xl font-bold">{projectInfo.name}</h2>
-              <p className="italic">{projectInfo.description}</p>
-              <div className="divider" />
-              <div className="flex justify-between items-center">
-                <p>Average Rating:</p>
-                <p className="font-bold">{projectInfo.averageRating ? projectInfo.averageRating.toFixed(1) : "N/A"}</p>
-              </div>
-              <div className="flex justify-between items-center">
-                <p>Created At:</p>
-                <p className="font-bold">{projectInfo.createdAt.toDateString()}</p>
-              </div>
-              <div className="flex justify-between items-center">
-                <p>Feedback received:</p>
-                <p className="font-bold">{projectInfo._count.feedbacks}</p>
-              </div>
-              <div className="flex justify-between items-center">
-                <p>ID:</p>
-                <p className="font-bold">{projectInfo.id}</p>
-              </div>
-            </div>
-          )}
-        </label>
-      </label>
-    </>
-  )
-}
-
-const SortContent: React.FC<{
-  currentSort: OrderBy | undefined;
-  projectId: string | undefined;
-  onLoadingChange: (value: boolean) => void;
-}> = (props) => {
-  const [isAscending, setIsAscending] = useState(
-    props.currentSort === "ratingAsc" || props.currentSort === "createdAtAsc"
-  );
-  const [isSortingByRating, setIsSortingByRating] = useState(
-    props.currentSort === 'ratingAsc' || props.currentSort === 'ratingDesc'
-  );
-
-  useEffect(() => {
-    if (props.currentSort === 'ratingAsc' || props.currentSort === 'ratingDesc') {
-      setIsSortingByRating(true);
-    } else {
-      setIsSortingByRating(false);
-    }
-    if (props.currentSort === 'ratingAsc' || props.currentSort === 'createdAtAsc') {
-      setIsAscending(true);
-    } else {
-      setIsAscending(false);
-    }
-  }, [props.currentSort])
-
-  const {
-    refetch: refetchFeedback
-  } = api.feedbacks.getAll.useQuery({
-    projectId: props.projectId || "-1"
-  }, {
-    enabled: !!props.projectId,
-    onError: (e) => {
-      toastTrpcError(
-        "Something went wrong fetching the feedback.",
-        e.data?.zodError?.fieldErrors,
-        [
-          { propertyName: "projectId", propertyMessage: "Project ID" },
-        ]
-      )
-    }
-  });
-
-  const {
-    refetch: refetchProjects
-  } = api.projects.getAll.useQuery(undefined, {
-    enabled: !!props.projectId,
-    onError: () => {
-      toastTrpcError(
-        "Something went wrong fetching the feedback.",
-        undefined,
-        []
-      )
-    }
-  });
-
-  const {
-    mutate: editProject,
-    isLoading: isEditProjectLoading
-  } = api.projects.edit.useMutation({
-    onError: (e) => {
-      toastTrpcError(
-        "Something went wrong changing the sort.",
-        e.data?.zodError?.fieldErrors,
-        [
-          { propertyName: "projectId", propertyMessage: "Project ID" },
-          { propertyName: "newOrderBy", propertyMessage: "New Sort" },
-        ]
-      )
-    },
-    onSuccess: async () => {
-      await refetchProjects();
-      void refetchFeedback();
-    }
-  });
-
-  useEffect(() => {
-    props.onLoadingChange(isEditProjectLoading)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEditProjectLoading])
-
-  const onChangeSort = (isSortingByRatingLocal: boolean, isAscendingLocal: boolean) => {
-    closeDropdown();
-    let currentSort: OrderBy;
-    if (isSortingByRatingLocal) {
-      if (isAscendingLocal) {
-        currentSort = 'ratingAsc';
-      } else {
-        currentSort = 'ratingDesc';
-      }
-    } else {
-      if (isAscendingLocal) {
-        currentSort = 'createdAtAsc';
-      } else {
-        currentSort = 'createdAtDesc';
-      }
-    }
-    editProject({
-      projectId: props.projectId || '-1',
-      newOrderBy: currentSort
-    })
-  }
-
-  return (
-    <div className="flex gap-4">
-      <select
-        className="select select-bordered grow outline-none focus:outline-none"
-        onChange={(e) => {
-          onChangeSort(e.currentTarget.value === 'Rating', isAscending);
-          e.currentTarget.value === 'Rating' ? setIsSortingByRating(true) : setIsSortingByRating(false);
-        }}
-        value={isSortingByRating ? 'Rating' : 'Created Time'}
-      >
-        <option disabled>Sort By</option>
-        <option>Created Time</option>
-        <option>Rating</option>
-      </select>
-      <SwitchComponent
-        activeFirst={isAscending}
-        first={<BiSortUp size={28} />}
-        second={<BiSortDown size={28} />}
-        onSwitch={() => {
-          onChangeSort(isSortingByRating, !isAscending)
-          setIsAscending((prevState) => !prevState)
-        }}
-      />
-    </div>
-  )
-}
 
 const ProjectMainContent: React.FC<{
   selectedProjectIndex: number;
@@ -991,23 +389,22 @@ const ProjectMainContent: React.FC<{
   });
 
 
+  const isNotMobile =
+    (windowWidth || 0) >= 768;
   if (!projectsData.length) {
     return (<>
       {
-        (windowWidth || 0) >= 768
-          ?
-          <ActionIconsComponent
-            currentSort={projectsData[props.selectedProjectIndex]?.orderBy}
-            projectId={projectsData[props.selectedProjectIndex]?.id}
-            areThereProjects={projectsData.length > 0}
-            projectName={projectsData[props.selectedProjectIndex]?.name}
-            isDeleteProjectLoading={props.isDeleteProjectLoading}
-            isEditProjectLoading={props.isEditProjectLoading}
-            isColorProjectLoading={props.isColorProjectLoading}
-            projectPrimaryColor={projectsData[props.selectedProjectIndex]?.primaryColor}
-          />
-          :
-          <></>
+        isNotMobile &&
+        <ActionIconsComponent
+          currentSort={projectsData[props.selectedProjectIndex]?.orderBy}
+          projectId={projectsData[props.selectedProjectIndex]?.id}
+          areThereProjects={projectsData.length > 0}
+          projectName={projectsData[props.selectedProjectIndex]?.name}
+          isDeleteProjectLoading={props.isDeleteProjectLoading}
+          isEditProjectLoading={props.isEditProjectLoading}
+          isColorProjectLoading={props.isColorProjectLoading}
+          projectPrimaryColor={projectsData[props.selectedProjectIndex]?.primaryColor}
+        />
       }
       <NoProjectsComponent />
     </>)
@@ -1022,59 +419,50 @@ const ProjectMainContent: React.FC<{
             style={{
               color: projectsData[props.selectedProjectIndex]?.primaryColor || ""
             }}
-          >{projectsData[props.selectedProjectIndex]?.name}</h1>
-          {
-            <DescriptionOrAddDescriptionComponent
-              projectDescription={projectsData[props.selectedProjectIndex]?.description}
-              editDescription={editDescriptionHandler}
-              isEditDescriptionLoading={isEditDescriptionLoading}
-              projectColor={projectsData[props.selectedProjectIndex]?.primaryColor}
-            />
-          }
+          >
+            {projectsData[props.selectedProjectIndex]?.name}
+          </h1>
+          <DescriptionOrAddDescriptionComponent
+            projectDescription={projectsData[props.selectedProjectIndex]?.description}
+            editDescription={editDescriptionHandler}
+            isEditDescriptionLoading={isEditDescriptionLoading}
+            projectColor={projectsData[props.selectedProjectIndex]?.primaryColor}
+          />
         </div>
         {
-          (windowWidth || 0) >= 768
-            ?
-            <ActionIconsComponent
-              currentSort={projectsData[props.selectedProjectIndex]?.orderBy}
-              projectId={projectsData[props.selectedProjectIndex]?.id}
-              areThereProjects={projectsData.length > 0}
-              projectName={projectsData[props.selectedProjectIndex]?.name}
-              isEditProjectLoading={props.isEditProjectLoading}
-              isDeleteProjectLoading={props.isDeleteProjectLoading}
-              isColorProjectLoading={props.isColorProjectLoading}
-              projectPrimaryColor={props.projectsData?.[props.selectedProjectIndex]?.primaryColor}
-            />
-            :
-            <></>
+          isNotMobile
+          &&
+          <ActionIconsComponent
+            currentSort={projectsData[props.selectedProjectIndex]?.orderBy}
+            projectId={projectsData[props.selectedProjectIndex]?.id}
+            areThereProjects={projectsData.length > 0}
+            projectName={projectsData[props.selectedProjectIndex]?.name}
+            isEditProjectLoading={props.isEditProjectLoading}
+            isDeleteProjectLoading={props.isDeleteProjectLoading}
+            isColorProjectLoading={props.isColorProjectLoading}
+            projectPrimaryColor={props.projectsData?.[props.selectedProjectIndex]?.primaryColor}
+          />
         }
       </div>
       {
-        (
-          (
-            isFeedbackDataLoading ?
-              <div className="h-full w-full flex justify-center items-center">
-                <LoadingIndicator color={projectsData[props.selectedProjectIndex]?.primaryColor || undefined} />
-              </div>
-              :
-              (
-
-                projectsData[props.selectedProjectIndex] && feedbacksData?.length
-                  ?
-                  <FeedbackList
-                    feedbacksData={feedbacksData}
-                    sortingMethod={projectsData[props.selectedProjectIndex]?.orderBy}
-                    shouldSort={isFeedbacksFetching && !!feedbacksData}
-                    primaryColor={projectsData[props.selectedProjectIndex]?.primaryColor}
-                  />
-                  :
-                  <NoFeedbackComponent
-                    projectId={projectsData[props.selectedProjectIndex]?.id || "-1"}
-                    projectName={projectsData[props.selectedProjectIndex]?.name}
-                  />
-              )
-          )
-        )
+        isFeedbackDataLoading ?
+          <div className="h-full w-full flex justify-center items-center">
+            <LoadingIndicator color={projectsData[props.selectedProjectIndex]?.primaryColor || undefined} />
+          </div>
+          :
+          projectsData[props.selectedProjectIndex] && feedbacksData?.length
+            ?
+            <FeedbackList
+              feedbacksData={feedbacksData}
+              sortingMethod={projectsData[props.selectedProjectIndex]?.orderBy}
+              shouldSort={isFeedbacksFetching && !!feedbacksData}
+              primaryColor={projectsData[props.selectedProjectIndex]?.primaryColor}
+            />
+            :
+            <NoFeedbackComponent
+              projectId={projectsData[props.selectedProjectIndex]?.id || "-1"}
+              projectName={projectsData[props.selectedProjectIndex]?.name}
+            />
       }
     </>
   )
@@ -1103,6 +491,65 @@ const FeedbackList: React.FC<{
   )
 }
 
+const FeedbackComponent: React.FC<{
+  feedback: Feedback,
+  primaryColor: string | null | undefined;
+}> = (props) => {
+  const [isShowMore, setIsShowMore] = useState(false);
+  const linesLimit = 6;
+  return (
+    <li key={props.feedback.id}>
+      <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between shadow-sm dark:bg-base-300 dark:border dark:border-zinc-700">
+        <div>
+          <div className="flex justify-between items-start">
+            <StaticRatingComponent
+              rating={props.feedback.rating}
+              primaryColor={props.primaryColor}
+            />
+            <p className="text-zinc-500 leading-3">{timeSinceNow(props.feedback.createdAt)}</p>
+          </div>
+          {
+            props.feedback.title ?
+              <h2 className="text-xl font-bold">
+                {props.feedback.title}
+              </h2>
+              :
+              <></>
+          }
+          <p className={!isShowMore ? 'line-clamp-6' : ''}>
+            {props.feedback.content}
+          </p>
+          {
+            countLines(props.feedback.content) > linesLimit &&
+            <div className="flex">
+              <button
+                className="link text-sm ml-auto text-zinc-500"
+                onClick={() => {
+                  setIsShowMore((prev) => !prev)
+                }}
+              >
+                {isShowMore ? 'less' : 'more'}
+              </button>
+            </div>
+          }
+        </div>
+        {
+          props.feedback.author ?
+            <p className="text-zinc-500 text-right italic align-text-bottom">
+              {props.feedback.author}
+            </p>
+            :
+            <div className="flex flex-row justify-end items-center gap-1">
+              <BsIncognito className="text-zinc-500" />
+              <p className="text-zinc-500 text-right italic align-text-bottom">
+                Anonymous
+              </p>
+            </div>
+        }
+      </div>
+    </li >
+  )
+}
 
 const DescriptionOrAddDescriptionComponent: React.FC<{
   projectDescription: string | null | undefined;
@@ -1235,88 +682,6 @@ const ProjectInstructionsRow: React.FC<{
   )
 }
 
-const onGenerateQr = async (projectId: string, projectName: string) => {
-  const projectLink = getProjectUrl(projectId);
-  try {
-    const qrImage = await QRCode.toDataURL(
-      projectLink,
-      { type: 'image/png' },
-    )
-    await shareOrCopyToClipboard({
-      title: `${projectName}'s QR-Code`,
-      isFile: true,
-      fileName: `${projectName}'s QR-Code.png`,
-      text: qrImage
-    })
-  } catch (err) {
-    toast('Something went wrong generating the QR-Code', {
-      className: 'bg-error text-error'
-    })
-  }
-}
-
-
-const shareOrCopyToClipboard = async ({
-  text,
-  title,
-  isFile,
-  fileName,
-}: {
-  text: string,
-  title?: string,
-  isFile?: boolean
-  fileName?: string;
-}) => {
-  if (isFile) {
-    const blob = await (await fetch(text)).blob()
-    const file = new File([blob], (fileName || 'projectQr.png'), { type: blob.type })
-    downloadFile(fileName || 'projectQr.png', file)
-    return;
-  }
-  const shareData: ShareData = {
-    title,
-    url: text,
-  };
-  if (navigator.share && navigator.canShare(shareData)) {
-    void navigator.share({
-      title,
-      url: text,
-    })
-  } else {
-    void copyToClipboard(text);
-  }
-}
-
-const copyToClipboard = async (text: string) => {
-  await navigator.clipboard.writeText(text)
-  toast('Copied to the clipboard!')
-}
-
-const downloadFile = (fileName: string, blob: Blob) => {
-  const url = window.URL.createObjectURL(
-    new Blob([blob]),
-  );
-  const link = document.createElement('a');
-  link.href = url;
-  link.setAttribute(
-    'download',
-    `${fileName}`,
-  );
-
-  // Append to html link element page
-  document.body.appendChild(link);
-
-  // Start download
-  link.click();
-
-  // Clean up and remove the link
-  link.parentNode?.removeChild(link);
-}
-
-const getProjectUrl = (projectId: string) => {
-  return `${window.location.origin}/newfeedback/${projectId}`
-}
-
 const NoProjectsComponent: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center h-full gap-4">
@@ -1345,238 +710,6 @@ const NoProjectsComponent: React.FC = () => {
   )
 }
 
-const ActionIconsComponent: React.FC<{
-  projectId: string | undefined;
-  areThereProjects: boolean;
-  projectName: string | undefined;
-  currentSort: OrderBy | undefined;
-  isDeleteProjectLoading: boolean;
-  isColorProjectLoading: boolean;
-  isEditProjectLoading: boolean;
-  projectPrimaryColor: string | null | undefined;
-}> = (props) => {
-  const [windowWidth] = useWindowSize()
-  const isSmall = (windowWidth || 0) < 768;
-  const isMedium = ((windowWidth || 0) < 1024) && ((windowWidth || 0) >= 768);
-  const isBig = (windowWidth || 0) >= 1024;
-
-  const {
-    data: subscriptionStatus
-  } = api.user.subscriptionStatus.useQuery();
-  const isSubscribed = subscriptionStatus === "active"
-
-  return (
-    <div className={
-      isSmall ? 'flex flex-row justify-end items-center gap-1' :
-        isMedium || isBig ? 'flex flex-row items-start justify-end ml-4 gap-1' :
-          ''
-    }>
-      {
-        props.areThereProjects &&
-        (
-          <>
-            <SingleActionIcon
-              isSubscribed={isSubscribed}
-              onPress={() => {
-                void onGenerateQr(props.projectId || "-1", props.projectName || "this project");
-              }}
-              tooltipName="Generate QR"
-            >
-              <BiQr size={26} />
-            </SingleActionIcon>
-            <SingleActionIcon
-              isSubscribed={isSubscribed}
-              onPress={() => {
-                void shareOrCopyToClipboard(
-                  {
-                    isFile: false,
-                    text: getProjectUrl(props.projectId || "-1"),
-                    title: `What do you think about ${props.projectName || "this project"}?`
-                  }
-                )
-              }}
-              tooltipName="share project"
-            >
-              <BiShareAlt size={26} />
-            </SingleActionIcon>
-            <SingleActionIcon
-              tooltipName="project info"
-              needsPro
-              isSubscribed={isSubscribed}
-              modalId="info-project-modal"
-            >
-              <BiInfoCircle size={26} />
-            </SingleActionIcon>
-            <SingleActionIcon
-              tooltipName="Customize colors"
-              isSubscribed={isSubscribed}
-              needsPro
-              modalId="color-project-modal"
-            >
-              {
-                props.isColorProjectLoading ?
-                  <LoadingIndicator
-                    isSmall
-                    showInstantly
-                    color={props.projectPrimaryColor || undefined}
-                  /> :
-                  <BiColorFill size={26} />
-              }
-            </SingleActionIcon>
-            <SingleActionIcon
-              isSubscribed={isSubscribed}
-              tooltipName="Edit Project"
-              modalId="edit-project-modal"
-            >
-              {
-                props.isEditProjectLoading ?
-                  <LoadingIndicator
-                    isSmall
-                    showInstantly
-                    color={props.projectPrimaryColor || undefined}
-                  />
-                  :
-                  <BiEdit size={26} />
-              }
-            </SingleActionIcon>
-            <SingleActionIcon
-              tooltipName="Delete Project"
-              modalId="delete-project-modal"
-              isSubscribed={isSubscribed}
-            >
-              {
-                props.isDeleteProjectLoading ?
-                  <LoadingIndicator isSmall showInstantly color={props.projectPrimaryColor || undefined} />
-                  :
-                  <BiTrash size={26} />
-              }
-            </SingleActionIcon>
-            <SingleActionIcon
-              tooltipName="sort"
-              needsPro
-              isSubscribed={isSubscribed}
-            >
-              <DropdownSort
-                currentSort={props.currentSort}
-                projectId={props.projectId}
-                needsPro
-                projectPrimaryColor={props.projectPrimaryColor}
-                isSubscribed={isSubscribed}
-              />
-            </SingleActionIcon>
-          </>
-        )
-      }
-      {
-        !isBig && <label htmlFor="drawer" className="cursor-pointer">
-          <OpenMenuButton />
-        </label>
-      }
-    </div >
-  )
-}
-
-const DropdownSort: React.FC<{
-  currentSort: OrderBy | undefined;
-  projectId: string | undefined;
-  projectPrimaryColor: string | null | undefined;
-  isSubscribed: boolean;
-  needsPro?: boolean;
-}> = (props) => {
-  const [isLoading, setIsLoading] = useState(false);
-
-  if (!props.isSubscribed && props.needsPro) {
-    return (
-      isLoading ? <LoadingIndicator
-        isSmall
-        showInstantly
-        color={props.projectPrimaryColor || undefined}
-      /> :
-        <BiSortAlt2 size={26} />
-    )
-  }
-
-  return (
-    <div className="dropdown dropdown-end flex">
-      <label tabIndex={0} className="cursor-pointer">
-        {
-          isLoading ? <LoadingIndicator
-            isSmall
-            showInstantly
-            color={props.projectPrimaryColor || undefined}
-          /> :
-            <BiSortAlt2 size={26} />
-        }
-      </label>
-      <div
-        id='sort-dropdown'
-        tabIndex={0}
-        className="dropdown-content bg-base-300 menu p-2 shadow rounded-box w-52">
-        <SortContent
-          currentSort={props.currentSort}
-          onLoadingChange={(value) => {
-            setIsLoading(value)
-          }}
-          projectId={props.projectId}
-        />
-      </div>
-    </div>
-  )
-}
-const closeDropdown = () => {
-  const dropdown = document.activeElement as HTMLDivElement | undefined;
-  if (dropdown) {
-    dropdown.blur();
-  }
-}
-
-const OpenMenuButton = () => {
-  return (
-    <div className="flex bg-base-300 rounded-full items-center justify-center pl-2 pr-1 text-center py-1 dark:border dark:border-zinc-700">
-      <p className="align-middle font-bold">MENU</p>
-      <BiMenu className="text-primary" size={24} />
-    </div>
-  )
-
-}
-
-const SingleActionIcon: React.FC<{
-  children: React.ReactNode;
-  onPress?: () => void;
-  tooltipName?: string;
-  isTooltipSuccess?: boolean;
-  needsPro?: boolean;
-  isSubscribed?: boolean;
-  modalId?: string;
-}> = (props) => {
-  const isForbidden = props.needsPro && !props.isSubscribed;
-  return (
-    <div
-      className={`${!!props.tooltipName ? ' md:tooltip md:tooltip-left' : ''} cursor-pointer`}
-      data-tip={props.tooltipName?.toLowerCase()}
-    >
-      {
-        isForbidden
-          ?
-          <label htmlFor="need-subscription-modal" className="cursor-pointer">
-            {props.children}
-          </label>
-          :
-          <a className="cursor-pointer" onClick={() => {
-            props.onPress && props.onPress()
-          }
-          }>
-            {
-              props.modalId ?
-                <label htmlFor={props.modalId} className="cursor-pointer">{props.children}</label>
-                :
-                props.children
-            }
-          </a>
-      }
-    </div>
-  )
-}
 
 const ProjectDrawerContainer: React.FC<{
   projectsData: Project[] | undefined;
@@ -1720,65 +853,5 @@ const ProjectComponent: React.FC<{
         {props.project.name}
       </a>
     </li>
-  )
-}
-
-const FeedbackComponent: React.FC<{
-  feedback: Feedback,
-  primaryColor: string | null | undefined;
-}> = (props) => {
-  const [isShowMore, setIsShowMore] = useState(false);
-  const linesLimit = 6;
-  return (
-    <li key={props.feedback.id}>
-      <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between shadow-sm dark:bg-base-300 dark:border dark:border-zinc-700">
-        <div>
-          <div className="flex justify-between items-start">
-            <StaticRatingComponent
-              rating={props.feedback.rating}
-              primaryColor={props.primaryColor}
-            />
-            <p className="text-zinc-500 leading-3">{timeSinceNow(props.feedback.createdAt)}</p>
-          </div>
-          {
-            props.feedback.title ?
-              <h2 className="text-xl font-bold">
-                {props.feedback.title}
-              </h2>
-              :
-              <></>
-          }
-          <p className={!isShowMore ? 'line-clamp-6' : ''}>
-            {props.feedback.content}
-          </p>
-          {
-            countLines(props.feedback.content) > linesLimit &&
-            <div className="flex">
-              <button
-                className="link text-sm ml-auto text-zinc-500"
-                onClick={() => {
-                  setIsShowMore((prev) => !prev)
-                }}
-              >
-                {isShowMore ? 'less' : 'more'}
-              </button>
-            </div>
-          }
-        </div>
-        {
-          props.feedback.author ?
-            <p className="text-zinc-500 text-right italic align-text-bottom">
-              {props.feedback.author}
-            </p>
-            :
-            <div className="flex flex-row justify-end items-center gap-1">
-              <BsIncognito className="text-zinc-500" />
-              <p className="text-zinc-500 text-right italic align-text-bottom">
-                Anonymous
-              </p>
-            </div>
-        }
-      </div>
-    </li >
   )
 }
