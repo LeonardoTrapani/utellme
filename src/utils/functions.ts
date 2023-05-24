@@ -1,4 +1,5 @@
 import toast from "react-hot-toast";
+import QRCode from 'qrcode'
 
 export const countLines = (text: string) => {
   return text.split(/\r\n|\r|\n/).length
@@ -85,4 +86,85 @@ export const toastTrpcError = (
 export const reloadSession = () => {
   const event = new Event("visibilitychange");
   document.dispatchEvent(event);
+}
+
+export const onGenerateQr = async (projectId: string, projectName: string) => {
+  const projectLink = getProjectUrl(projectId);
+  try {
+    const qrImage = await QRCode.toDataURL(
+      projectLink,
+      { type: 'image/png' },
+    )
+    await shareOrCopyToClipboard({
+      title: `${projectName}'s QR-Code`,
+      isFile: true,
+      fileName: `${projectName}'s QR-Code.png`,
+      text: qrImage
+    })
+  } catch (err) {
+    toast('Something went wrong generating the QR-Code', {
+      className: 'bg-error text-error'
+    })
+  }
+}
+
+export const shareOrCopyToClipboard = async ({
+  text,
+  title,
+  isFile,
+  fileName,
+}: {
+  text: string,
+  title?: string,
+  isFile?: boolean
+  fileName?: string;
+}) => {
+  if (isFile) {
+    const blob = await (await fetch(text)).blob()
+    const file = new File([blob], (fileName || 'projectQr.png'), { type: blob.type })
+    downloadFile(fileName || 'projectQr.png', file)
+    return;
+  }
+  const shareData: ShareData = {
+    title,
+    url: text,
+  };
+  if (navigator.share && navigator.canShare(shareData)) {
+    void navigator.share({
+      title,
+      url: text,
+    })
+  } else {
+    void copyToClipboard(text);
+  }
+}
+
+export const copyToClipboard = async (text: string) => {
+  await navigator.clipboard.writeText(text)
+  toast('Copied to the clipboard!')
+}
+
+const downloadFile = (fileName: string, blob: Blob) => {
+  const url = window.URL.createObjectURL(
+    new Blob([blob]),
+  );
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute(
+    'download',
+    `${fileName}`,
+  );
+
+  // Append to html link element page
+  document.body.appendChild(link);
+
+  // Start download
+  link.click();
+
+  // Clean up and remove the link
+  link.parentNode?.removeChild(link);
+}
+
+export const getProjectUrl = (projectId: string) => {
+  return `${window.location.origin}/newfeedback/${projectId}`
 }

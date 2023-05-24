@@ -2,11 +2,10 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import type { GetServerSidePropsContext } from "next";
 import { authOptions } from "~/server/auth";
-
 import { signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useEffect, useRef, useState } from "react";
-import { BiEdit, BiMenu, BiTrash, BiQr, BiShareAlt, BiCheck, BiInfoCircle, BiSortUp, BiSortDown, BiSortAlt2, BiColorFill, BiReset, BiSun, BiMoon } from "react-icons/bi"
+import { BiQr, BiShareAlt, BiCheck } from "react-icons/bi"
 import { BsIncognito } from "react-icons/bs";
 import { FiSettings } from "react-icons/fi";
 import type { Feedback, OrderBy, Project } from "@prisma/client";
@@ -15,20 +14,16 @@ import LoadingIndicator from "~/components/LoadingIndicator";
 import Avatar from "~/components/Avatar";
 
 import { BiLogOut } from "react-icons/bi";
-import { useIsDarkMode, useWindowSize } from "~/utils/hooks";
+import { useWindowSize } from "~/utils/hooks";
 import { toast } from "react-hot-toast";
-import QRCode from 'qrcode'
 import Input from "~/components/Input";
 import { UTellMeComponentButton } from "~/components/UTellMeComponent";
-import { countLines, timeSinceNow, toastTrpcError } from "~/utils/functions";
-import { SwitchComponent } from "~/components/SwitchComponent";
+import { countLines, getProjectUrl, onGenerateQr, shareOrCopyToClipboard, timeSinceNow, toastTrpcError } from "~/utils/functions";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import Modal, { ModalActionButton } from "~/components/Modal";
-import { ChromePicker } from "react-color";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import DashboardModals from "~/components/DashboardModals";
+import ActionIconsComponent, { SingleActionIcon } from "~/components/DashboardActionIcons";
 
 const Home: NextPage = () => {
   const { status: sessionStatus } = useSession();
@@ -100,6 +95,13 @@ const Home: NextPage = () => {
       )
     }
   })
+
+  const closeDrawer = () => {
+    const drawer = document.getElementById('drawer') as HTMLInputElement || undefined;
+    if (drawer) {
+      drawer.checked = false;
+    }
+  }
 
   const setSelectedProjectIndex = (i: number) => {
     setSelectedProjectIndexState(i);
@@ -296,6 +298,7 @@ const MainPageContent: React.FC<{
     return <></>
   }
 
+  const isMobile = (windowWidth || 0) < 768;
   return (
     <ProjectDrawerContainer
       projectsData={props.projectsData}
@@ -303,7 +306,7 @@ const MainPageContent: React.FC<{
       onProjectPress={onProjectPress}
     >
       {
-        (windowWidth || 0) < 768 //if we are in mobile we need the icons above the main page content 
+        isMobile //if we are in mobile we need the icons above the main page content 
         &&
         <ActionIconsComponent
           projectId={props.projectsData[props.selectedProjectIndex]?.id}
@@ -328,143 +331,7 @@ const MainPageContent: React.FC<{
   )
 }
 
-const closeDrawer = () => {
-  const drawer = document.getElementById('drawer') as HTMLInputElement || undefined;
-  if (drawer) {
-    drawer.checked = false;
-  }
-}
-
 export default Home;
-
-const SortContent: React.FC<{
-  currentSort: OrderBy | undefined;
-  projectId: string | undefined;
-  onLoadingChange: (value: boolean) => void;
-}> = (props) => {
-  const [isAscending, setIsAscending] = useState(
-    props.currentSort === "ratingAsc" || props.currentSort === "createdAtAsc"
-  );
-  const [isSortingByRating, setIsSortingByRating] = useState(
-    props.currentSort === 'ratingAsc' || props.currentSort === 'ratingDesc'
-  );
-
-  useEffect(() => {
-    if (props.currentSort === 'ratingAsc' || props.currentSort === 'ratingDesc') {
-      setIsSortingByRating(true);
-    } else {
-      setIsSortingByRating(false);
-    }
-    if (props.currentSort === 'ratingAsc' || props.currentSort === 'createdAtAsc') {
-      setIsAscending(true);
-    } else {
-      setIsAscending(false);
-    }
-  }, [props.currentSort])
-
-  const {
-    refetch: refetchFeedback
-  } = api.feedbacks.getAll.useQuery({
-    projectId: props.projectId || "-1"
-  }, {
-    enabled: !!props.projectId,
-    onError: (e) => {
-      toastTrpcError(
-        "Something went wrong fetching the feedback.",
-        e.data?.zodError?.fieldErrors,
-        [
-          { propertyName: "projectId", propertyMessage: "Project ID" },
-        ]
-      )
-    }
-  });
-
-  const {
-    refetch: refetchProjects
-  } = api.projects.getAll.useQuery(undefined, {
-    enabled: !!props.projectId,
-    onError: () => {
-      toastTrpcError(
-        "Something went wrong fetching the feedback.",
-        undefined,
-        []
-      )
-    }
-  });
-
-  const {
-    mutate: editProject,
-    isLoading: isEditProjectLoading
-  } = api.projects.edit.useMutation({
-    onError: (e) => {
-      toastTrpcError(
-        "Something went wrong changing the sort.",
-        e.data?.zodError?.fieldErrors,
-        [
-          { propertyName: "projectId", propertyMessage: "Project ID" },
-          { propertyName: "newOrderBy", propertyMessage: "New Sort" },
-        ]
-      )
-    },
-    onSuccess: async () => {
-      await refetchProjects();
-      void refetchFeedback();
-    }
-  });
-
-  useEffect(() => {
-    props.onLoadingChange(isEditProjectLoading)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEditProjectLoading])
-
-  const onChangeSort = (isSortingByRatingLocal: boolean, isAscendingLocal: boolean) => {
-    closeDropdown();
-    let currentSort: OrderBy;
-    if (isSortingByRatingLocal) {
-      if (isAscendingLocal) {
-        currentSort = 'ratingAsc';
-      } else {
-        currentSort = 'ratingDesc';
-      }
-    } else {
-      if (isAscendingLocal) {
-        currentSort = 'createdAtAsc';
-      } else {
-        currentSort = 'createdAtDesc';
-      }
-    }
-    editProject({
-      projectId: props.projectId || '-1',
-      newOrderBy: currentSort
-    })
-  }
-
-  return (
-    <div className="flex gap-4">
-      <select
-        className="select select-bordered grow outline-none focus:outline-none"
-        onChange={(e) => {
-          onChangeSort(e.currentTarget.value === 'Rating', isAscending);
-          e.currentTarget.value === 'Rating' ? setIsSortingByRating(true) : setIsSortingByRating(false);
-        }}
-        value={isSortingByRating ? 'Rating' : 'Created Time'}
-      >
-        <option disabled>Sort By</option>
-        <option>Created Time</option>
-        <option>Rating</option>
-      </select>
-      <SwitchComponent
-        activeFirst={isAscending}
-        first={<BiSortUp size={28} />}
-        second={<BiSortDown size={28} />}
-        onSwitch={() => {
-          onChangeSort(isSortingByRating, !isAscending)
-          setIsAscending((prevState) => !prevState)
-        }}
-      />
-    </div>
-  )
-}
 
 const ProjectMainContent: React.FC<{
   selectedProjectIndex: number;
@@ -522,23 +389,22 @@ const ProjectMainContent: React.FC<{
   });
 
 
+  const isNotMobile =
+    (windowWidth || 0) >= 768;
   if (!projectsData.length) {
     return (<>
       {
-        (windowWidth || 0) >= 768
-          ?
-          <ActionIconsComponent
-            currentSort={projectsData[props.selectedProjectIndex]?.orderBy}
-            projectId={projectsData[props.selectedProjectIndex]?.id}
-            areThereProjects={projectsData.length > 0}
-            projectName={projectsData[props.selectedProjectIndex]?.name}
-            isDeleteProjectLoading={props.isDeleteProjectLoading}
-            isEditProjectLoading={props.isEditProjectLoading}
-            isColorProjectLoading={props.isColorProjectLoading}
-            projectPrimaryColor={projectsData[props.selectedProjectIndex]?.primaryColor}
-          />
-          :
-          <></>
+        isNotMobile &&
+        <ActionIconsComponent
+          currentSort={projectsData[props.selectedProjectIndex]?.orderBy}
+          projectId={projectsData[props.selectedProjectIndex]?.id}
+          areThereProjects={projectsData.length > 0}
+          projectName={projectsData[props.selectedProjectIndex]?.name}
+          isDeleteProjectLoading={props.isDeleteProjectLoading}
+          isEditProjectLoading={props.isEditProjectLoading}
+          isColorProjectLoading={props.isColorProjectLoading}
+          projectPrimaryColor={projectsData[props.selectedProjectIndex]?.primaryColor}
+        />
       }
       <NoProjectsComponent />
     </>)
@@ -553,59 +419,50 @@ const ProjectMainContent: React.FC<{
             style={{
               color: projectsData[props.selectedProjectIndex]?.primaryColor || ""
             }}
-          >{projectsData[props.selectedProjectIndex]?.name}</h1>
-          {
-            <DescriptionOrAddDescriptionComponent
-              projectDescription={projectsData[props.selectedProjectIndex]?.description}
-              editDescription={editDescriptionHandler}
-              isEditDescriptionLoading={isEditDescriptionLoading}
-              projectColor={projectsData[props.selectedProjectIndex]?.primaryColor}
-            />
-          }
+          >
+            {projectsData[props.selectedProjectIndex]?.name}
+          </h1>
+          <DescriptionOrAddDescriptionComponent
+            projectDescription={projectsData[props.selectedProjectIndex]?.description}
+            editDescription={editDescriptionHandler}
+            isEditDescriptionLoading={isEditDescriptionLoading}
+            projectColor={projectsData[props.selectedProjectIndex]?.primaryColor}
+          />
         </div>
         {
-          (windowWidth || 0) >= 768
-            ?
-            <ActionIconsComponent
-              currentSort={projectsData[props.selectedProjectIndex]?.orderBy}
-              projectId={projectsData[props.selectedProjectIndex]?.id}
-              areThereProjects={projectsData.length > 0}
-              projectName={projectsData[props.selectedProjectIndex]?.name}
-              isEditProjectLoading={props.isEditProjectLoading}
-              isDeleteProjectLoading={props.isDeleteProjectLoading}
-              isColorProjectLoading={props.isColorProjectLoading}
-              projectPrimaryColor={props.projectsData?.[props.selectedProjectIndex]?.primaryColor}
-            />
-            :
-            <></>
+          isNotMobile
+          &&
+          <ActionIconsComponent
+            currentSort={projectsData[props.selectedProjectIndex]?.orderBy}
+            projectId={projectsData[props.selectedProjectIndex]?.id}
+            areThereProjects={projectsData.length > 0}
+            projectName={projectsData[props.selectedProjectIndex]?.name}
+            isEditProjectLoading={props.isEditProjectLoading}
+            isDeleteProjectLoading={props.isDeleteProjectLoading}
+            isColorProjectLoading={props.isColorProjectLoading}
+            projectPrimaryColor={props.projectsData?.[props.selectedProjectIndex]?.primaryColor}
+          />
         }
       </div>
       {
-        (
-          (
-            isFeedbackDataLoading ?
-              <div className="h-full w-full flex justify-center items-center">
-                <LoadingIndicator color={projectsData[props.selectedProjectIndex]?.primaryColor || undefined} />
-              </div>
-              :
-              (
-
-                projectsData[props.selectedProjectIndex] && feedbacksData?.length
-                  ?
-                  <FeedbackList
-                    feedbacksData={feedbacksData}
-                    sortingMethod={projectsData[props.selectedProjectIndex]?.orderBy}
-                    shouldSort={isFeedbacksFetching && !!feedbacksData}
-                    primaryColor={projectsData[props.selectedProjectIndex]?.primaryColor}
-                  />
-                  :
-                  <NoFeedbackComponent
-                    projectId={projectsData[props.selectedProjectIndex]?.id || "-1"}
-                    projectName={projectsData[props.selectedProjectIndex]?.name}
-                  />
-              )
-          )
-        )
+        isFeedbackDataLoading ?
+          <div className="h-full w-full flex justify-center items-center">
+            <LoadingIndicator color={projectsData[props.selectedProjectIndex]?.primaryColor || undefined} />
+          </div>
+          :
+          projectsData[props.selectedProjectIndex] && feedbacksData?.length
+            ?
+            <FeedbackList
+              feedbacksData={feedbacksData}
+              sortingMethod={projectsData[props.selectedProjectIndex]?.orderBy}
+              shouldSort={isFeedbacksFetching && !!feedbacksData}
+              primaryColor={projectsData[props.selectedProjectIndex]?.primaryColor}
+            />
+            :
+            <NoFeedbackComponent
+              projectId={projectsData[props.selectedProjectIndex]?.id || "-1"}
+              projectName={projectsData[props.selectedProjectIndex]?.name}
+            />
       }
     </>
   )
@@ -634,6 +491,65 @@ const FeedbackList: React.FC<{
   )
 }
 
+const FeedbackComponent: React.FC<{
+  feedback: Feedback,
+  primaryColor: string | null | undefined;
+}> = (props) => {
+  const [isShowMore, setIsShowMore] = useState(false);
+  const linesLimit = 6;
+  return (
+    <li key={props.feedback.id}>
+      <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between shadow-sm dark:bg-base-300 dark:border dark:border-zinc-700">
+        <div>
+          <div className="flex justify-between items-start">
+            <StaticRatingComponent
+              rating={props.feedback.rating}
+              primaryColor={props.primaryColor}
+            />
+            <p className="text-zinc-500 leading-3">{timeSinceNow(props.feedback.createdAt)}</p>
+          </div>
+          {
+            props.feedback.title ?
+              <h2 className="text-xl font-bold">
+                {props.feedback.title}
+              </h2>
+              :
+              <></>
+          }
+          <p className={!isShowMore ? 'line-clamp-6' : ''}>
+            {props.feedback.content}
+          </p>
+          {
+            countLines(props.feedback.content) > linesLimit &&
+            <div className="flex">
+              <button
+                className="link text-sm ml-auto text-zinc-500"
+                onClick={() => {
+                  setIsShowMore((prev) => !prev)
+                }}
+              >
+                {isShowMore ? 'less' : 'more'}
+              </button>
+            </div>
+          }
+        </div>
+        {
+          props.feedback.author ?
+            <p className="text-zinc-500 text-right italic align-text-bottom">
+              {props.feedback.author}
+            </p>
+            :
+            <div className="flex flex-row justify-end items-center gap-1">
+              <BsIncognito className="text-zinc-500" />
+              <p className="text-zinc-500 text-right italic align-text-bottom">
+                Anonymous
+              </p>
+            </div>
+        }
+      </div>
+    </li >
+  )
+}
 
 const DescriptionOrAddDescriptionComponent: React.FC<{
   projectDescription: string | null | undefined;
@@ -766,88 +682,6 @@ const ProjectInstructionsRow: React.FC<{
   )
 }
 
-const onGenerateQr = async (projectId: string, projectName: string) => {
-  const projectLink = getProjectUrl(projectId);
-  try {
-    const qrImage = await QRCode.toDataURL(
-      projectLink,
-      { type: 'image/png' },
-    )
-    await shareOrCopyToClipboard({
-      title: `${projectName}'s QR-Code`,
-      isFile: true,
-      fileName: `${projectName}'s QR-Code.png`,
-      text: qrImage
-    })
-  } catch (err) {
-    toast('Something went wrong generating the QR-Code', {
-      className: 'bg-error text-error'
-    })
-  }
-}
-
-
-const shareOrCopyToClipboard = async ({
-  text,
-  title,
-  isFile,
-  fileName,
-}: {
-  text: string,
-  title?: string,
-  isFile?: boolean
-  fileName?: string;
-}) => {
-  if (isFile) {
-    const blob = await (await fetch(text)).blob()
-    const file = new File([blob], (fileName || 'projectQr.png'), { type: blob.type })
-    downloadFile(fileName || 'projectQr.png', file)
-    return;
-  }
-  const shareData: ShareData = {
-    title,
-    url: text,
-  };
-  if (navigator.share && navigator.canShare(shareData)) {
-    void navigator.share({
-      title,
-      url: text,
-    })
-  } else {
-    void copyToClipboard(text);
-  }
-}
-
-const copyToClipboard = async (text: string) => {
-  await navigator.clipboard.writeText(text)
-  toast('Copied to the clipboard!')
-}
-
-const downloadFile = (fileName: string, blob: Blob) => {
-  const url = window.URL.createObjectURL(
-    new Blob([blob]),
-  );
-  const link = document.createElement('a');
-  link.href = url;
-  link.setAttribute(
-    'download',
-    `${fileName}`,
-  );
-
-  // Append to html link element page
-  document.body.appendChild(link);
-
-  // Start download
-  link.click();
-
-  // Clean up and remove the link
-  link.parentNode?.removeChild(link);
-}
-
-const getProjectUrl = (projectId: string) => {
-  return `${window.location.origin}/newfeedback/${projectId}`
-}
-
 const NoProjectsComponent: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center h-full gap-4">
@@ -876,238 +710,6 @@ const NoProjectsComponent: React.FC = () => {
   )
 }
 
-const ActionIconsComponent: React.FC<{
-  projectId: string | undefined;
-  areThereProjects: boolean;
-  projectName: string | undefined;
-  currentSort: OrderBy | undefined;
-  isDeleteProjectLoading: boolean;
-  isColorProjectLoading: boolean;
-  isEditProjectLoading: boolean;
-  projectPrimaryColor: string | null | undefined;
-}> = (props) => {
-  const [windowWidth] = useWindowSize()
-  const isSmall = (windowWidth || 0) < 768;
-  const isMedium = ((windowWidth || 0) < 1024) && ((windowWidth || 0) >= 768);
-  const isBig = (windowWidth || 0) >= 1024;
-
-  const {
-    data: subscriptionStatus
-  } = api.user.subscriptionStatus.useQuery();
-  const isSubscribed = subscriptionStatus === "active"
-
-  return (
-    <div className={
-      isSmall ? 'flex flex-row justify-end items-center gap-1' :
-        isMedium || isBig ? 'flex flex-row items-start justify-end ml-4 gap-1' :
-          ''
-    }>
-      {
-        props.areThereProjects &&
-        (
-          <>
-            <SingleActionIcon
-              isSubscribed={isSubscribed}
-              onPress={() => {
-                void onGenerateQr(props.projectId || "-1", props.projectName || "this project");
-              }}
-              tooltipName="Generate QR"
-            >
-              <BiQr size={26} />
-            </SingleActionIcon>
-            <SingleActionIcon
-              isSubscribed={isSubscribed}
-              onPress={() => {
-                void shareOrCopyToClipboard(
-                  {
-                    isFile: false,
-                    text: getProjectUrl(props.projectId || "-1"),
-                    title: `What do you think about ${props.projectName || "this project"}?`
-                  }
-                )
-              }}
-              tooltipName="share project"
-            >
-              <BiShareAlt size={26} />
-            </SingleActionIcon>
-            <SingleActionIcon
-              tooltipName="project info"
-              needsPro
-              isSubscribed={isSubscribed}
-              modalId="info-project-modal"
-            >
-              <BiInfoCircle size={26} />
-            </SingleActionIcon>
-            <SingleActionIcon
-              tooltipName="Customize colors"
-              isSubscribed={isSubscribed}
-              needsPro
-              modalId="color-project-modal"
-            >
-              {
-                props.isColorProjectLoading ?
-                  <LoadingIndicator
-                    isSmall
-                    showInstantly
-                    color={props.projectPrimaryColor || undefined}
-                  /> :
-                  <BiColorFill size={26} />
-              }
-            </SingleActionIcon>
-            <SingleActionIcon
-              isSubscribed={isSubscribed}
-              tooltipName="Edit Project"
-              modalId="edit-project-modal"
-            >
-              {
-                props.isEditProjectLoading ?
-                  <LoadingIndicator
-                    isSmall
-                    showInstantly
-                    color={props.projectPrimaryColor || undefined}
-                  />
-                  :
-                  <BiEdit size={26} />
-              }
-            </SingleActionIcon>
-            <SingleActionIcon
-              tooltipName="Delete Project"
-              modalId="delete-project-modal"
-              isSubscribed={isSubscribed}
-            >
-              {
-                props.isDeleteProjectLoading ?
-                  <LoadingIndicator isSmall showInstantly color={props.projectPrimaryColor || undefined} />
-                  :
-                  <BiTrash size={26} />
-              }
-            </SingleActionIcon>
-            <SingleActionIcon
-              tooltipName="sort"
-              needsPro
-              isSubscribed={isSubscribed}
-            >
-              <DropdownSort
-                currentSort={props.currentSort}
-                projectId={props.projectId}
-                needsPro
-                projectPrimaryColor={props.projectPrimaryColor}
-                isSubscribed={isSubscribed}
-              />
-            </SingleActionIcon>
-          </>
-        )
-      }
-      {
-        !isBig && <label htmlFor="drawer" className="cursor-pointer">
-          <OpenMenuButton />
-        </label>
-      }
-    </div >
-  )
-}
-
-const DropdownSort: React.FC<{
-  currentSort: OrderBy | undefined;
-  projectId: string | undefined;
-  projectPrimaryColor: string | null | undefined;
-  isSubscribed: boolean;
-  needsPro?: boolean;
-}> = (props) => {
-  const [isLoading, setIsLoading] = useState(false);
-
-  if (!props.isSubscribed && props.needsPro) {
-    return (
-      isLoading ? <LoadingIndicator
-        isSmall
-        showInstantly
-        color={props.projectPrimaryColor || undefined}
-      /> :
-        <BiSortAlt2 size={26} />
-    )
-  }
-
-  return (
-    <div className="dropdown dropdown-end flex">
-      <label tabIndex={0} className="cursor-pointer">
-        {
-          isLoading ? <LoadingIndicator
-            isSmall
-            showInstantly
-            color={props.projectPrimaryColor || undefined}
-          /> :
-            <BiSortAlt2 size={26} />
-        }
-      </label>
-      <div
-        id='sort-dropdown'
-        tabIndex={0}
-        className="dropdown-content bg-base-300 menu p-2 shadow rounded-box w-52">
-        <SortContent
-          currentSort={props.currentSort}
-          onLoadingChange={(value) => {
-            setIsLoading(value)
-          }}
-          projectId={props.projectId}
-        />
-      </div>
-    </div>
-  )
-}
-const closeDropdown = () => {
-  const dropdown = document.activeElement as HTMLDivElement | undefined;
-  if (dropdown) {
-    dropdown.blur();
-  }
-}
-
-const OpenMenuButton = () => {
-  return (
-    <div className="flex bg-base-300 rounded-full items-center justify-center pl-2 pr-1 text-center py-1 dark:border dark:border-zinc-700">
-      <p className="align-middle font-bold">MENU</p>
-      <BiMenu className="text-primary" size={24} />
-    </div>
-  )
-
-}
-
-const SingleActionIcon: React.FC<{
-  children: React.ReactNode;
-  onPress?: () => void;
-  tooltipName?: string;
-  isTooltipSuccess?: boolean;
-  needsPro?: boolean;
-  isSubscribed?: boolean;
-  modalId?: string;
-}> = (props) => {
-  const isForbidden = props.needsPro && !props.isSubscribed;
-  return (
-    <div
-      className={`${!!props.tooltipName ? ' md:tooltip md:tooltip-left' : ''} cursor-pointer`}
-      data-tip={props.tooltipName?.toLowerCase()}
-    >
-      {
-        isForbidden
-          ?
-          <label htmlFor="need-subscription-modal" className="cursor-pointer">
-            {props.children}
-          </label>
-          :
-          <a className="cursor-pointer" onClick={() => {
-            props.onPress && props.onPress()
-          }
-          }>
-            {
-              props.modalId ?
-                <label htmlFor={props.modalId} className="cursor-pointer">{props.children}</label>
-                :
-                props.children
-            }
-          </a>
-      }
-    </div>
-  )
-}
 
 const ProjectDrawerContainer: React.FC<{
   projectsData: Project[] | undefined;
@@ -1251,65 +853,5 @@ const ProjectComponent: React.FC<{
         {props.project.name}
       </a>
     </li>
-  )
-}
-
-const FeedbackComponent: React.FC<{
-  feedback: Feedback,
-  primaryColor: string | null | undefined;
-}> = (props) => {
-  const [isShowMore, setIsShowMore] = useState(false);
-  const linesLimit = 6;
-  return (
-    <li key={props.feedback.id}>
-      <div className="bg-base-200 rounded-xl p-2 h-full flex flex-col justify-between shadow-sm dark:bg-base-300 dark:border dark:border-zinc-700">
-        <div>
-          <div className="flex justify-between items-start">
-            <StaticRatingComponent
-              rating={props.feedback.rating}
-              primaryColor={props.primaryColor}
-            />
-            <p className="text-zinc-500 leading-3">{timeSinceNow(props.feedback.createdAt)}</p>
-          </div>
-          {
-            props.feedback.title ?
-              <h2 className="text-xl font-bold">
-                {props.feedback.title}
-              </h2>
-              :
-              <></>
-          }
-          <p className={!isShowMore ? 'line-clamp-6' : ''}>
-            {props.feedback.content}
-          </p>
-          {
-            countLines(props.feedback.content) > linesLimit &&
-            <div className="flex">
-              <button
-                className="link text-sm ml-auto text-zinc-500"
-                onClick={() => {
-                  setIsShowMore((prev) => !prev)
-                }}
-              >
-                {isShowMore ? 'less' : 'more'}
-              </button>
-            </div>
-          }
-        </div>
-        {
-          props.feedback.author ?
-            <p className="text-zinc-500 text-right italic align-text-bottom">
-              {props.feedback.author}
-            </p>
-            :
-            <div className="flex flex-row justify-end items-center gap-1">
-              <BsIncognito className="text-zinc-500" />
-              <p className="text-zinc-500 text-right italic align-text-bottom">
-                Anonymous
-              </p>
-            </div>
-        }
-      </div>
-    </li >
   )
 }
